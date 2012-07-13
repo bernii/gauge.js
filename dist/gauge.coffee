@@ -1,3 +1,42 @@
+# Request Animation Frame Polyfill
+# CoffeeScript version of http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+do () ->
+	vendors = ['ms', 'moz', 'webkit', 'o']
+	for vendor in vendors
+		if window.requestAnimationFrame
+			break
+		window.requestAnimationFrame = window[vendor + 'RequestAnimationFrame']
+		window.cancelAnimationFrame = window[vendor + 'CancelAnimationFrame'] or window[vendor + 'CancelRequestAnimationFrame']
+
+	browserRequestAnimationFrame = null
+	lastId = 0
+	isCancelled = {}
+
+	if not requestAnimationFrame
+		window.requestAnimationFrame = (callback, element) ->
+			currTime = new Date().getTime()
+			timeToCall = Math.max(0, 16 - (currTime - lastTime))
+			id = window.setTimeout(() ->
+				callback(currTime + timeToCall)
+			, timeToCall)
+			lastTime = currTime + timeToCall
+			return id
+		# This implementation should only be used with the setTimeout()
+		# version of window.requestAnimationFrame().
+		window.cancelAnimationFrame = (id) ->
+			clearTimeout(id)
+	else if not window.cancelAnimationFrame
+		browserRequestAnimationFrame = window.requestAnimationFrame
+		window.requestAnimationFrame = (callback, element) ->
+			myId = ++lastId
+			browserRequestAnimationFrame(() ->
+				if not isCancelled[myId]
+					callback()
+			, element)
+			return myId
+		window.cancelAnimationFrame = (id) ->
+			isCancelled[id] = true
+
 String.prototype.hashCode = () ->
 	hash = 0
 	if this.length == 0
@@ -41,6 +80,7 @@ addCommas =(nStr) ->
 	return x1 + x2
 
 class ValueUpdater
+	animationSpeed: 32
 	constructor: () ->
 		AnimationUpdater.add(@)
 
@@ -49,10 +89,10 @@ class ValueUpdater
 			if @ctx
 				@ctx.clearRect(0, 0, @canvas.width, @canvas.height)
 			diff = @value - @displayedValue
-			if Math.abs(diff / 8) <= 0.001
+			if Math.abs(diff / @animationSpeed) <= 0.001
 				@displayedValue = @value
 			else
-				@displayedValue = @displayedValue + diff / 8
+				@displayedValue = @displayedValue + diff / @animationSpeed
 			@render()
 			return true
 		return false
@@ -131,11 +171,9 @@ class Bar
 		@value = arrValues[0]
 		@maxValue = arrValues[1]
 		@avgValue = arrValues[2]
-		# alert(@value + ", " + @maxValue + ", " +@avgValue)
 		@render()
-	# setTextField: (@textField) ->
+
 	render: () ->
-		# alert("meme")
 		if @textField
 			@textField.text(formatNumber(@value))
 
@@ -271,7 +309,7 @@ class Donut extends ValueUpdater
 
 		start = @radius - @lineWidth / 2;
 		stop = @radius + @lineWidth / 2;
-		# console.log("START " + start + "STOP " + stop)
+
 		grd = @ctx.createRadialGradient(w, h, start, w, h, stop)
 		grd.addColorStop(0, "#d5d5d5")
 		grd.addColorStop(0.12, @options.strokeColor)
@@ -293,7 +331,7 @@ class Donut extends ValueUpdater
 
 window.AnimationUpdater =
 	elements: []
-	running: false
+	animId: null
 
 	addAll: (list) ->
 		for elem in list
@@ -302,37 +340,15 @@ window.AnimationUpdater =
 	add: (object) ->
 		AnimationUpdater.elements.push(object)
 
-	run: (run=not AnimationUpdater.running) ->
-		if run
-			animationFinished = true
-			for elem in AnimationUpdater.elements
-				if elem.update()
-					animationFinished = false
-			# animationFinished = true
-			if not animationFinished
-				AnimationUpdater.running = true
-				setTimeout(() ->
-					AnimationUpdater.run(true)
-				, 30)
-			else
-				AnimationUpdater.running = false
+	run: () ->
+		animationFinished = true
+		for elem in AnimationUpdater.elements
+			if elem.update()
+				animationFinished = false
+		if not animationFinished
+			AnimationUpdater.animId = requestAnimationFrame(AnimationUpdater.run)
+		else
+			cancelAnimationFrame(AnimationUpdater.animId)
 
 window.Gauge = Gauge
 window.Donut = Donut
-
-readyStateCheckInterval = setInterval(() ->
-    if document.readyState == "complete"
-        AnimationUpdater.run()
-        clearInterval(readyStateCheckInterval)
-, 10)
-
-
-# window.App = new MainApp
-# $(() ->
-# 	App.init()
-	# window.onfocus = () ->
-	# 	App.isActive = true
-	# 	App.updateData()
-	# window.onblur = () ->
-	# 	App.isActive = false
-# )

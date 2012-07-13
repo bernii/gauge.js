@@ -1,5 +1,5 @@
 (function() {
-  var AnimatedText, AnimatedTextFactory, Bar, Donut, Gauge, GaugePointer, ValueUpdater, addCommas, formatNumber, readyStateCheckInterval, secondsToString, updateObjectValues;
+  var AnimatedText, AnimatedTextFactory, Bar, Donut, Gauge, GaugePointer, ValueUpdater, addCommas, formatNumber, secondsToString, updateObjectValues;
   var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
@@ -8,6 +8,51 @@
     child.__super__ = parent.prototype;
     return child;
   };
+  (function() {
+    var browserRequestAnimationFrame, isCancelled, lastId, vendor, vendors, _i, _len;
+    vendors = ['ms', 'moz', 'webkit', 'o'];
+    for (_i = 0, _len = vendors.length; _i < _len; _i++) {
+      vendor = vendors[_i];
+      if (window.requestAnimationFrame) {
+        break;
+      }
+      window.requestAnimationFrame = window[vendor + 'RequestAnimationFrame'];
+      window.cancelAnimationFrame = window[vendor + 'CancelAnimationFrame'] || window[vendor + 'CancelRequestAnimationFrame'];
+    }
+    browserRequestAnimationFrame = null;
+    lastId = 0;
+    isCancelled = {};
+    if (!requestAnimationFrame) {
+      window.requestAnimationFrame = function(callback, element) {
+        var currTime, id, lastTime, timeToCall;
+        currTime = new Date().getTime();
+        timeToCall = Math.max(0, 16 - (currTime - lastTime));
+        id = window.setTimeout(function() {
+          return callback(currTime + timeToCall);
+        }, timeToCall);
+        lastTime = currTime + timeToCall;
+        return id;
+      };
+      return window.cancelAnimationFrame = function(id) {
+        return clearTimeout(id);
+      };
+    } else if (!window.cancelAnimationFrame) {
+      browserRequestAnimationFrame = window.requestAnimationFrame;
+      window.requestAnimationFrame = function(callback, element) {
+        var myId;
+        myId = ++lastId;
+        browserRequestAnimationFrame(function() {
+          if (!isCancelled[myId]) {
+            return callback();
+          }
+        }, element);
+        return myId;
+      };
+      return window.cancelAnimationFrame = function(id) {
+        return isCancelled[id] = true;
+      };
+    }
+  })();
   String.prototype.hashCode = function() {
     var char, hash, i, _ref;
     hash = 0;
@@ -66,6 +111,7 @@
     return x1 + x2;
   };
   ValueUpdater = (function() {
+    ValueUpdater.prototype.animationSpeed = 32;
     function ValueUpdater() {
       AnimationUpdater.add(this);
     }
@@ -76,10 +122,10 @@
           this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         }
         diff = this.value - this.displayedValue;
-        if (Math.abs(diff / 8) <= 0.001) {
+        if (Math.abs(diff / this.animationSpeed) <= 0.001) {
           this.displayedValue = this.value;
         } else {
-          this.displayedValue = this.displayedValue + diff / 8;
+          this.displayedValue = this.displayedValue + diff / this.animationSpeed;
         }
         this.render();
         return true;
@@ -353,7 +399,7 @@
   })();
   window.AnimationUpdater = {
     elements: [],
-    running: false,
+    animId: null,
     addAll: function(list) {
       var elem, _i, _len, _results;
       _results = [];
@@ -366,37 +412,23 @@
     add: function(object) {
       return AnimationUpdater.elements.push(object);
     },
-    run: function(run) {
+    run: function() {
       var animationFinished, elem, _i, _len, _ref;
-      if (run == null) {
-        run = !AnimationUpdater.running;
+      animationFinished = true;
+      _ref = AnimationUpdater.elements;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        elem = _ref[_i];
+        if (elem.update()) {
+          animationFinished = false;
+        }
       }
-      if (run) {
-        animationFinished = true;
-        _ref = AnimationUpdater.elements;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          elem = _ref[_i];
-          if (elem.update()) {
-            animationFinished = false;
-          }
-        }
-        if (!animationFinished) {
-          AnimationUpdater.running = true;
-          return setTimeout(function() {
-            return AnimationUpdater.run(true);
-          }, 30);
-        } else {
-          return AnimationUpdater.running = false;
-        }
+      if (!animationFinished) {
+        return AnimationUpdater.animId = requestAnimationFrame(AnimationUpdater.run);
+      } else {
+        return cancelAnimationFrame(AnimationUpdater.animId);
       }
     }
   };
   window.Gauge = Gauge;
   window.Donut = Donut;
-  readyStateCheckInterval = setInterval(function() {
-    if (document.readyState === "complete") {
-      AnimationUpdater.run();
-      return clearInterval(readyStateCheckInterval);
-    }
-  }, 10);
 }).call(this);

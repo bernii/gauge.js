@@ -52,7 +52,8 @@
   </div>
   <form id="opts" class="opts">
   	<h4>Options:</h4>
-  	<label>Current Val:</label><input type="text" name="currval" min="0" max="3000" step="25" value="1244"><br><br>
+  	<label>Current Val:</label><input type="text" name="currval" min="0" max="3000" step="25" value="1244"><br>
+    <label>Anim speed:</label><input type="text" name="animationSpeed" min="1" max="128" step="1" value="32"><br><br>
     <label>Angle:</label><input id="input-angle" type="text" name="angle" min="0" max="100" step="1" value="15"><br>
     <label>Line width:</label><input id="input-line-width" type="text" name="lineWidth" min="0" max="70" value="44"><br>
     <label>Ptr length:</label><input id="input-ptr-len" type="text" name="pointer.length" min="0" max="100" value="90"><br>
@@ -99,6 +100,7 @@ var target = document.getElementById('foo'); // your canvas element
 var gauge = new Gauge(target).setOptions(opts); // create sexy gauge!
 gauge.value = <span id="opt-currval" class="lit">1500</span>; // set actual value
 gauge.maxValue = <span id="opt-maxval" class="lit">3000</span>; // set max gauge value
+gauge.animationSpeed = <span id="opt-animationSpeed" class="lit">3000</span>; // set animation speed (32 is default value)
 </pre>
 <p>
   The <code>Gauge</code> class handles drawing on canvas and starts the animation. 
@@ -209,6 +211,7 @@ $.fn.gauge = function(opts) {
       $('#opt-' + this.name).text(this.checked);
     });
 
+    demoGauge.animationSpeed = opts.animationSpeed;
     demoGauge.setOptions(opts);
     demoGauge.ctx.clearRect(0, 0, demoGauge.ctx.canvas.width, demoGauge.ctx.canvas.height);
     demoGauge.render();
