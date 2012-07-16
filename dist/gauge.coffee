@@ -286,6 +286,7 @@ class Donut extends ValueUpdater
 		@radius = @canvas.height / 2 - @lineWidth/2
 		if @textField
 			@textField.style.fontSize = options.fontSize + 'px'
+		return @
 
 	setTextField: (@textField) ->
 
@@ -352,3 +353,4 @@ window.AnimationUpdater =
 
 window.Gauge = Gauge
 window.Donut = Donut
+

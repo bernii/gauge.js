@@ -98,9 +98,9 @@ var opts = {
 };
 var target = document.getElementById('foo'); // your canvas element
 var gauge = new Gauge(target).setOptions(opts); // create sexy gauge!
-gauge.value = <span id="opt-currval" class="lit">1500</span>; // set actual value
 gauge.maxValue = <span id="opt-maxval" class="lit">3000</span>; // set max gauge value
 gauge.animationSpeed = <span id="opt-animationSpeed" class="lit">3000</span>; // set animation speed (32 is default value)
+gauge.set(<span id="opt-currval" class="lit">1500</span>); // set actual value
 </pre>
 <p>
   The <code>Gauge</code> class handles drawing on canvas and starts the animation. 

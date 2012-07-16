@@ -353,8 +353,9 @@
       this.lineWidth = this.canvas.height * this.options.lineWidth;
       this.radius = this.canvas.height / 2 - this.lineWidth / 2;
       if (this.textField) {
-        return this.textField.style.fontSize = options.fontSize + 'px';
+        this.textField.style.fontSize = options.fontSize + 'px';
       }
+      return this;
     };
     Donut.prototype.setTextField = function(textField) {
       this.textField = textField;
