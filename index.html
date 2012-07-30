@@ -268,9 +268,9 @@ $.fn.gauge = function(opts) {
     		$("input[name=fontSize]").val(24);
     		$("input[name=angle]").val(35);
 
-    		$("input[name=colorStart]").val("6f6ea0");
-    		$("input[name=colorStop]").val("c0c0db");
-    		$("input[name=strokeColor]").val("eeeeee");
+    		$("input[name=colorStart]").val("6f6ea0")[0].color.importColor();
+    		$("input[name=colorStop]").val("c0c0db")[0].color.importColor();
+    		$("input[name=strokeColor]").val("eeeeee")[0].color.importColor();
 
     		fdSlider.disable('input-ptr-len');
     		fdSlider.disable('input-ptr-stroke');
@@ -284,9 +284,9 @@ $.fn.gauge = function(opts) {
     		$("input[name=fontSize]").val(41);
     		$("input[name=angle]").val(15);
 
-    		$("input[name=colorStart]").val("6FADCF");
-    		$("input[name=colorStop]").val("8FC0DA");
-    		$("input[name=strokeColor]").val("E0E0E0");
+    		$("input[name=colorStart]").val("6FADCF")[0].color.importColor();
+    		$("input[name=colorStop]").val("8FC0DA")[0].color.importColor();
+    		$("input[name=strokeColor]").val("E0E0E0")[0].color.importColor();
 
     		fdSlider.enable('input-ptr-len');
     		fdSlider.enable('input-ptr-stroke');
