@@ -51,7 +51,7 @@ secondsToString = (sec) ->
 	hr = Math.floor(sec / 3600)
 	min = Math.floor((sec - (hr * 3600))/60)
 	sec -= ((hr * 3600) + (min * 60))
-	sec += '' 
+	sec += ''
 	min += ''
 	while min.length < 2
 		min = '0' + min
@@ -141,7 +141,7 @@ class GaugePointer
 	render: (angle) ->
 		centerX = @canvas.width / 2
 		centerY = @canvas.height * 0.9
-		
+
 		# angle = Math.PI * 1.45
 		x = Math.round(centerX + @length * Math.cos(angle))
 		y = Math.round(centerY + @length * Math.sin(angle))
@@ -197,7 +197,7 @@ class Gauge extends ValueUpdater
 	paddingBottom: 0.1
 	options:
 		colorStart: "#6fadcf"
-		colorStop: "#8fc0da"
+		colorStop: undefined
 		strokeColor: "#e0e0e0"
 		pointer:
 			length: 0.8
@@ -220,7 +220,7 @@ class Gauge extends ValueUpdater
 		if @textField
 			@textField.style.fontSize = options.fontSize + 'px'
 		return @
-	
+
 	set: (value) ->
 		@value = value
 		if @value > @maxValue
@@ -240,12 +240,16 @@ class Gauge extends ValueUpdater
 		if @textField
 			@textField.innerHTML = formatNumber(@displayedValue)
 
-		grd = @ctx.createRadialGradient(w, h, 9, w, h, 70)
 		@ctx.lineCap = "butt"
 
-		grd.addColorStop(0, @options.colorStart)
-		grd.addColorStop(1, @options.colorStop)
-		@ctx.strokeStyle = grd
+		if typeof(@options.colorStop) != undefined
+			fillStyle = @ctx.createRadialGradient w, h, 9, w, h, 70
+			fillStyle.addColorStop 0, @options.colorStart
+			fillStyle.addColorStop 1, @options.colorStop
+		else
+			fillStyle = @options.colorStart
+
+		@ctx.strokeStyle = fillStyle
 		@ctx.beginPath()
 		@ctx.arc(w, h, @radius, (1 + @options.angle) * Math.PI, displayedAngle, false)
 		@ctx.lineWidth = @lineWidth
