@@ -51,7 +51,7 @@ secondsToString = (sec) ->
 	hr = Math.floor(sec / 3600)
 	min = Math.floor((sec - (hr * 3600))/60)
 	sec -= ((hr * 3600) + (min * 60))
-	sec += '' 
+	sec += ''
 	min += ''
 	while min.length < 2
 		min = '0' + min
@@ -141,7 +141,7 @@ class GaugePointer
 	render: (angle) ->
 		centerX = @canvas.width / 2
 		centerY = @canvas.height * 0.9
-		
+
 		# angle = Math.PI * 1.45
 		x = Math.round(centerX + @length * Math.cos(angle))
 		y = Math.round(centerY + @length * Math.sin(angle))
@@ -220,7 +220,7 @@ class Gauge extends ValueUpdater
 		if @textField
 			@textField.style.fontSize = options.fontSize + 'px'
 		return @
-	
+
 	set: (value) ->
 		@value = value
 		if @value > @maxValue
@@ -311,13 +311,7 @@ class Donut extends ValueUpdater
 		start = @radius - @lineWidth / 2;
 		stop = @radius + @lineWidth / 2;
 
-		grd = @ctx.createRadialGradient(w, h, start, w, h, stop)
-		grd.addColorStop(0, "#d5d5d5")
-		grd.addColorStop(0.12, @options.strokeColor)
-		grd.addColorStop(0.88, @options.strokeColor)
-		grd.addColorStop(1, "#d5d5d5")
-
-		@ctx.strokeStyle = grd
+		@ctx.strokeStyle = @options.strokeColor
 		@ctx.beginPath()
 		@ctx.arc(w, h, @radius, (1 - @options.angle) * Math.PI, (2 + @options.angle) * Math.PI, false)
 		@ctx.lineWidth = @lineWidth
