@@ -57,11 +57,12 @@
     <label>Angle:</label><input id="input-angle" type="text" name="angle" min="0" max="100" step="1" value="15"><br>
     <label>Line width:</label><input id="input-line-width" type="text" name="lineWidth" min="0" max="70" value="44"><br>
     <label>Ptr length:</label><input id="input-ptr-len" type="text" name="pointer.length" min="0" max="100" value="90"><br>
+    <label>Ptr color:</label><input id="input-ptr-color" type="text" class="color" name="pointer.color" value="000000"><br>
     <label>Ptr stroke:</label><input id="input-ptr-stroke" type="text" name="pointer.strokeWidth" min="0" max="300" value="35"><br>
     <label>Font size:</label><input id="input-font-size" type="text" name="fontSize" min="0" max="100" value="41"><br>
-    <label>Color start:</label><input type="text" name="colorStart" class="color" value="#6fadcf"><br>
-    <label>Color stop:</label><input type="text" name="colorStop" class="color" value="#8fc0da"><br>
-    <label>Background:</label><input type="text" name="strokeColor" class="color" value="#e0e0e0"><br>
+    <label>Color start:</label><input type="text" name="colorStart" class="color" value="6FADCF"><br>
+    <label>Color stop:</label><input type="text" name="colorStop" class="color" value="8FC0DA"><br>
+    <label>Background:</label><input type="text" name="strokeColor" class="color" value="E0E0E0"><br>
   </form>
 
   <br clear="left">
@@ -90,7 +91,8 @@ var opts = {
   lineWidth: <span id="opt-lineWidth" class="lit">5</span>, // The line thickness
   pointer: {
     length: <span id="opt-pointer-length" class="lit">10</span>, // The radius of the inner circle
-    strokeWidth: <span id="opt-pointer-strokeWidth" class="lit">0</span> // The rotation offset
+    strokeWidth: <span id="opt-pointer-strokeWidth" class="lit">0</span>, // The rotation offset
+    color: '<span id="opt-pointer-color" class="lit">#000000</span>' // Fill color
   },
   colorStart: '<span id="opt-colorStart" class="lit">0</span>',   // Colors
   colorStop: '<span id="opt-colorStop" class="lit">0</span>',    // just experiment with them
@@ -144,12 +146,13 @@ $.fn.gauge = function(opts) {
 
 <h2>Changes</h2>
 
-<!-- <h3 id="v1.2.5">Version 1.2.5 (22.03.2012)</h3>
+<h3 id="v1.2.5">Version 1.1 (15.08.2012)</h3>
 <ul>
-  <li>Fixed <a href="https://github.com/bernii/gauge.js/issues/58">a bug</a> that prevented the VML from being displayed when Modernizr or html5shiv was used.</li>
-  <li>Added a rotate option. See <a href="https://github.com/bernii/gauge.js/issues/60">issue #60</a>.</li>
-  <li>The constructor property is now preserved. See <a href="https://github.com/bernii/gauge.js/pull/61">issue #61</a>.</li>
-</ul> -->
+  <li>Fixed color picker <a href="https://github.com/bernii/gauge.js/issues/2">bug</a> in FF & Opera</li>
+  <li>Added a shadow option. See <a href="https://github.com/bernii/gauge.js/pull/5">issue #60</a>.</li>
+  <li>Added multiple pointer option (requested via email). This needed some code refactoring. No demo for it yet. Use array of values to check it ex. gauge.set([44, 554]);</li>
+  <li>Added wrapper for formatting text output <a href="https://github.com/bernii/gauge.js/issues/4">issue #4</a>.</li>
+</ul>
 
 <h3 id="v1.0">Version 1.0 (27.6.2012)</h3>
 <ul>
@@ -167,7 +170,7 @@ $.fn.gauge = function(opts) {
 <div id="footer">
   <a class="github" href="http://github.com">Hosted on GitHub</a>
 </div>
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 <script type="text/javascript" src="assets/fd-slider/fd-slider.js"></script>
 <script src="dist/gauge.js"></script>
 <script>
@@ -175,7 +178,10 @@ $.fn.gauge = function(opts) {
   function update() {
     var opts = {};
     $('.opts input[min], .opts .color').each(function() {
-      var val = parseFloat(this.value)
+      var val = this.classList.contains("color") ? this.value : parseFloat(this.value);
+      if(this.classList.contains("color")){
+        val = "#" + val;
+      }
       if(this.name.indexOf("lineWidth") != -1 ||
         this.name.indexOf("angle") != -1 ||
         this.name.indexOf("pointer.length") != -1){
@@ -195,14 +201,15 @@ $.fn.gauge = function(opts) {
       	}
       	tmp_opts[elems[elems.length - 1]] = val;
       }else if(this.classList.contains("color")){
-      	opts[this.name] = this.value
+        // color picker is removing # from color values
+      	opts[this.name] = "#" + this.value
         $('#opt-' + this.name.replace(".", "-")).text("#" + this.value);
       }else{
       	opts[this.name] = val;
       }
       if(this.name == "currval"){
       	// update current demo gauge
-      	demoGauge.value = parseInt(this.value);
+      	demoGauge.set(parseInt(this.value));
       	AnimationUpdater.run();
       }
     });
@@ -210,7 +217,6 @@ $.fn.gauge = function(opts) {
       opts[this.name] = this.checked;
       $('#opt-' + this.name).text(this.checked);
     });
-
     demoGauge.animationSpeed = opts.animationSpeed;
     demoGauge.setOptions(opts);
     demoGauge.ctx.clearRect(0, 0, demoGauge.ctx.canvas.width, demoGauge.ctx.canvas.height);
@@ -222,14 +228,14 @@ $.fn.gauge = function(opts) {
   function initGauge(){
     demoGauge = new Gauge(document.getElementById("canvas-preview"));
     demoGauge.setTextField(document.getElementById("preview-textfield"));
-    demoGauge.value = 1244;
     demoGauge.maxValue = 3000;
+    demoGauge.set(1244);
   };
   function initDonut(){
     demoGauge = new Donut(document.getElementById("canvas-preview"));
     demoGauge.setTextField(document.getElementById("preview-textfield"));
-    demoGauge.value = 1244;
     demoGauge.maxValue = 3000;
+    demoGauge.set(1244);
   };
   $(function() {
     var params = {};
@@ -268,12 +274,13 @@ $.fn.gauge = function(opts) {
     		$("input[name=fontSize]").val(24);
     		$("input[name=angle]").val(35);
 
-    		$("input[name=colorStart]").val("6f6ea0")[0].color.importColor();
-    		$("input[name=colorStop]").val("c0c0db")[0].color.importColor();
-    		$("input[name=strokeColor]").val("eeeeee")[0].color.importColor();
+    		$("input[name=colorStart]").val("6F6EA0")[0].color.importColor();
+    		$("input[name=colorStop]").val("C0C0DB")[0].color.importColor();
+    		$("input[name=strokeColor]").val("EEEEEE")[0].color.importColor();
 
     		fdSlider.disable('input-ptr-len');
     		fdSlider.disable('input-ptr-stroke');
+        $("#input-ptr-color").prop('disabled', true);
 
         selectGaguge1.set(1);
         selectGaguge2.set(3000);
@@ -290,6 +297,7 @@ $.fn.gauge = function(opts) {
 
     		fdSlider.enable('input-ptr-len');
     		fdSlider.enable('input-ptr-stroke');
+        $("#input-ptr-color").prop('disabled', false);
         selectGaguge1.set(3000);
         selectGaguge2.set(1) ;
     	}
@@ -303,12 +311,13 @@ $.fn.gauge = function(opts) {
     });
 
     selectGaguge1 = new Gauge(document.getElementById("select-1"));
-    selectGaguge1.value = 1552;
     selectGaguge1.maxValue = 3000;
-
+    selectGaguge1.set(1552);
+    
     selectGaguge2 = new Donut(document.getElementById("select-2"));
-    selectGaguge2.value = 1844;
     selectGaguge2.maxValue = 3000;
+    selectGaguge2.set(1844);
+    
     initGauge();
     update();
     

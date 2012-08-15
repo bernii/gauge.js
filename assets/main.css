@@ -253,3 +253,6 @@ input.color{
   -o-transform: rotate(-20deg);
   text-shadow: rgba(0, 0, 0, 0.2) 1px 1px 0;
 }
+input[disabled] {
+  opacity: 0.5;
+}

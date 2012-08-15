@@ -1,5 +1,5 @@
 (function() {
-  var AnimatedText, AnimatedTextFactory, Bar, Donut, Gauge, GaugePointer, ValueUpdater, addCommas, formatNumber, secondsToString, updateObjectValues;
+  var AnimatedText, AnimatedTextFactory, Bar, BaseGauge, Donut, Gauge, GaugePointer, TextRenderer, ValueUpdater, addCommas, formatNumber, secondsToString, updateObjectValues;
   var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
     for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
     function ctor() { this.constructor = child; }
@@ -112,13 +112,22 @@
   };
   ValueUpdater = (function() {
     ValueUpdater.prototype.animationSpeed = 32;
-    function ValueUpdater() {
-      AnimationUpdater.add(this);
+    function ValueUpdater(addToAnimationQueue, clear) {
+      if (addToAnimationQueue == null) {
+        addToAnimationQueue = true;
+      }
+      this.clear = clear != null ? clear : true;
+      if (addToAnimationQueue) {
+        AnimationUpdater.add(this);
+      }
     }
-    ValueUpdater.prototype.update = function() {
+    ValueUpdater.prototype.update = function(force) {
       var diff;
-      if (this.displayedValue !== this.value) {
-        if (this.ctx) {
+      if (force == null) {
+        force = false;
+      }
+      if (force || this.displayedValue !== this.value) {
+        if (this.ctx && this.clear) {
           this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         }
         diff = this.value - this.displayedValue;
@@ -133,6 +142,35 @@
       return false;
     };
     return ValueUpdater;
+  })();
+  BaseGauge = (function() {
+    __extends(BaseGauge, ValueUpdater);
+    function BaseGauge() {
+      BaseGauge.__super__.constructor.apply(this, arguments);
+    }
+    BaseGauge.prototype.setTextField = function(textField) {
+      return this.textField = textField instanceof TextRenderer ? textField : new TextRenderer(textField);
+    };
+    BaseGauge.prototype.setOptions = function(options) {
+      if (options == null) {
+        options = null;
+      }
+      updateObjectValues(this.options, options);
+      if (this.textField) {
+        this.textField.el.style.fontSize = options.fontSize + 'px';
+      }
+      return this;
+    };
+    return BaseGauge;
+  })();
+  TextRenderer = (function() {
+    function TextRenderer(el) {
+      this.el = el;
+    }
+    TextRenderer.prototype.render = function(gauge) {
+      return this.el.innerHTML = formatNumber(gauge.displayedValue);
+    };
+    return TextRenderer;
   })();
   AnimatedText = (function() {
     __extends(AnimatedText, ValueUpdater);
@@ -172,15 +210,19 @@
     }
   };
   GaugePointer = (function() {
-    GaugePointer.prototype.strokeWidth = 3;
-    GaugePointer.prototype.length = 76;
+    __extends(GaugePointer, ValueUpdater);
+    GaugePointer.prototype.displayedValue = 0;
+    GaugePointer.prototype.value = 0;
     GaugePointer.prototype.options = {
       strokeWidth: 0.035,
-      length: 0.1
+      length: 0.1,
+      color: "#000000"
     };
-    function GaugePointer(ctx, canvas) {
-      this.ctx = ctx;
-      this.canvas = canvas;
+    function GaugePointer(gauge) {
+      this.gauge = gauge;
+      this.ctx = this.gauge.ctx;
+      this.canvas = this.gauge.canvas;
+      GaugePointer.__super__.constructor.call(this, false, false);
       this.setOptions();
     }
     GaugePointer.prototype.setOptions = function(options) {
@@ -189,10 +231,12 @@
       }
       updateObjectValues(this.options, options);
       this.length = this.canvas.height * this.options.length;
-      return this.strokeWidth = this.canvas.height * this.options.strokeWidth;
+      this.strokeWidth = this.canvas.height * this.options.strokeWidth;
+      return this.maxValue = this.gauge.maxValue;
     };
-    GaugePointer.prototype.render = function(angle) {
-      var centerX, centerY, endX, endY, startX, startY, x, y;
+    GaugePointer.prototype.render = function() {
+      var angle, centerX, centerY, endX, endY, startX, startY, x, y;
+      angle = this.gauge.getAngle.call(this, this.displayedValue);
       centerX = this.canvas.width / 2;
       centerY = this.canvas.height * 0.9;
       x = Math.round(centerX + this.length * Math.cos(angle));
@@ -201,7 +245,7 @@
       startY = Math.round(centerY + this.strokeWidth * Math.sin(angle - Math.PI / 2));
       endX = Math.round(centerX + this.strokeWidth * Math.cos(angle + Math.PI / 2));
       endY = Math.round(centerY + this.strokeWidth * Math.sin(angle + Math.PI / 2));
-      this.ctx.fillStyle = "black";
+      this.ctx.fillStyle = this.options.color;
       this.ctx.beginPath();
       this.ctx.arc(centerX, centerY, this.strokeWidth, 0, Math.PI * 2, true);
       this.ctx.fill();
@@ -243,9 +287,9 @@
     return Bar;
   })();
   Gauge = (function() {
-    __extends(Gauge, ValueUpdater);
+    __extends(Gauge, BaseGauge);
     Gauge.prototype.elem = null;
-    Gauge.prototype.value = 20;
+    Gauge.prototype.value = [20];
     Gauge.prototype.maxValue = 80;
     Gauge.prototype.displayedAngle = 0;
     Gauge.prototype.displayedValue = 0;
@@ -267,43 +311,60 @@
       this.canvas = canvas;
       Gauge.__super__.constructor.call(this);
       this.ctx = this.canvas.getContext('2d');
-      this.gp = new GaugePointer(this.ctx, this.canvas);
+      this.gp = [new GaugePointer(this)];
       this.setOptions();
       this.render();
     }
     Gauge.prototype.setOptions = function(options) {
+      var gauge, _i, _len, _ref;
       if (options == null) {
         options = null;
       }
-      updateObjectValues(this.options, options);
+      Gauge.__super__.setOptions.call(this, options);
       this.lineWidth = this.canvas.height * (1 - this.paddingBottom) * this.options.lineWidth;
       this.radius = this.canvas.height * (1 - this.paddingBottom) - this.lineWidth;
-      this.gp.setOptions(this.options.pointer);
-      if (this.textField) {
-        this.textField.style.fontSize = options.fontSize + 'px';
+      _ref = this.gp;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        gauge = _ref[_i];
+        gauge.setOptions(this.options.pointer);
       }
       return this;
     };
     Gauge.prototype.set = function(value) {
-      this.value = value;
-      if (this.value > this.maxValue) {
-        this.maxValue = this.value * 1.1;
+      var i, val, _i, _len, _ref;
+      if (!(value instanceof Array)) {
+        value = [value];
       }
+      if (value.length > this.gp.length) {
+        for (i = 0, _ref = value.length - this.gp.length; 0 <= _ref ? i < _ref : i > _ref; 0 <= _ref ? i++ : i--) {
+          this.gp.push(new GaugePointer(this));
+        }
+      }
+      i = 0;
+      for (_i = 0, _len = value.length; _i < _len; _i++) {
+        val = value[_i];
+        if (val > this.maxValue) {
+          this.maxValue = this.value * 1.1;
+        }
+        this.gp[i].value = val;
+        this.gp[i++].setOptions({
+          maxValue: this.maxValue,
+          angle: this.options.angle
+        });
+      }
+      this.value = value[value.length - 1];
       return AnimationUpdater.run();
     };
     Gauge.prototype.getAngle = function(value) {
       return (1 + this.options.angle) * Math.PI + (value / this.maxValue) * (1 - this.options.angle * 2) * Math.PI;
     };
-    Gauge.prototype.setTextField = function(textField) {
-      this.textField = textField;
-    };
     Gauge.prototype.render = function() {
-      var displayedAngle, grd, h, w;
+      var displayedAngle, gauge, grd, h, w, _i, _len, _ref, _results;
       w = this.canvas.width / 2;
       h = this.canvas.height * (1 - this.paddingBottom);
       displayedAngle = this.getAngle(this.displayedValue);
       if (this.textField) {
-        this.textField.innerHTML = formatNumber(this.displayedValue);
+        this.textField.render(this);
       }
       grd = this.ctx.createRadialGradient(w, h, 9, w, h, 70);
       this.ctx.lineCap = "butt";
@@ -318,12 +379,18 @@
       this.ctx.beginPath();
       this.ctx.arc(w, h, this.radius, displayedAngle, (2 - this.options.angle) * Math.PI, false);
       this.ctx.stroke();
-      return this.gp.render(displayedAngle);
+      _ref = this.gp;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        gauge = _ref[_i];
+        _results.push(gauge.update(true));
+      }
+      return _results;
     };
     return Gauge;
   })();
   Donut = (function() {
-    __extends(Donut, ValueUpdater);
+    __extends(Donut, BaseGauge);
     Donut.prototype.lineWidth = 15;
     Donut.prototype.displayedValue = 0;
     Donut.prototype.value = 33;
@@ -333,6 +400,7 @@
       colorStart: "#6f6ea0",
       colorStop: "#c0c0db",
       strokeColor: "#eeeeee",
+      shadowColor: "#d5d5d5",
       angle: 0.35
     };
     function Donut(canvas) {
@@ -349,16 +417,10 @@
       if (options == null) {
         options = null;
       }
-      updateObjectValues(this.options, options);
+      Donut.__super__.setOptions.call(this, options);
       this.lineWidth = this.canvas.height * this.options.lineWidth;
       this.radius = this.canvas.height / 2 - this.lineWidth / 2;
-      if (this.textField) {
-        this.textField.style.fontSize = options.fontSize + 'px';
-      }
       return this;
-    };
-    Donut.prototype.setTextField = function(textField) {
-      this.textField = textField;
     };
     Donut.prototype.set = function(value) {
       this.value = value;
@@ -373,7 +435,7 @@
       w = this.canvas.width / 2;
       h = this.canvas.height / 2;
       if (this.textField) {
-        this.textField.innerHTML = formatNumber(this.displayedValue);
+        this.textField.render(this);
       }
       grdFill = this.ctx.createRadialGradient(w, h, 39, w, h, 70);
       grdFill.addColorStop(0, this.options.colorStart);
@@ -381,10 +443,10 @@
       start = this.radius - this.lineWidth / 2;
       stop = this.radius + this.lineWidth / 2;
       grd = this.ctx.createRadialGradient(w, h, start, w, h, stop);
-      grd.addColorStop(0, "#d5d5d5");
+      grd.addColorStop(0, this.options.shadowColor);
       grd.addColorStop(0.12, this.options.strokeColor);
       grd.addColorStop(0.88, this.options.strokeColor);
-      grd.addColorStop(1, "#d5d5d5");
+      grd.addColorStop(1, this.options.shadowColor);
       this.ctx.strokeStyle = grd;
       this.ctx.beginPath();
       this.ctx.arc(w, h, this.radius, (1 - this.options.angle) * Math.PI, (2 + this.options.angle) * Math.PI, false);
@@ -432,4 +494,5 @@
   };
   window.Gauge = Gauge;
   window.Donut = Donut;
+  window.TextRenderer = TextRenderer;
 }).call(this);

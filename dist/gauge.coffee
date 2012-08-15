@@ -67,7 +67,7 @@ updateObjectValues = (obj1, obj2) ->
 	for own key, val of obj2
 		obj1[key] = val
 
-addCommas =(nStr) ->
+addCommas = (nStr) ->
 	nStr += ''
 	x = nStr.split('.')
 	x1 = x[0]
@@ -81,12 +81,13 @@ addCommas =(nStr) ->
 
 class ValueUpdater
 	animationSpeed: 32
-	constructor: () ->
-		AnimationUpdater.add(@)
+	constructor: (addToAnimationQueue=true, @clear=true) ->
+		if addToAnimationQueue
+			AnimationUpdater.add(@)
 
-	update: ->
-		if @displayedValue != @value
-			if @ctx
+	update: (force=false) ->
+		if force or @displayedValue != @value
+			if @ctx and @clear
 				@ctx.clearRect(0, 0, @canvas.width, @canvas.height)
 			diff = @value - @displayedValue
 			if Math.abs(diff / @animationSpeed) <= 0.001
@@ -96,6 +97,23 @@ class ValueUpdater
 			@render()
 			return true
 		return false
+
+class BaseGauge extends ValueUpdater
+	setTextField: (textField) ->
+		@textField = if textField instanceof TextRenderer then textField else new TextRenderer(textField)
+
+	setOptions: (options=null) ->
+		updateObjectValues(@options, options)
+		if @textField
+			@textField.el.style.fontSize = options.fontSize + 'px'
+		return @
+
+class TextRenderer
+	constructor: (@el) ->
+
+	# Default behaviour, override to customize rendering
+	render: (gauge) ->
+		@el.innerHTML = formatNumber(gauge.displayedValue)
 
 class AnimatedText extends ValueUpdater
 	displayedValue: 0
@@ -122,27 +140,31 @@ AnimatedTextFactory =
 			out.push(new AnimatedText(elem))
 		return out
 
-class GaugePointer
-	strokeWidth: 3
-	length: 76
+class GaugePointer extends ValueUpdater
+	displayedValue: 0
+	value: 0
 	options:
 		strokeWidth: 0.035
 		length: 0.1
-	constructor: (@ctx, @canvas) ->
-		# @length = @canvas.height * @options.length
-		# @strokeWidth = @canvas.height * @options.strokeWidth
+		color: "#000000"
+
+	constructor: (@gauge) ->
+		@ctx = @gauge.ctx
+		@canvas = @gauge.canvas
+		super(false, false)
 		@setOptions()
 
 	setOptions: (options=null) ->
 		updateObjectValues(@options, options)
 		@length = @canvas.height * @options.length
 		@strokeWidth = @canvas.height * @options.strokeWidth
+		@maxValue = @gauge.maxValue
 
-	render: (angle) ->
+	render: () ->
+		angle = @gauge.getAngle.call(@, @displayedValue)
 		centerX = @canvas.width / 2
 		centerY = @canvas.height * 0.9
-		
-		# angle = Math.PI * 1.45
+
 		x = Math.round(centerX + @length * Math.cos(angle))
 		y = Math.round(centerY + @length * Math.sin(angle))
 
@@ -152,7 +174,7 @@ class GaugePointer
 		endX = Math.round(centerX + @strokeWidth * Math.cos(angle + Math.PI/2))
 		endY = Math.round(centerY + @strokeWidth * Math.sin(angle + Math.PI/2))
 
-		@ctx.fillStyle = "black"
+		@ctx.fillStyle = @options.color
 		@ctx.beginPath()
 
 		@ctx.arc(centerX, centerY, @strokeWidth, 0, Math.PI*2, true)
@@ -163,7 +185,6 @@ class GaugePointer
 		@ctx.lineTo(x, y)
 		@ctx.lineTo(endX, endY)
 		@ctx.fill()
-
 
 class Bar
 	constructor: (@elem) ->
@@ -182,15 +203,14 @@ class Bar
 
 		valPercent = (@value / @maxValue) * 100
 		avgPercent = (@avgValue / @maxValue) * 100
-		# alert(valPercent)
+
 		$(".bar-value", @elem).css({"width": valPercent + "%"})
 		$(".typical-value", @elem).css({"width": avgPercent + "%"})
 
-class Gauge extends ValueUpdater
+class Gauge extends BaseGauge
 	elem: null
-	value: 20
+	value: [20] # we support multiple pointers
 	maxValue: 80
-	# angle: 1.45 * Math.PI
 	displayedAngle: 0
 	displayedValue: 0
 	lineWidth: 40
@@ -208,29 +228,39 @@ class Gauge extends ValueUpdater
 	constructor: (@canvas) ->
 		super()
 		@ctx = @canvas.getContext('2d')
-		@gp = new GaugePointer(@ctx, @canvas)
+		@gp = [new GaugePointer(@)]
 		@setOptions()
 		@render()
 
 	setOptions: (options=null) ->
-		updateObjectValues(@options, options)
+		super(options)
 		@lineWidth = @canvas.height * (1 - @paddingBottom) * @options.lineWidth # .2 - .7
 		@radius = @canvas.height * (1 - @paddingBottom) - @lineWidth
-		@gp.setOptions(@options.pointer)
-		if @textField
-			@textField.style.fontSize = options.fontSize + 'px'
+		for gauge in @gp
+			gauge.setOptions(@options.pointer)
 		return @
 	
 	set: (value) ->
-		@value = value
-		if @value > @maxValue
-			@maxValue = @value * 1.1
+		if not (value instanceof Array)
+			value = [value]
+		# check if we have enough GaugePointers initialized
+		# lazy initialization
+		if value.length > @gp.length
+			for i in [0...(value.length - @gp.length)]
+				@gp.push(new GaugePointer(@))
+
+		# get max value and update pointer(s)
+		i = 0
+		for val in value
+			if val > @maxValue
+				@maxValue = @value * 1.1
+			@gp[i].value = val
+			@gp[i++].setOptions({maxValue: @maxValue, angle: @options.angle})
+		@value = value[value.length - 1] # TODO: Span maybe?? 
 		AnimationUpdater.run()
 
 	getAngle: (value) ->
 		return (1 + @options.angle) * Math.PI + (value / @maxValue) * (1 - @options.angle * 2) * Math.PI
-
-	setTextField: (@textField) ->
 
 	render: () ->
 		# Draw using canvas
@@ -238,7 +268,7 @@ class Gauge extends ValueUpdater
 		h = @canvas.height * (1 - @paddingBottom)
 		displayedAngle = @getAngle(@displayedValue)
 		if @textField
-			@textField.innerHTML = formatNumber(@displayedValue)
+			@textField.render(@)
 
 		grd = @ctx.createRadialGradient(w, h, 9, w, h, 70)
 		@ctx.lineCap = "butt"
@@ -255,9 +285,10 @@ class Gauge extends ValueUpdater
 		@ctx.beginPath()
 		@ctx.arc(w, h, @radius, displayedAngle, (2 - @options.angle) * Math.PI, false)
 		@ctx.stroke()
-		@gp.render(displayedAngle)
+		for gauge in @gp
+			gauge.update(true)
 
-class Donut extends ValueUpdater
+class Donut extends BaseGauge
 	lineWidth: 15
 	displayedValue: 0
 	value: 33
@@ -268,12 +299,12 @@ class Donut extends ValueUpdater
 		colorStart: "#6f6ea0"
 		colorStop: "#c0c0db"
 		strokeColor: "#eeeeee"
+		shadowColor: "#d5d5d5"
 		angle: 0.35
 
-	constructor: (@canvas) -> #, @color=["#6fadcf", "#8fc0da"]) ->
+	constructor: (@canvas) ->
 		super()
 		@ctx = @canvas.getContext('2d')
-		# @canvas = @elem[0]
 		@setOptions()
 		@render()
 
@@ -281,14 +312,10 @@ class Donut extends ValueUpdater
 		return (1 - @options.angle) * Math.PI + (value / @maxValue) * ((2 + @options.angle) - (1 - @options.angle)) * Math.PI
 
 	setOptions: (options=null) ->
-		updateObjectValues(@options, options)
-		@lineWidth = @canvas.height * @options.lineWidth #0.10
+		super(options)
+		@lineWidth = @canvas.height * @options.lineWidth
 		@radius = @canvas.height / 2 - @lineWidth/2
-		if @textField
-			@textField.style.fontSize = options.fontSize + 'px'
 		return @
-
-	setTextField: (@textField) ->
 
 	set: (value) ->
 		@value = value
@@ -302,7 +329,7 @@ class Donut extends ValueUpdater
 		h = @canvas.height / 2
 
 		if @textField
-			@textField.innerHTML = formatNumber(@displayedValue)
+			@textField.render(@)
 
 		grdFill = @ctx.createRadialGradient(w, h, 39, w, h, 70)
 		grdFill.addColorStop(0, @options.colorStart)
@@ -312,10 +339,10 @@ class Donut extends ValueUpdater
 		stop = @radius + @lineWidth / 2;
 
 		grd = @ctx.createRadialGradient(w, h, start, w, h, stop)
-		grd.addColorStop(0, "#d5d5d5")
+		grd.addColorStop(0, @options.shadowColor)
 		grd.addColorStop(0.12, @options.strokeColor)
 		grd.addColorStop(0.88, @options.strokeColor)
-		grd.addColorStop(1, "#d5d5d5")
+		grd.addColorStop(1, @options.shadowColor)
 
 		@ctx.strokeStyle = grd
 		@ctx.beginPath()
@@ -353,4 +380,4 @@ window.AnimationUpdater =
 
 window.Gauge = Gauge
 window.Donut = Donut
-
+window.TextRenderer = TextRenderer
