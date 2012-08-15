@@ -401,7 +401,8 @@
       colorStop: "#c0c0db",
       strokeColor: "#eeeeee",
       shadowColor: "#d5d5d5",
-      angle: 0.35
+      angle: 0.35,
+      generateGradient: false
     };
     function Donut(canvas) {
       this.canvas = canvas;
@@ -429,8 +430,17 @@
       }
       return AnimationUpdater.run();
     };
+    Donut.prototype.strokeGradient = function(w, h, start, stop) {
+      var grd;
+      grd = this.ctx.createRadialGradient(w, h, start, w, h, stop);
+      grd.addColorStop(0, this.options.shadowColor);
+      grd.addColorStop(0.12, this.options.strokeColor);
+      grd.addColorStop(0.88, this.options.strokeColor);
+      grd.addColorStop(1, this.options.shadowColor);
+      return grd;
+    };
     Donut.prototype.render = function() {
-      var displayedAngle, grd, grdFill, h, start, stop, w;
+      var displayedAngle, grdFill, h, start, stop, w;
       displayedAngle = this.getAngle(this.displayedValue);
       w = this.canvas.width / 2;
       h = this.canvas.height / 2;
@@ -442,12 +452,7 @@
       grdFill.addColorStop(1, this.options.colorStop);
       start = this.radius - this.lineWidth / 2;
       stop = this.radius + this.lineWidth / 2;
-      grd = this.ctx.createRadialGradient(w, h, start, w, h, stop);
-      grd.addColorStop(0, this.options.shadowColor);
-      grd.addColorStop(0.12, this.options.strokeColor);
-      grd.addColorStop(0.88, this.options.strokeColor);
-      grd.addColorStop(1, this.options.shadowColor);
-      this.ctx.strokeStyle = grd;
+      this.ctx.strokeStyle = this.options.generateGradient ? this.strokeGradient(w, h, start, stop) : this.options.strokeColor;
       this.ctx.beginPath();
       this.ctx.arc(w, h, this.radius, (1 - this.options.angle) * Math.PI, (2 + this.options.angle) * Math.PI, false);
       this.ctx.lineWidth = this.lineWidth;

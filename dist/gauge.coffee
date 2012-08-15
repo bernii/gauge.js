@@ -301,6 +301,7 @@ class Donut extends BaseGauge
 		strokeColor: "#eeeeee"
 		shadowColor: "#d5d5d5"
 		angle: 0.35
+		generateGradient: false
 
 	constructor: (@canvas) ->
 		super()
@@ -323,6 +324,14 @@ class Donut extends BaseGauge
 			@maxValue = @value * 1.1
 		AnimationUpdater.run()
 
+	strokeGradient: (w, h, start, stop) ->
+		grd = @ctx.createRadialGradient(w, h, start, w, h, stop)
+		grd.addColorStop(0, @options.shadowColor)
+		grd.addColorStop(0.12, @options.strokeColor)
+		grd.addColorStop(0.88, @options.strokeColor)
+		grd.addColorStop(1, @options.shadowColor)
+		return grd
+
 	render: () ->
 		displayedAngle = @getAngle(@displayedValue)
 		w = @canvas.width / 2
@@ -338,13 +347,7 @@ class Donut extends BaseGauge
 		start = @radius - @lineWidth / 2;
 		stop = @radius + @lineWidth / 2;
 
-		grd = @ctx.createRadialGradient(w, h, start, w, h, stop)
-		grd.addColorStop(0, @options.shadowColor)
-		grd.addColorStop(0.12, @options.strokeColor)
-		grd.addColorStop(0.88, @options.strokeColor)
-		grd.addColorStop(1, @options.shadowColor)
-
-		@ctx.strokeStyle = grd
+		@ctx.strokeStyle = if @options.generateGradient then @strokeGradient(w, h, start, stop) else @options.strokeColor
 		@ctx.beginPath()
 		@ctx.arc(w, h, @radius, (1 - @options.angle) * Math.PI, (2 + @options.angle) * Math.PI, false)
 		@ctx.lineWidth = @lineWidth

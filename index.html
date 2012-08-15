@@ -96,10 +96,11 @@ var opts = {
   },
   colorStart: '<span id="opt-colorStart" class="lit">0</span>',   // Colors
   colorStop: '<span id="opt-colorStop" class="lit">0</span>',    // just experiment with them
-  strokeColor: '<span id="opt-strokeColor" class="lit">0</span>'   // to see which ones work best for you
+  strokeColor: '<span id="opt-strokeColor" class="lit">0</span>',   // to see which ones work best for you
+  generateGradient: true
 };
 var target = document.getElementById('foo'); // your canvas element
-var gauge = new Gauge(target).setOptions(opts); // create sexy gauge!
+var gauge = new <span id="class-code-name" class="typ">Gauge</span>(target).setOptions(opts); // create sexy gauge!
 gauge.maxValue = <span id="opt-maxval" class="lit">3000</span>; // set max gauge value
 gauge.animationSpeed = <span id="opt-animationSpeed" class="lit">3000</span>; // set animation speed (32 is default value)
 gauge.set(<span id="opt-currval" class="lit">1500</span>); // set actual value
@@ -218,6 +219,7 @@ $.fn.gauge = function(opts) {
       $('#opt-' + this.name).text(this.checked);
     });
     demoGauge.animationSpeed = opts.animationSpeed;
+    opts.generateGradient = true;
     demoGauge.setOptions(opts);
     demoGauge.ctx.clearRect(0, 0, demoGauge.ctx.canvas.width, demoGauge.ctx.canvas.height);
     demoGauge.render();
@@ -226,12 +228,14 @@ $.fn.gauge = function(opts) {
     }
   }
   function initGauge(){
+    document.getElementById("class-code-name").innerHTML = "Gauge";
     demoGauge = new Gauge(document.getElementById("canvas-preview"));
     demoGauge.setTextField(document.getElementById("preview-textfield"));
     demoGauge.maxValue = 3000;
     demoGauge.set(1244);
   };
   function initDonut(){
+    document.getElementById("class-code-name").innerHTML = "Donut";
     demoGauge = new Donut(document.getElementById("canvas-preview"));
     demoGauge.setTextField(document.getElementById("preview-textfield"));
     demoGauge.maxValue = 3000;
