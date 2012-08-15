@@ -297,7 +297,7 @@
     Gauge.prototype.paddingBottom = 0.1;
     Gauge.prototype.options = {
       colorStart: "#6fadcf",
-      colorStop: "#8fc0da",
+      colorStop: void 0,
       strokeColor: "#e0e0e0",
       pointer: {
         length: 0.8,
@@ -359,18 +359,22 @@
       return (1 + this.options.angle) * Math.PI + (value / this.maxValue) * (1 - this.options.angle * 2) * Math.PI;
     };
     Gauge.prototype.render = function() {
-      var displayedAngle, gauge, grd, h, w, _i, _len, _ref, _results;
+      var displayedAngle, fillStyle, gauge, h, w, _i, _len, _ref, _results;
       w = this.canvas.width / 2;
       h = this.canvas.height * (1 - this.paddingBottom);
       displayedAngle = this.getAngle(this.displayedValue);
       if (this.textField) {
         this.textField.render(this);
       }
-      grd = this.ctx.createRadialGradient(w, h, 9, w, h, 70);
       this.ctx.lineCap = "butt";
-      grd.addColorStop(0, this.options.colorStart);
-      grd.addColorStop(1, this.options.colorStop);
-      this.ctx.strokeStyle = grd;
+      if (this.options.colorStop !== void 0) {
+        fillStyle = this.ctx.createRadialGradient(w, h, 9, w, h, 70);
+        fillStyle.addColorStop(0, this.options.colorStart);
+        fillStyle.addColorStop(1, this.options.colorStop);
+      } else {
+        fillStyle = this.options.colorStart;
+      }
+      this.ctx.strokeStyle = fillStyle;
       this.ctx.beginPath();
       this.ctx.arc(w, h, this.radius, (1 + this.options.angle) * Math.PI, displayedAngle, false);
       this.ctx.lineWidth = this.lineWidth;

@@ -217,7 +217,7 @@ class Gauge extends BaseGauge
 	paddingBottom: 0.1
 	options:
 		colorStart: "#6fadcf"
-		colorStop: "#8fc0da"
+		colorStop: undefined
 		strokeColor: "#e0e0e0"
 		pointer:
 			length: 0.8
@@ -270,12 +270,15 @@ class Gauge extends BaseGauge
 		if @textField
 			@textField.render(@)
 
-		grd = @ctx.createRadialGradient(w, h, 9, w, h, 70)
 		@ctx.lineCap = "butt"
+		if @options.colorStop != undefined
+			fillStyle = @ctx.createRadialGradient(w, h, 9, w, h, 70)
+			fillStyle.addColorStop(0, @options.colorStart)
+			fillStyle.addColorStop(1, @options.colorStop)
+		else
+			fillStyle = @options.colorStart
+		@ctx.strokeStyle = fillStyle
 
-		grd.addColorStop(0, @options.colorStart)
-		grd.addColorStop(1, @options.colorStop)
-		@ctx.strokeStyle = grd
 		@ctx.beginPath()
 		@ctx.arc(w, h, @radius, (1 + @options.angle) * Math.PI, displayedAngle, false)
 		@ctx.lineWidth = @lineWidth
