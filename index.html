@@ -147,10 +147,16 @@ $.fn.gauge = function(opts) {
 
 <h2>Changes</h2>
 
-<h3 id="v1.2.5">Version 1.1 (15.08.2012)</h3>
+<h3 id="v1.2">Version 1.2 (16.08.2012)</h3>
+<ul>
+  <li>Prototype chain fix. See <a href="https://github.com/bernii/gauge.js/issues/7">issue #7</a>.</li>
+  <li>Refactored code a bit to make it more flexible. Default class that has some extra features like gradient shadows is called Donut while more flexible one (for devs) is called BaseDonut - use it if you would don't need extra automatic stuff.</li>
+</ul>
+
+<h3 id="v1.1">Version 1.1 (15.08.2012)</h3>
 <ul>
   <li>Fixed color picker <a href="https://github.com/bernii/gauge.js/issues/2">bug</a> in FF & Opera</li>
-  <li>Added a shadow option. See <a href="https://github.com/bernii/gauge.js/pull/5">issue #60</a>.</li>
+  <li>Added a shadow option. See <a href="https://github.com/bernii/gauge.js/pull/5">issue #5</a>.</li>
   <li>Added multiple pointer option (requested via email). This needed some code refactoring. No demo for it yet. Use array of values to check it ex. gauge.set([44, 554]);</li>
   <li>Added wrapper for formatting text output <a href="https://github.com/bernii/gauge.js/issues/4">issue #4</a>.</li>
 </ul>

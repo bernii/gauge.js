@@ -66,6 +66,15 @@ formatNumber = (num) ->
 updateObjectValues = (obj1, obj2) ->
 	for own key, val of obj2
 		obj1[key] = val
+	return obj1
+
+mergeObjects = (obj1, obj2) ->
+	out = {}
+	for own key, val of obj1
+		out[key] = val
+	for own key, val of obj2
+		out[key] = val
+	return out
 
 addCommas = (nStr) ->
 	nStr += ''
@@ -103,7 +112,7 @@ class BaseGauge extends ValueUpdater
 		@textField = if textField instanceof TextRenderer then textField else new TextRenderer(textField)
 
 	setOptions: (options=null) ->
-		updateObjectValues(@options, options)
+		@options = mergeObjects(@options, options)
 		if @textField
 			@textField.el.style.fontSize = options.fontSize + 'px'
 		return @
@@ -291,7 +300,8 @@ class Gauge extends BaseGauge
 		for gauge in @gp
 			gauge.update(true)
 
-class Donut extends BaseGauge
+
+class BaseDonut extends BaseGauge
 	lineWidth: 15
 	displayedValue: 0
 	value: 33
@@ -304,7 +314,6 @@ class Donut extends BaseGauge
 		strokeColor: "#eeeeee"
 		shadowColor: "#d5d5d5"
 		angle: 0.35
-		generateGradient: false
 
 	constructor: (@canvas) ->
 		super()
@@ -327,14 +336,6 @@ class Donut extends BaseGauge
 			@maxValue = @value * 1.1
 		AnimationUpdater.run()
 
-	strokeGradient: (w, h, start, stop) ->
-		grd = @ctx.createRadialGradient(w, h, start, w, h, stop)
-		grd.addColorStop(0, @options.shadowColor)
-		grd.addColorStop(0.12, @options.strokeColor)
-		grd.addColorStop(0.88, @options.strokeColor)
-		grd.addColorStop(1, @options.shadowColor)
-		return grd
-
 	render: () ->
 		displayedAngle = @getAngle(@displayedValue)
 		w = @canvas.width / 2
@@ -350,7 +351,7 @@ class Donut extends BaseGauge
 		start = @radius - @lineWidth / 2;
 		stop = @radius + @lineWidth / 2;
 
-		@ctx.strokeStyle = if @options.generateGradient then @strokeGradient(w, h, start, stop) else @options.strokeColor
+		@ctx.strokeStyle = @options.strokeColor
 		@ctx.beginPath()
 		@ctx.arc(w, h, @radius, (1 - @options.angle) * Math.PI, (2 + @options.angle) * Math.PI, false)
 		@ctx.lineWidth = @lineWidth
@@ -362,6 +363,23 @@ class Donut extends BaseGauge
 		@ctx.arc(w, h, @radius, (1 - @options.angle) * Math.PI, displayedAngle, false)
 		@ctx.stroke()
 
+
+class Donut extends BaseDonut
+	strokeGradient: (w, h, start, stop) ->
+		grd = @ctx.createRadialGradient(w, h, start, w, h, stop)
+		grd.addColorStop(0, @options.shadowColor)
+		grd.addColorStop(0.12, @options.strokeColor)
+		grd.addColorStop(0.88, @options.strokeColor)
+		grd.addColorStop(1, @options.shadowColor)
+		return grd
+
+	setOptions: (options=null) ->
+		super(options)
+		w = @canvas.width / 2
+		h = @canvas.height / 2
+		start = @radius - @lineWidth / 2;
+		stop = @radius + @lineWidth / 2;
+		@options.strokeColor = @strokeGradient(w, h, start, stop)
 
 window.AnimationUpdater =
 	elements: []
@@ -386,4 +404,5 @@ window.AnimationUpdater =
 
 window.Gauge = Gauge
 window.Donut = Donut
+window.BaseDonut = BaseDonut
 window.TextRenderer = TextRenderer
