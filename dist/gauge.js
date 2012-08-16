@@ -563,8 +563,8 @@
       var grd;
       grd = this.ctx.createRadialGradient(w, h, start, w, h, stop);
       grd.addColorStop(0, this.options.shadowColor);
-      grd.addColorStop(0.12, this.options.strokeColor);
-      grd.addColorStop(0.88, this.options.strokeColor);
+      grd.addColorStop(0.12, this.options._orgStrokeColor);
+      grd.addColorStop(0.88, this.options._orgStrokeColor);
       grd.addColorStop(1, this.options.shadowColor);
       return grd;
     };
@@ -579,6 +579,9 @@
       h = this.canvas.height / 2;
       start = this.radius - this.lineWidth / 2;
       stop = this.radius + this.lineWidth / 2;
+      if (!this.options._orgStrokeColor) {
+        this.options._orgStrokeColor = this.options.strokeColor;
+      }
       return this.options.strokeColor = this.strokeGradient(w, h, start, stop);
     };
 

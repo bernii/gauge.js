@@ -368,8 +368,8 @@ class Donut extends BaseDonut
 	strokeGradient: (w, h, start, stop) ->
 		grd = @ctx.createRadialGradient(w, h, start, w, h, stop)
 		grd.addColorStop(0, @options.shadowColor)
-		grd.addColorStop(0.12, @options.strokeColor)
-		grd.addColorStop(0.88, @options.strokeColor)
+		grd.addColorStop(0.12, @options._orgStrokeColor)
+		grd.addColorStop(0.88, @options._orgStrokeColor)
 		grd.addColorStop(1, @options.shadowColor)
 		return grd
 
@@ -379,6 +379,8 @@ class Donut extends BaseDonut
 		h = @canvas.height / 2
 		start = @radius - @lineWidth / 2;
 		stop = @radius + @lineWidth / 2;
+		if not @options._orgStrokeColor
+			@options._orgStrokeColor = @options.strokeColor
 		@options.strokeColor = @strokeGradient(w, h, start, stop)
 
 window.AnimationUpdater =
