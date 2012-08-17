@@ -283,7 +283,8 @@
       updateObjectValues(this.options, options);
       this.length = this.canvas.height * this.options.length;
       this.strokeWidth = this.canvas.height * this.options.strokeWidth;
-      return this.maxValue = this.gauge.maxValue;
+      this.maxValue = this.gauge.maxValue;
+      return this.animationSpeed = this.gauge.animationSpeed;
     };
 
     GaugePointer.prototype.render = function() {

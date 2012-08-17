@@ -168,6 +168,7 @@ class GaugePointer extends ValueUpdater
 		@length = @canvas.height * @options.length
 		@strokeWidth = @canvas.height * @options.strokeWidth
 		@maxValue = @gauge.maxValue
+		@animationSpeed =  @gauge.animationSpeed
 
 	render: () ->
 		angle = @gauge.getAngle.call(@, @displayedValue)
