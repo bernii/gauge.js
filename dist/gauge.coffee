@@ -383,6 +383,7 @@ class Donut extends BaseDonut
 		if not @options._orgStrokeColor
 			@options._orgStrokeColor = @options.strokeColor
 		@options.strokeColor = @strokeGradient(w, h, start, stop)
+		return @
 
 window.AnimationUpdater =
 	elements: []

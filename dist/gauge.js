@@ -583,7 +583,8 @@
       if (!this.options._orgStrokeColor) {
         this.options._orgStrokeColor = this.options.strokeColor;
       }
-      return this.options.strokeColor = this.strokeGradient(w, h, start, stop);
+      this.options.strokeColor = this.strokeGradient(w, h, start, stop);
+      return this;
     };
 
     return Donut;
