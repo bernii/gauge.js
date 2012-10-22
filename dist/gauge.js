@@ -580,9 +580,7 @@
       h = this.canvas.height / 2;
       start = this.radius - this.lineWidth / 2;
       stop = this.radius + this.lineWidth / 2;
-      if (!this.options._orgStrokeColor) {
-        this.options._orgStrokeColor = this.options.strokeColor;
-      }
+      this.options._orgStrokeColor = this.options.strokeColor;
       this.options.strokeColor = this.strokeGradient(w, h, start, stop);
       return this;
     };

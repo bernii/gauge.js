@@ -349,8 +349,8 @@ class BaseDonut extends BaseGauge
 		grdFill.addColorStop(0, @options.colorStart)
 		grdFill.addColorStop(1, @options.colorStop)
 
-		start = @radius - @lineWidth / 2;
-		stop = @radius + @lineWidth / 2;
+		start = @radius - @lineWidth / 2
+		stop = @radius + @lineWidth / 2
 
 		@ctx.strokeStyle = @options.strokeColor
 		@ctx.beginPath()
@@ -378,10 +378,9 @@ class Donut extends BaseDonut
 		super(options)
 		w = @canvas.width / 2
 		h = @canvas.height / 2
-		start = @radius - @lineWidth / 2;
-		stop = @radius + @lineWidth / 2;
-		if not @options._orgStrokeColor
-			@options._orgStrokeColor = @options.strokeColor
+		start = @radius - @lineWidth / 2
+		stop = @radius + @lineWidth / 2
+		@options._orgStrokeColor = @options.strokeColor
 		@options.strokeColor = @strokeGradient(w, h, start, stop)
 		return @
 
