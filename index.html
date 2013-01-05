@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=1024, maximum-scale=1">
   <meta property="og:image" content="http://bernii.github.com/gauge.js/assets/preview.jpg?v=1" />
   <link rel="shortcut icon" href="favicon.ico">
+  <meta http-equiv="X-UA-Compatible" content="IE=7" />
   <link href="assets/bootstrap.min.css" type="text/css" rel="stylesheet">
   <link href="assets/main.css?v=5" type="text/css" rel="stylesheet">
   <link href='http://fonts.googleapis.com/css?family=Amaranth:400,700|Just+Another+Hand' rel='stylesheet' type='text/css'>
@@ -14,6 +15,7 @@
   <link rel="stylesheet" type="text/css" href="assets/fd-slider/fd-slider-tooltip.css">
   <script type="text/javascript" src="assets/prettify.js"></script>
   <script type="text/javascript" src="assets/jscolor.js"></script>
+  <!--[if lt IE 9]><script type="text/javascript" src="assets/excanvas.compiled.js"></script><![endif]-->
 </head>
 <body>
 
@@ -47,7 +49,7 @@
   	<li type="donut"><canvas width=80 height=40 id="select-2"></canvas></li>
   </ul>	
   <div id="preview">
-  	<canvas id="canvas-preview"></canvas>
+  	<canvas width=220 height=70 id="canvas-preview"></canvas>
   	<div id="preview-textfield"></div>
   </div>
   <form id="opts" class="opts">
@@ -186,8 +188,8 @@ $.fn.gauge = function(opts) {
   function update() {
     var opts = {};
     $('.opts input[min], .opts .color').each(function() {
-      var val = this.classList.contains("color") ? this.value : parseFloat(this.value);
-      if(this.classList.contains("color")){
+      var val = $(this).hasClass("color") ? this.value : parseFloat(this.value);
+      if($(this).hasClass("color")){
         val = "#" + val;
       }
       if(this.name.indexOf("lineWidth") != -1 ||
@@ -208,7 +210,7 @@ $.fn.gauge = function(opts) {
       		tmp_opts = tmp_opts[elems[i]];
       	}
       	tmp_opts[elems[elems.length - 1]] = val;
-      }else if(this.classList.contains("color")){
+      }else if($(this).hasClass("color")){
         // color picker is removing # from color values
       	opts[this.name] = "#" + this.value
         $('#opt-' + this.name.replace(".", "-")).text("#" + this.value);

@@ -382,6 +382,9 @@
     function Gauge(canvas) {
       this.canvas = canvas;
       Gauge.__super__.constructor.call(this);
+      if (typeof G_vmlCanvasManager !== 'undefined') {
+        this.canvas = window.G_vmlCanvasManager.initElement(this.canvas);
+      }
       this.ctx = this.canvas.getContext('2d');
       this.gp = [new GaugePointer(this)];
       this.setOptions();
@@ -498,6 +501,9 @@
     function BaseDonut(canvas) {
       this.canvas = canvas;
       BaseDonut.__super__.constructor.call(this);
+      if (typeof G_vmlCanvasManager !== 'undefined') {
+        this.canvas = window.G_vmlCanvasManager.initElement(this.canvas);
+      }
       this.ctx = this.canvas.getContext('2d');
       this.setOptions();
       this.render();

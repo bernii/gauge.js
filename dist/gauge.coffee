@@ -237,6 +237,8 @@ class Gauge extends BaseGauge
 		fontSize: 40
 	constructor: (@canvas) ->
 		super()
+		if typeof G_vmlCanvasManager != 'undefined'
+			@canvas = window.G_vmlCanvasManager.initElement(@canvas)
 		@ctx = @canvas.getContext('2d')
 		@gp = [new GaugePointer(@)]
 		@setOptions()
@@ -320,6 +322,8 @@ class BaseDonut extends BaseGauge
 
 	constructor: (@canvas) ->
 		super()
+		if typeof G_vmlCanvasManager != 'undefined'
+			@canvas = window.G_vmlCanvasManager.initElement(@canvas)
 		@ctx = @canvas.getContext('2d')
 		@setOptions()
 		@render()
