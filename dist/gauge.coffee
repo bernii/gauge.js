@@ -281,7 +281,9 @@ class Gauge extends BaseGauge
 			@textField.render(@)
 
 		@ctx.lineCap = "butt"
-		if @options.colorStop != undefined
+		if @options.customFillStyle != undefined
+			fillStyle = @options.customFillStyle(@)
+		else if @options.colorStop != undefined
 			fillStyle = @ctx.createRadialGradient(w, h, 9, w, h, 70)
 			fillStyle.addColorStop(0, @options.colorStart)
 			fillStyle.addColorStop(1, @options.colorStop)

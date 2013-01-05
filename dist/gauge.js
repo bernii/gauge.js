@@ -443,7 +443,9 @@
         this.textField.render(this);
       }
       this.ctx.lineCap = "butt";
-      if (this.options.colorStop !== void 0) {
+      if (this.options.customFillStyle !== void 0) {
+        fillStyle = this.options.customFillStyle(this);
+      } else if (this.options.colorStop !== void 0) {
         fillStyle = this.ctx.createRadialGradient(w, h, 9, w, h, 70);
         fillStyle.addColorStop(0, this.options.colorStart);
         fillStyle.addColorStop(1, this.options.colorStop);
