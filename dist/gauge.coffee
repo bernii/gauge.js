@@ -111,6 +111,12 @@ class BaseGauge extends ValueUpdater
 	setTextField: (textField) ->
 		@textField = if textField instanceof TextRenderer then textField else new TextRenderer(textField)
 
+	setMinValue: (@minValue, updateStartValue=true) ->
+		if updateStartValue
+			@displayedValue = @minValue
+			for gauge in @gp or []
+				gauge.displayedValue = @minValue
+
 	setOptions: (options=null) ->
 		@options = mergeObjects(@options, options)
 		if @textField
@@ -168,6 +174,7 @@ class GaugePointer extends ValueUpdater
 		@length = @canvas.height * @options.length
 		@strokeWidth = @canvas.height * @options.strokeWidth
 		@maxValue = @gauge.maxValue
+		@minValue = @gauge.minValue
 		@animationSpeed =  @gauge.animationSpeed
 
 	render: () ->
@@ -221,6 +228,7 @@ class Gauge extends BaseGauge
 	elem: null
 	value: [20] # we support multiple pointers
 	maxValue: 80
+	minValue: 0
 	displayedAngle: 0
 	displayedValue: 0
 	lineWidth: 40
@@ -272,7 +280,7 @@ class Gauge extends BaseGauge
 		AnimationUpdater.run()
 
 	getAngle: (value) ->
-		return (1 + @options.angle) * Math.PI + (value / @maxValue) * (1 - @options.angle * 2) * Math.PI
+		return (1 + @options.angle) * Math.PI + ((value - @minValue) / (@maxValue - @minValue)) * (1 - @options.angle * 2) * Math.PI
 
 	render: () ->
 		# Draw using canvas
@@ -311,6 +319,7 @@ class BaseDonut extends BaseGauge
 	displayedValue: 0
 	value: 33
 	maxValue: 80
+	minValue: 0
 
 	options:
 		lineWidth: 0.10
@@ -329,7 +338,7 @@ class BaseDonut extends BaseGauge
 		@render()
 
 	getAngle: (value) ->
-		return (1 - @options.angle) * Math.PI + (value / @maxValue) * ((2 + @options.angle) - (1 - @options.angle)) * Math.PI
+		return (1 - @options.angle) * Math.PI + ((value - @minValue) / (@maxValue - @minValue)) * ((2 + @options.angle) - (1 - @options.angle)) * Math.PI
 
 	setOptions: (options=null) ->
 		super(options)

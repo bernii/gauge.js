@@ -178,6 +178,24 @@
       return this.textField = textField instanceof TextRenderer ? textField : new TextRenderer(textField);
     };
 
+    BaseGauge.prototype.setMinValue = function(minValue, updateStartValue) {
+      var gauge, _i, _len, _ref, _results;
+      this.minValue = minValue;
+      if (updateStartValue == null) {
+        updateStartValue = true;
+      }
+      if (updateStartValue) {
+        this.displayedValue = this.minValue;
+        _ref = this.gp || [];
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          gauge = _ref[_i];
+          _results.push(gauge.displayedValue = this.minValue);
+        }
+        return _results;
+      }
+    };
+
     BaseGauge.prototype.setOptions = function(options) {
       if (options == null) {
         options = null;
@@ -284,6 +302,7 @@
       this.length = this.canvas.height * this.options.length;
       this.strokeWidth = this.canvas.height * this.options.strokeWidth;
       this.maxValue = this.gauge.maxValue;
+      this.minValue = this.gauge.minValue;
       return this.animationSpeed = this.gauge.animationSpeed;
     };
 
@@ -357,6 +376,8 @@
     Gauge.prototype.value = [20];
 
     Gauge.prototype.maxValue = 80;
+
+    Gauge.prototype.minValue = 0;
 
     Gauge.prototype.displayedAngle = 0;
 
@@ -434,7 +455,7 @@
     };
 
     Gauge.prototype.getAngle = function(value) {
-      return (1 + this.options.angle) * Math.PI + (value / this.maxValue) * (1 - this.options.angle * 2) * Math.PI;
+      return (1 + this.options.angle) * Math.PI + ((value - this.minValue) / (this.maxValue - this.minValue)) * (1 - this.options.angle * 2) * Math.PI;
     };
 
     Gauge.prototype.render = function() {
@@ -489,6 +510,8 @@
 
     BaseDonut.prototype.maxValue = 80;
 
+    BaseDonut.prototype.minValue = 0;
+
     BaseDonut.prototype.options = {
       lineWidth: 0.10,
       colorStart: "#6f6ea0",
@@ -510,7 +533,7 @@
     }
 
     BaseDonut.prototype.getAngle = function(value) {
-      return (1 - this.options.angle) * Math.PI + (value / this.maxValue) * ((2 + this.options.angle) - (1 - this.options.angle)) * Math.PI;
+      return (1 - this.options.angle) * Math.PI + ((value - this.minValue) / (this.maxValue - this.minValue)) * ((2 + this.options.angle) - (1 - this.options.angle)) * Math.PI;
     };
 
     BaseDonut.prototype.setOptions = function(options) {
