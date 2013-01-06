@@ -176,6 +176,7 @@ class GaugePointer extends ValueUpdater
 		@maxValue = @gauge.maxValue
 		@minValue = @gauge.minValue
 		@animationSpeed =  @gauge.animationSpeed
+		@options.angle = @gauge.options.angle
 
 	render: () ->
 		angle = @gauge.getAngle.call(@, @displayedValue)

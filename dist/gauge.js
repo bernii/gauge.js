@@ -303,7 +303,8 @@
       this.strokeWidth = this.canvas.height * this.options.strokeWidth;
       this.maxValue = this.gauge.maxValue;
       this.minValue = this.gauge.minValue;
-      return this.animationSpeed = this.gauge.animationSpeed;
+      this.animationSpeed = this.gauge.animationSpeed;
+      return this.options.angle = this.gauge.options.angle;
     };
 
     GaugePointer.prototype.render = function() {
