@@ -257,6 +257,7 @@ class Gauge extends BaseGauge
 		super(options)
 		@lineWidth = @canvas.height * (1 - @paddingBottom) * @options.lineWidth # .2 - .7
 		@radius = @canvas.height * (1 - @paddingBottom) - @lineWidth
+		@ctx.clearRect(0, 0, @canvas.width, @canvas.height)
 		@render()
 		for gauge in @gp
 			gauge.setOptions(@options.pointer)

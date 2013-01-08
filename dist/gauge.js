@@ -421,6 +421,7 @@
       Gauge.__super__.setOptions.call(this, options);
       this.lineWidth = this.canvas.height * (1 - this.paddingBottom) * this.options.lineWidth;
       this.radius = this.canvas.height * (1 - this.paddingBottom) - this.lineWidth;
+      this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
       this.render();
       _ref = this.gp;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
