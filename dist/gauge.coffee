@@ -88,6 +88,11 @@ addCommas = (nStr) ->
 		x1 = x1.replace(rgx, '$1' + ',' + '$2')
 	return x1 + x2
 
+cutHex = (nStr) ->
+	if nStr.charAt(0) == "#"
+		return nStr.substring(1,7)
+	return nStr
+
 class ValueUpdater
 	animationSpeed: 32
 	constructor: (addToAnimationQueue=true, @clear=true) ->
@@ -234,9 +239,11 @@ class Gauge extends BaseGauge
 	displayedValue: 0
 	lineWidth: 40
 	paddingBottom: 0.1
+	percentColors: null
 	options:
 		colorStart: "#6fadcf"
 		colorStop: undefined
+		gradientType: 0       	# 0 : radial, 1 : linear
 		strokeColor: "#e0e0e0"
 		pointer:
 			length: 0.8
@@ -244,8 +251,15 @@ class Gauge extends BaseGauge
 		angle: 0.15
 		lineWidth: 0.44
 		fontSize: 40
+		percentColors : [
+							[ 0.0, "#a9d70b" ],
+							[ 0.50, "#f9c802" ],
+							[ 1.0, "#ff0000" ]
+						]
+
 	constructor: (@canvas) ->
 		super()
+		@percentColors = null
 		if typeof G_vmlCanvasManager != 'undefined'
 			@canvas = window.G_vmlCanvasManager.initElement(@canvas)
 		@ctx = @canvas.getContext('2d')
@@ -255,6 +269,7 @@ class Gauge extends BaseGauge
 
 	setOptions: (options=null) ->
 		super(options)
+		@configPercentColors()
 		@lineWidth = @canvas.height * (1 - @paddingBottom) * @options.lineWidth # .2 - .7
 		@radius = @canvas.height * (1 - @paddingBottom) - @lineWidth
 		@ctx.clearRect(0, 0, @canvas.width, @canvas.height)
@@ -263,7 +278,17 @@ class Gauge extends BaseGauge
 			gauge.setOptions(@options.pointer)
 			gauge.render()
 		return @
-	
+
+	configPercentColors: () ->
+		@percentColors = null;
+		if (@options.percentColors != undefined)
+			@percentColors = new Array()
+			for i in [0..(@options.percentColors.length-1)]
+				rval = parseInt((cutHex(@options.percentColors[i][1])).substring(0,2),16)
+				gval = parseInt((cutHex(@options.percentColors[i][1])).substring(2,4),16)
+				bval = parseInt((cutHex(@options.percentColors[i][1])).substring(4,6),16)
+				@percentColors[i] = { pct: @options.percentColors[i][0], color: { r: rval, g: gval, b: bval  } }
+
 	set: (value) ->
 		if not (value instanceof Array)
 			value = [value]
@@ -286,6 +311,32 @@ class Gauge extends BaseGauge
 	getAngle: (value) ->
 		return (1 + @options.angle) * Math.PI + ((value - @minValue) / (@maxValue - @minValue)) * (1 - @options.angle * 2) * Math.PI
 
+	getColorForPercentage: (pct, grad) ->
+		if pct == 0
+			color = @percentColors[0].color;
+		else
+			color = @percentColors[@percentColors.length - 1].color;
+			for i in [0..(@percentColors.length - 1)]
+				if (pct <= @percentColors[i].pct)
+					if grad == true
+						# Gradually change between colors
+						startColor = @percentColors[i - 1]
+						endColor = @percentColors[i]
+						rangePct = (pct - startColor.pct) / (endColor.pct - startColor.pct)  # How far between both colors
+						color = {
+							r: Math.floor(startColor.color.r * (1 - rangePct) + endColor.color.r * rangePct),
+							g: Math.floor(startColor.color.g * (1 - rangePct) + endColor.color.g * rangePct),
+							b: Math.floor(startColor.color.b * (1 - rangePct) + endColor.color.b * rangePct)
+						}
+					else
+						color = @percentColors[i].color
+					break
+		return 'rgb(' + [color.r, color.g, color.b].join(',') + ')'
+    
+	getColorForValue: (val, grad) ->
+		pct = (val - @minValue) / (@maxValue - @minValue)
+		return @getColorForPercentage(pct, grad);
+
 	render: () ->
 		# Draw using canvas
 		w = @canvas.width / 2
@@ -297,8 +348,13 @@ class Gauge extends BaseGauge
 		@ctx.lineCap = "butt"
 		if @options.customFillStyle != undefined
 			fillStyle = @options.customFillStyle(@)
+		else if @percentColors != null
+			fillStyle = @getColorForValue(@displayedValue, true)
 		else if @options.colorStop != undefined
-			fillStyle = @ctx.createRadialGradient(w, h, 9, w, h, 70)
+			if @options.gradientType == 0
+				fillStyle = this.ctx.createRadialGradient(w, h, 9, w, h, 70);
+			else
+				fillStyle = this.ctx.createLinearGradient(0, 0, w, 0);
 			fillStyle.addColorStop(0, @options.colorStart)
 			fillStyle.addColorStop(1, @options.colorStop)
 		else
