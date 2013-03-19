@@ -239,7 +239,7 @@ class Gauge extends BaseGauge
 	displayedValue: 0
 	lineWidth: 40
 	paddingBottom: 0.1
-	percentColors: null
+	percentColors: null,
 	options:
 		colorStart: "#6fadcf"
 		colorStop: undefined
@@ -251,6 +251,7 @@ class Gauge extends BaseGauge
 		angle: 0.15
 		lineWidth: 0.44
 		fontSize: 40
+		limitMax: false
 		percentColors : [
 							[ 0.0, "#a9d70b" ],
 							[ 0.50, "#f9c802" ],
@@ -290,6 +291,7 @@ class Gauge extends BaseGauge
 				@percentColors[i] = { pct: @options.percentColors[i][0], color: { r: rval, g: gval, b: bval  } }
 
 	set: (value) ->
+
 		if not (value instanceof Array)
 			value = [value]
 		# check if we have enough GaugePointers initialized
@@ -300,13 +302,21 @@ class Gauge extends BaseGauge
 
 		# get max value and update pointer(s)
 		i = 0
+		max_hit = false
+
 		for val in value
 			if val > @maxValue
-				@maxValue = @value * 1.1
+					@maxValue = @value * 1.1
+					max_hit = true
 			@gp[i].value = val
 			@gp[i++].setOptions({maxValue: @maxValue, angle: @options.angle})
 		@value = value[value.length - 1] # TODO: Span maybe?? 
-		AnimationUpdater.run()
+
+		if max_hit
+			unless @options.limitMax
+				AnimationUpdater.run()
+		else
+			AnimationUpdater.run()
 
 	getAngle: (value) ->
 		return (1 + @options.angle) * Math.PI + ((value - @minValue) / (@maxValue - @minValue)) * (1 - @options.angle * 2) * Math.PI

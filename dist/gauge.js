@@ -409,6 +409,7 @@
       angle: 0.15,
       lineWidth: 0.44,
       fontSize: 40,
+      limitMax: false,
       percentColors: [[0.0, "#a9d70b"], [0.50, "#f9c802"], [1.0, "#ff0000"]]
     };
 
@@ -469,7 +470,7 @@
     };
 
     Gauge.prototype.set = function(value) {
-      var i, val, _i, _j, _len, _ref;
+      var i, max_hit, val, _i, _j, _len, _ref;
       if (!(value instanceof Array)) {
         value = [value];
       }
@@ -479,10 +480,12 @@
         }
       }
       i = 0;
+      max_hit = false;
       for (_j = 0, _len = value.length; _j < _len; _j++) {
         val = value[_j];
         if (val > this.maxValue) {
           this.maxValue = this.value * 1.1;
+          max_hit = true;
         }
         this.gp[i].value = val;
         this.gp[i++].setOptions({
@@ -491,7 +494,13 @@
         });
       }
       this.value = value[value.length - 1];
-      return AnimationUpdater.run();
+      if (max_hit) {
+        if (!this.options.limitMax) {
+          return AnimationUpdater.run();
+        }
+      } else {
+        return AnimationUpdater.run();
+      }
     };
 
     Gauge.prototype.getAngle = function(value) {
