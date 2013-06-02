@@ -439,23 +439,21 @@ Gauge = (function(_super) {
   Gauge.prototype.setOptions = function(options) {
     var gauge, _i, _len, _ref1;
 
-    if (options == null) {
-      options = null;
-    }
-    Gauge.__super__.setOptions.call(this, options);
-    this.configPercentColors();
-    this.lineWidth = this.canvas.height * (1 - this.paddingBottom) * this.options.lineWidth;
-    this.radius = this.canvas.height * (1 - this.paddingBottom) - this.lineWidth;
-    this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    this.render();
-    _ref1 = this.gp;
-    for (_i = 0, _len = _ref1.length; _i < _len; _i++) {
-      gauge = _ref1[_i];
-      gauge.setOptions(this.options.pointer);
-      gauge.render();
-    }
-    return this;
-  };
+    Gauge.prototype.options = {
+      colorStart: "#6fadcf",
+      colorStop: void 0,
+      gradientType: 0,
+      strokeColor: "#e0e0e0",
+      pointer: {
+        length: 0.8,
+        strokeWidth: 0.035
+      },
+      angle: 0.15,
+      lineWidth: 0.44,
+      fontSize: 40,
+      limitMax: false,
+      percentColors: [[0.0, "#a9d70b"], [0.50, "#f9c802"], [1.0, "#ff0000"]]
+    };
 
   Gauge.prototype.configPercentColors = function() {
     var bval, gval, i, rval, _i, _ref1, _results;
@@ -512,8 +510,39 @@ Gauge = (function(_super) {
     return (1 + this.options.angle) * Math.PI + ((value - this.minValue) / (this.maxValue - this.minValue)) * (1 - this.options.angle * 2) * Math.PI;
   };
 
-  Gauge.prototype.getColorForPercentage = function(pct, grad) {
-    var color, endColor, i, rangePct, startColor, _i, _ref1;
+    Gauge.prototype.set = function(value) {
+      var i, max_hit, val, _i, _j, _len, _ref;
+      if (!(value instanceof Array)) {
+        value = [value];
+      }
+      if (value.length > this.gp.length) {
+        for (i = _i = 0, _ref = value.length - this.gp.length; 0 <= _ref ? _i < _ref : _i > _ref; i = 0 <= _ref ? ++_i : --_i) {
+          this.gp.push(new GaugePointer(this));
+        }
+      }
+      i = 0;
+      max_hit = false;
+      for (_j = 0, _len = value.length; _j < _len; _j++) {
+        val = value[_j];
+        if (val > this.maxValue) {
+          this.maxValue = this.value * 1.1;
+          max_hit = true;
+        }
+        this.gp[i].value = val;
+        this.gp[i++].setOptions({
+          maxValue: this.maxValue,
+          angle: this.options.angle
+        });
+      }
+      this.value = value[value.length - 1];
+      if (max_hit) {
+        if (!this.options.limitMax) {
+          return AnimationUpdater.run();
+        }
+      } else {
+        return AnimationUpdater.run();
+      }
+    };
 
     if (pct === 0) {
       color = this.percentColors[0].color;
