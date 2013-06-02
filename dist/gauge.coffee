@@ -126,6 +126,9 @@ class BaseGauge extends ValueUpdater
 		@options = mergeObjects(@options, options)
 		if @textField
 			@textField.el.style.fontSize = options.fontSize + 'px'
+
+		if @options.angle > .5
+			@gauge.options.angle = .5
 		return @
 
 class TextRenderer
