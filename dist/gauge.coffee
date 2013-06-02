@@ -113,6 +113,8 @@ class ValueUpdater
 		return false
 
 class BaseGauge extends ValueUpdater
+	displayScale: 1
+
 	setTextField: (textField) ->
 		@textField = if textField instanceof TextRenderer then textField else new TextRenderer(textField)
 
@@ -129,6 +131,34 @@ class BaseGauge extends ValueUpdater
 
 		if @options.angle > .5
 			@gauge.options.angle = .5
+		@configDisplayScale()
+		return @
+
+	configDisplayScale: () ->
+		prevDisplayScale = @displayScale
+
+		if @options.highDpiSupport == false
+			delete @displayScale
+		else
+			devicePixelRatio = window.devicePixelRatio or 1
+			backingStorePixelRatio =
+				@ctx.webkitBackingStorePixelRatio or
+				@ctx.mozBackingStorePixelRatio or
+				@ctx.msBackingStorePixelRatio or
+				@ctx.oBackingStorePixelRatio or
+				@ctx.backingStorePixelRatio or 1
+			@displayScale = devicePixelRatio / backingStorePixelRatio
+
+		if @displayScale != prevDisplayScale
+			width = @canvas.G__width or @canvas.width
+			height = @canvas.G__height or @canvas.height
+			@canvas.width = width * @displayScale
+			@canvas.height = height * @displayScale
+			@canvas.style.width = "#{width}px"
+			@canvas.style.height = "#{height}px"
+			@canvas.G__width = width
+			@canvas.G__height = height
+
 		return @
 
 class TextRenderer

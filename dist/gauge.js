@@ -181,6 +181,8 @@
       return BaseGauge.__super__.constructor.apply(this, arguments);
     }
 
+    BaseGauge.prototype.displayScale = 1;
+
     BaseGauge.prototype.setTextField = function(textField) {
       return this.textField = textField instanceof TextRenderer ? textField : new TextRenderer(textField);
     };
@@ -213,6 +215,30 @@
       }
       if (this.options.angle > .5) {
         this.gauge.options.angle = .5;
+      }
+      this.configDisplayScale();
+      return this;
+    };
+
+    BaseGauge.prototype.configDisplayScale = function() {
+      var backingStorePixelRatio, devicePixelRatio, height, prevDisplayScale, width;
+      prevDisplayScale = this.displayScale;
+      if (this.options.highDpiSupport === false) {
+        delete this.displayScale;
+      } else {
+        devicePixelRatio = window.devicePixelRatio || 1;
+        backingStorePixelRatio = this.ctx.webkitBackingStorePixelRatio || this.ctx.mozBackingStorePixelRatio || this.ctx.msBackingStorePixelRatio || this.ctx.oBackingStorePixelRatio || this.ctx.backingStorePixelRatio || 1;
+        this.displayScale = devicePixelRatio / backingStorePixelRatio;
+      }
+      if (this.displayScale !== prevDisplayScale) {
+        width = this.canvas.G__width || this.canvas.width;
+        height = this.canvas.G__height || this.canvas.height;
+        this.canvas.width = width * this.displayScale;
+        this.canvas.height = height * this.displayScale;
+        this.canvas.style.width = "" + width + "px";
+        this.canvas.style.height = "" + height + "px";
+        this.canvas.G__width = width;
+        this.canvas.G__height = height;
       }
       return this;
     };
