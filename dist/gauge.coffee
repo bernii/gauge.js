@@ -333,20 +333,27 @@ class Gauge extends BaseGauge
 			for i in [0...(value.length - @gp.length)]
 				@gp.push(new GaugePointer(@))
 
-		# get max value and update pointer(s)
+		# get max and min values and update pointer(s)
 		i = 0
 		max_hit = false
+		min_hit = false
 
 		for val in value
 			if val > @maxValue
-					@maxValue = @value * 1.1
+					@maxValue = val
 					max_hit = true
+			if val < @minValue
+					@minValue = val
+					min_hit = true		
+			@gp[i].setOptions({maxValue: @maxValue, minValue: @minValue, angle: @options.angle})
 			@gp[i].value = val
-			@gp[i++].setOptions({maxValue: @maxValue, angle: @options.angle})
 		@value = value[value.length - 1] # TODO: Span maybe?? 
 
 		if max_hit
 			unless @options.limitMax
+				AnimationUpdater.run()
+		else if min_hit
+			unless @options.limitMin
 				AnimationUpdater.run()
 		else
 			AnimationUpdater.run()
