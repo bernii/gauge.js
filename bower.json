@@ -4,7 +4,7 @@
   "main": [
     "dist/gauge.js",
     "dist/gauge.min.js",
-    "dist/gauge.coffee",
+    "dist/gauge.coffee"
   ],
   "description": "100% native and cool looking animated JavaScript/CoffeScript gauge",
   "license": "MIT",
