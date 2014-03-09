@@ -97,7 +97,6 @@ var opts = {
     color: '<span id="opt-pointer-color" class="lit">#000000</span>' // Fill color
   },
   limitMax: '<span id="opt-limitMax" class="lit">false</span>',   // If true, the pointer will not go past the end of the gauge
-
   colorStart: '<span id="opt-colorStart" class="lit">0</span>',   // Colors
   colorStop: '<span id="opt-colorStop" class="lit">0</span>',    // just experiment with them
   strokeColor: '<span id="opt-strokeColor" class="lit">0</span>',   // to see which ones work best for you
@@ -112,6 +111,18 @@ gauge.set(<span id="opt-currval" class="lit">1500</span>); // set actual value
 <p>
   The <code>Gauge</code> class handles drawing on canvas and starts the animation. 
 </p>
+
+<h2 id="advanced-options">Advanced options</h2>
+<ul>
+  <li>
+    <b>Percentage color</b>
+    <p>If you want to control how Gauge behavaes in relation to the displayed value you can use the Guage option called <b>percentColors</b>. To use it add following entry to the options:
+<pre class="prettyprint">
+percentColors = [[0.0, "#a9d70b" ], [0.50, "#f9c802"], [1.0, "#ff0000"]];
+</pre>
+    see working example at <a href="http://jsfiddle.net/berni/Yb4d7/">JSFiddle</a></p>
+  </li>
+</ul>
 
 <h3 id="jquery">jQuery plugin</h3>
 <p>
@@ -150,6 +161,12 @@ $.fn.gauge = function(opts) {
 </p>
 
 <h2>Changes</h2>
+
+<h3 id="v1.2.1">Version 1.2.1 (9.03.2014)</h3>
+<ul>
+  <li>Proper handling of color params <a href="https://github.com/bernii/gauge.js/issues/47">issue #47</a>.</li>
+  <li>Moved percentage color to example/docs + <a href="http://jsfiddle.net/berni/Yb4d7/">JSFiddle</a></li>
+</ul>
 
 <h3 id="v1.2">Version 1.2 (16.08.2012)</h3>
 <ul>
@@ -319,9 +336,7 @@ $.fn.gauge = function(opts) {
     	fdSlider.updateSlider('input-line-width');
     	fdSlider.updateSlider('input-font-size');
     	fdSlider.updateSlider('input-angle');
-    	$("#example").removeClass("donut");
-    	$("#example").removeClass("gauge");
-    	$("#example").addClass(type);
+    	$("#example").removeClass("donut, gauge").addClass(type);
     	update();
     });
 
