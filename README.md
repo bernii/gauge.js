@@ -1,13 +1,13 @@
 gauge.js
 ========
 
-100% native and cool looking animated JavaScript/CoffeScript gauge
+100% native and cool looking animated JavaScript/CoffeScript gauge.
 
  * No images, no external CSS - pure canvas
  * No dependencies
  * Highly configurable
  * Resolution independent
- * Animated guage value changes
+ * Animated gauge value changes
  * Works in all major browsers
  * MIT License
 
