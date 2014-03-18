@@ -1,0 +1,22 @@
+var options = {
+
+  lines: 20,            // ?
+  angle: 0.15,          // starting, finishing angle of the gauge. In degrees?
+  lineWidth: 0.2,       // ?
+  limitMax: true,       // limit the pointer to the end of the gauge (if true)
+  
+  //gauge colors, ordered in usage precedence
+  percentColors: [[10,'#fff000'],[0.5,'#202020']],  // color to use based on gauge actual value. The gauge is filled with the color of the percentage bracket where actual value falls.
+  gradientColors: [[0.1,'#fff000'],[0.6,'#202020']],  // colors to use as gradient colors, each entry will be used as a setStopColor() function parameters.
+  colorStart: '#FF0000',  // starting color of the gradient, if colorStop is specified, otherwise is used as the fill color for the full gauge
+  colorStop: '#00FF00',   // end color of the gradient, if percent
+  
+  gradientType: 1,      // if not specified, or 0, a radial gradient is used, if 1, a linear gradient is used (left to right)
+  
+  pointer: {            // properties of the gauge pointer (arrow)
+    length: 0.75,       // factor of the gauge total length that ocupies the pointer
+    strokeWidth: 0.05,  // how fat the pointer is, don't understands the proportion
+    color: '#006600'    // color of the pointer
+  }
+
+};
