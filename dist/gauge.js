@@ -469,7 +469,7 @@
           gval = parseInt((cutHex(this.options.percentColors[i][1])).substring(2, 4), 16);
           bval = parseInt((cutHex(this.options.percentColors[i][1])).substring(4, 6), 16);
           _results.push(this.percentColors[i] = {
-            pct: this.options.percentColors[i][0],
+            pct: (this.options.percentColors[i][0] > 1?this.options.percentColors[i][0] / 100:this.options.percentColors[i][0]),
             color: {
               r: rval,
               g: gval,
@@ -520,7 +520,7 @@
 
     Gauge.prototype.getColorForPercentage = function(pct, grad) {
       var color, endColor, i, rangePct, startColor, _i, _ref1;
-      if (pct === 0) {
+      if (pct <= this.percentColors[0].pct) {
         color = this.percentColors[0].color;
       } else {
         color = this.percentColors[this.percentColors.length - 1].color;
