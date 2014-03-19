@@ -394,7 +394,7 @@
 
     Gauge.prototype.elem = null;
 
-    Gauge.prototype.value = [20];
+    Gauge.prototype.value = 0;
 
     Gauge.prototype.maxValue = 80;
 
@@ -497,21 +497,25 @@
       for (_j = 0, _len = value.length; _j < _len; _j++) {
         val = value[_j];
         if (val > this.maxValue) {
-          this.maxValue = this.value * 1.1;
-	      options.maxValue = this.maxValue;
-          max_hit = true;
+		  max_hit = true;
+	      if(this.options.limitMax)
+	      	val = this.maxValue;
+	      else{
+          	this.maxValue = this.value * 1.1;
+	      	options.maxValue = this.maxValue;
+      	  };
         }
         this.gp[i].value = val;
         this.gp[i++].setOptions(options);
       }
-      this.value = value[value.length - 1];
       if (max_hit) {
-        if (!this.options.limitMax) {
-          return AnimationUpdater.run();
-        }
-      } else {
-        return AnimationUpdater.run();
-      }
+        if (!this.options.limitMax)
+          this.value = value[value.length - 1];
+        else
+          this.value = this.maxValue;
+      }else
+	    this.value = value[value.length - 1];
+      return AnimationUpdater.run();
     };
 
     Gauge.prototype.getAngle = function(value) {
