@@ -745,8 +745,10 @@
       h = this.canvas.height * (1 - this.paddingBottom);
       start = this.radius - this.lineWidth / 2;
       stop = this.radius + this.lineWidth / 2;
-      this.options._orgStrokeColor = this.options.strokeColor;
-      this.options.strokeColor = this.strokeGradient(w, h, start, stop);
+      if (Object.prototype.toString.call(this.options.strokeColor) !== "[object CanvasGradient]") {
+        this.options._orgStrokeColor = this.options.strokeColor;
+        this.options.strokeColor = this.strokeGradient(w, h, start, stop);
+      }
       return this;
     };
 
@@ -865,8 +867,10 @@
       h = this.canvas.height / 2;
       start = this.radius - this.lineWidth / 2;
       stop = this.radius + this.lineWidth / 2;
-      this.options._orgStrokeColor = this.options.strokeColor;
-      this.options.strokeColor = this.strokeGradient(w, h, start, stop);
+      if (Object.prototype.toString.call(this.options.strokeColor) !== "[object CanvasGradient]") {
+        this.options._orgStrokeColor = this.options.strokeColor;
+        this.options.strokeColor = this.strokeGradient(w, h, start, stop);
+      }
       return this;
     };
 

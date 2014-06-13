@@ -511,8 +511,9 @@ class Double extends BaseDouble
 		h = @canvas.height * (1 - @paddingBottom)
 		start = @radius - @lineWidth / 2
 		stop = @radius + @lineWidth / 2
-		@options._orgStrokeColor = @options.strokeColor
-		@options.strokeColor = @strokeGradient(w, h, start, stop)
+		if Object.prototype.toString.call(@options.strokeColor) != "[object CanvasGradient]"
+			@options._orgStrokeColor = @options.strokeColor
+			@options.strokeColor = @strokeGradient(w, h, start, stop)
 		return @
 
 class BaseDonut extends BaseGauge
@@ -596,8 +597,9 @@ class Donut extends BaseDonut
 		h = @canvas.height / 2
 		start = @radius - @lineWidth / 2
 		stop = @radius + @lineWidth / 2
-		@options._orgStrokeColor = @options.strokeColor
-		@options.strokeColor = @strokeGradient(w, h, start, stop)
+		if Object.prototype.toString.call(@options.strokeColor) != "[object CanvasGradient]"
+			@options._orgStrokeColor = @options.strokeColor
+			@options.strokeColor = @strokeGradient(w, h, start, stop)
 		return @
 
 window.AnimationUpdater =
