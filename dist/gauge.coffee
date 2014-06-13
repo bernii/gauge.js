@@ -51,7 +51,7 @@ secondsToString = (sec) ->
 	hr = Math.floor(sec / 3600)
 	min = Math.floor((sec - (hr * 3600))/60)
 	sec -= ((hr * 3600) + (min * 60))
-	sec += '' 
+	sec += ''
 	min += ''
 	while min.length < 2
 		min = '0' + min
@@ -213,11 +213,11 @@ class GaugePointer extends ValueUpdater
 		@strokeWidth = @canvas.height * @options.strokeWidth
 		@maxValue = @gauge.maxValue
 		@minValue = @gauge.minValue
-		@animationSpeed =  @gauge.animationSpeed
+		@animationSpeed = @gauge.animationSpeed
 		@options.angle = @gauge.options.angle
 
 	render: () ->
-		angle = @gauge.getAngle.call(@, @displayedValue)
+		angle = @gauge.getAngle(@displayedValue)
 		centerX = @canvas.width / 2
 		centerY = @canvas.height * 0.9
 
@@ -338,7 +338,7 @@ class Gauge extends BaseGauge
 					max_hit = true
 			@gp[i].value = val
 			@gp[i++].setOptions({maxValue: @maxValue, angle: @options.angle})
-		@value = value[value.length - 1] # TODO: Span maybe?? 
+		@value = value[value.length - 1] # TODO: Span maybe??
 
 		if max_hit
 			unless @options.limitMax
@@ -370,7 +370,7 @@ class Gauge extends BaseGauge
 						color = @percentColors[i].color
 					break
 		return 'rgb(' + [color.r, color.g, color.b].join(',') + ')'
-    
+
 	getColorForValue: (val, grad) ->
 		pct = (val - @minValue) / (@maxValue - @minValue)
 		return @getColorForPercentage(pct, grad);
@@ -411,6 +411,109 @@ class Gauge extends BaseGauge
 		for gauge in @gp
 			gauge.update(true)
 
+class BaseDouble extends BaseGauge
+	lineWidth: 30
+	displayedAngle: 0
+	displayedValue: 0
+	value: 33
+	maxValue: 80
+	minValue: -80
+	paddingBottom: 0.1
+	options:
+		lineWidth: 0.40
+		colorStart: "#d73d32"
+		colorStop: "#53a93f"
+		strokeColor: "#eeeeee"
+		shadowColor: "#d5d5d5"
+		pointer:
+			length: 0.8
+			strokeWidth: 0.05
+		angle: 0
+
+	constructor: (@canvas) ->
+		super()
+		if typeof G_vmlCanvasManager != 'undefined'
+			@canvas = window.G_vmlCanvasManager.initElement(@canvas)
+		@ctx = @canvas.getContext('2d')
+		@gp = new GaugePointer(@)
+		@setOptions()
+		@render()
+
+	getAngle: (value) ->
+		if (value < 0)
+			return (1.5 - value / @minValue * (0.5 - @options.angle)) * Math.PI
+		else if (value > 0)
+			return (1.5 + value / @maxValue * (0.5 - @options.angle)) * Math.PI
+		else
+			return 1.5 * Math.PI
+
+	setOptions: (options=null) ->
+		super(options)
+		@lineWidth = @canvas.height * (1 - @paddingBottom) * @options.lineWidth
+		@radius = @canvas.height * (1 - @paddingBottom) - @lineWidth
+		@ctx.clearRect(0, 0, @canvas.width, @canvas.height)
+		@render()
+		@gp.setOptions(@options.pointer)
+		@gp.render()
+		return @
+
+	set: (value) ->
+		@value = value
+		if @value > @maxValue
+			@maxValue = @value
+		if @value < @minValue
+			@minValue = @value
+		@gp.value = value
+		@gp.setOptions()
+		AnimationUpdater.run()
+
+	render: () ->
+		w = @canvas.width / 2
+		h = @canvas.height * (1 - @paddingBottom)
+
+		if @textField
+			@textField.render(@)
+
+		@ctx.strokeStyle = @options.strokeColor
+		@ctx.beginPath()
+		@ctx.arc(w, h, @radius, (1 + @options.angle) * Math.PI, (2 - @options.angle) * Math.PI, false)
+		@ctx.lineWidth = @lineWidth
+		@ctx.lineCap = "butt"
+		@ctx.stroke()
+
+		displayedAngle = @getAngle(@displayedValue)
+		if displayedAngle < 1.5 * Math.PI
+			counterclockwise = true
+			fillStyle = @options.colorStart
+		else
+			counterclockwise = false
+			fillStyle = @options.colorStop
+
+		@ctx.strokeStyle = fillStyle
+		@ctx.beginPath()
+		@ctx.arc(w, h, @radius, 1.5 * Math.PI, displayedAngle, counterclockwise)
+		@ctx.stroke()
+
+		@gp.update(true)
+
+class Double extends BaseDouble
+	strokeGradient: (w, h, start, stop) ->
+		grd = @ctx.createRadialGradient(w, h, start, w, h, stop)
+		grd.addColorStop(0, @options.shadowColor)
+		grd.addColorStop(0.15, @options._orgStrokeColor)
+		grd.addColorStop(0.85, @options._orgStrokeColor)
+		grd.addColorStop(1, @options.shadowColor)
+		return grd
+
+	setOptions: (options=null) ->
+		super(options)
+		w = @canvas.width / 2
+		h = @canvas.height * (1 - @paddingBottom)
+		start = @radius - @lineWidth / 2
+		stop = @radius + @lineWidth / 2
+		@options._orgStrokeColor = @options.strokeColor
+		@options.strokeColor = @strokeGradient(w, h, start, stop)
+		return @
 
 class BaseDonut extends BaseGauge
 	lineWidth: 15
@@ -520,5 +623,6 @@ window.AnimationUpdater =
 
 window.Gauge = Gauge
 window.Donut = Donut
+window.Double = Double
 window.BaseDonut = BaseDonut
 window.TextRenderer = TextRenderer
