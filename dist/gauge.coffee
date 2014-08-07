@@ -37,21 +37,22 @@ do () ->
 		window.cancelAnimationFrame = (id) ->
 			isCancelled[id] = true
 
-String.prototype.hashCode = () ->
-	hash = 0
-	if this.length == 0
-		return hash
-	for i in [0...this.length]
-		char = this.charCodeAt(i)
-		hash = ((hash << 5) - hash) + char
-		hash = hash & hash # Convert to 32bit integer
-	return hash
+Object.defineProperty String.prototype, 'hashCode',
+  value: () ->
+  	hash = 0
+  	if this.length == 0
+  		return hash
+  	for i in [0...this.length]
+  		char = this.charCodeAt(i)
+  		hash = ((hash << 5) - hash) + char
+  		hash = hash & hash # Convert to 32bit integer
+  	return hash
 
 secondsToString = (sec) ->
 	hr = Math.floor(sec / 3600)
 	min = Math.floor((sec - (hr * 3600))/60)
 	sec -= ((hr * 3600) + (min * 60))
-	sec += '' 
+	sec += ''
 	min += ''
 	while min.length < 2
 		min = '0' + min
@@ -338,7 +339,7 @@ class Gauge extends BaseGauge
 					max_hit = true
 			@gp[i].value = val
 			@gp[i++].setOptions({maxValue: @maxValue, angle: @options.angle})
-		@value = value[value.length - 1] # TODO: Span maybe?? 
+		@value = value[value.length - 1] # TODO: Span maybe??
 
 		if max_hit
 			unless @options.limitMax
@@ -370,7 +371,7 @@ class Gauge extends BaseGauge
 						color = @percentColors[i].color
 					break
 		return 'rgb(' + [color.r, color.g, color.b].join(',') + ')'
-    
+
 	getColorForValue: (val, grad) ->
 		pct = (val - @minValue) / (@maxValue - @minValue)
 		return @getColorForPercentage(pct, grad);
