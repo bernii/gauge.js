@@ -100,7 +100,8 @@ var opts = {
   colorStart: '<span id="opt-colorStart" class="lit">0</span>',   // Colors
   colorStop: '<span id="opt-colorStop" class="lit">0</span>',    // just experiment with them
   strokeColor: '<span id="opt-strokeColor" class="lit">0</span>',   // to see which ones work best for you
-  generateGradient: true
+  generateGradient: true,
+  responsive: false        // set to true if you want the gauge to scale with the parent element
 };
 var target = document.getElementById('foo'); // your canvas element
 var gauge = new <span id="class-code-name" class="typ">Gauge</span>(target).setOptions(opts); // create sexy gauge!

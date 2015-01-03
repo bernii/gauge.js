@@ -148,8 +148,10 @@ class BaseGauge extends ValueUpdater
 				@ctx.oBackingStorePixelRatio or
 				@ctx.backingStorePixelRatio or 1
 			@displayScale = devicePixelRatio / backingStorePixelRatio
-
-		if @displayScale != prevDisplayScale
+		if @options.responsive
+			@canvas.G__width = @canvas.parentNode.clientWidth
+			@canvas.G__height = Math.min(@canvas.parentNode.clientHeight, @canvas.G__width/2);
+		if @options.responsive or @displayScale != prevDisplayScale
 			width = @canvas.G__width or @canvas.width
 			height = @canvas.G__height or @canvas.height
 			@canvas.width = width * @displayScale

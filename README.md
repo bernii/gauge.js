@@ -24,7 +24,8 @@ var opts = {
   },
   colorStart: '#6FADCF',   // Colors
   colorStop: '#8FC0DA',    // just experiment with them
-  strokeColor: '#E0E0E0'   // to see which ones work best for you
+  strokeColor: '#E0E0E0',  // to see which ones work best for you
+  responsive: false        // set to true if you want the gauge to scale with the parent element
 };
 var target = document.getElementById('foo'); // your canvas element
 var gauge = new Gauge(target).setOptions(opts); // create sexy gauge!
