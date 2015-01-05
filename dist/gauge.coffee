@@ -387,7 +387,7 @@ class Gauge extends BaseGauge
 		if @options.customFillStyle != undefined
 			fillStyle = @options.customFillStyle(@)
 		else if @percentColors != null
-			fillStyle = @getColorForValue(@displayedValue, true)
+			fillStyle = @getColorForValue(@displayedValue, @options.generateGradient)
 		else if @options.colorStop != undefined
 			if @options.gradientType == 0
 				fillStyle = this.ctx.createRadialGradient(w, h, 9, w, h, 70);
