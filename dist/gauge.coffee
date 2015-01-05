@@ -148,9 +148,6 @@ class BaseGauge extends ValueUpdater
 				@ctx.oBackingStorePixelRatio or
 				@ctx.backingStorePixelRatio or 1
 			@displayScale = devicePixelRatio / backingStorePixelRatio
-		if @options.responsive
-			@canvas.G__width = @canvas.parentNode.clientWidth
-			@canvas.G__height = Math.min(@canvas.parentNode.clientHeight, @canvas.G__width/2);
 		if @options.responsive or @displayScale != prevDisplayScale
 			width = @canvas.G__width or @canvas.width
 			height = @canvas.G__height or @canvas.height
@@ -299,6 +296,10 @@ class Gauge extends BaseGauge
 		@render()
 
 	setOptions: (options=null) ->
+		console.log(options)
+		if options && options.responsive
+			@canvas.G__width = @canvas.parentNode.clientWidth
+			@canvas.G__height = Math.min(@canvas.parentNode.clientHeight, @canvas.G__width/2)
 		super(options)
 		@configPercentColors()
 		@lineWidth = @canvas.height * (1 - @paddingBottom) * @options.lineWidth # .2 - .7
@@ -441,6 +442,9 @@ class BaseDonut extends BaseGauge
 		return (1 - @options.angle) * Math.PI + ((value - @minValue) / (@maxValue - @minValue)) * ((2 + @options.angle) - (1 - @options.angle)) * Math.PI
 
 	setOptions: (options=null) ->
+		if options && options.responsive
+			@canvas.G__width = @canvas.parentNode.clientWidth
+			@canvas.G__height = @canvas.parentNode.clientHeight
 		super(options)
 		@lineWidth = @canvas.height * @options.lineWidth
 		@radius = @canvas.height / 2 - @lineWidth/2

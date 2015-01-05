@@ -228,10 +228,6 @@
         backingStorePixelRatio = this.ctx.webkitBackingStorePixelRatio || this.ctx.mozBackingStorePixelRatio || this.ctx.msBackingStorePixelRatio || this.ctx.oBackingStorePixelRatio || this.ctx.backingStorePixelRatio || 1;
         this.displayScale = devicePixelRatio / backingStorePixelRatio;
       }
-      if (this.options.responsive) {
-        this.canvas.G__width = this.canvas.parentNode.clientWidth;
-        this.canvas.G__height = Math.min(this.canvas.parentNode.clientHeight, this.canvas.G__width / 2);
-      }
       if (this.options.responsive || this.displayScale !== prevDisplayScale) {
         width = this.canvas.G__width || this.canvas.width;
         height = this.canvas.G__height || this.canvas.height;
@@ -456,6 +452,11 @@
       if (options == null) {
         options = null;
       }
+      console.log(options);
+      if (options && options.responsive) {
+        this.canvas.G__width = this.canvas.parentNode.clientWidth;
+        this.canvas.G__height = Math.min(this.canvas.parentNode.clientHeight, this.canvas.G__width / 2);
+      }
       Gauge.__super__.setOptions.call(this, options);
       this.configPercentColors();
       this.lineWidth = this.canvas.height * (1 - this.paddingBottom) * this.options.lineWidth;
@@ -651,6 +652,10 @@
     BaseDonut.prototype.setOptions = function(options) {
       if (options == null) {
         options = null;
+      }
+      if (options && options.responsive) {
+        this.canvas.G__width = this.canvas.parentNode.clientWidth;
+        this.canvas.G__height = this.canvas.parentNode.clientHeight;
       }
       BaseDonut.__super__.setOptions.call(this, options);
       this.lineWidth = this.canvas.height * this.options.lineWidth;
