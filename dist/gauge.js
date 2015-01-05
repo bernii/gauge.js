@@ -654,8 +654,8 @@
         options = null;
       }
       if (options && options.responsive) {
-        this.canvas.G__width = this.canvas.parentNode.clientWidth;
-        this.canvas.G__height = this.canvas.parentNode.clientHeight;
+        this.canvas.G__width = Math.min(this.canvas.parentNode.clientWidth, this.canvas.parentNode.clientHeight);
+        this.canvas.G__height = this.canvas.G__width;
       }
       BaseDonut.__super__.setOptions.call(this, options);
       this.lineWidth = this.canvas.height * this.options.lineWidth;

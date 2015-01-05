@@ -443,8 +443,8 @@ class BaseDonut extends BaseGauge
 
 	setOptions: (options=null) ->
 		if options && options.responsive
-			@canvas.G__width = @canvas.parentNode.clientWidth
-			@canvas.G__height = @canvas.parentNode.clientHeight
+			@canvas.G__width = Math.min(@canvas.parentNode.clientWidth, @canvas.parentNode.clientHeight)
+			@canvas.G__height = @canvas.G__width
 		super(options)
 		@lineWidth = @canvas.height * @options.lineWidth
 		@radius = @canvas.height / 2 - @lineWidth/2
