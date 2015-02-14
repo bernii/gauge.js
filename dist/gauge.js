@@ -491,7 +491,8 @@
       }
     };
 
-    Gauge.prototype.set = function(value) {
+    Gauge.prototype.set = function(value, onComplete) {
+      debugger;
       var i, max_hit, val, _i, _j, _len, _ref1;
       if (!(value instanceof Array)) {
         value = [value];
@@ -518,10 +519,11 @@
       this.value = value[value.length - 1];
       if (max_hit) {
         if (!this.options.limitMax) {
-          return AnimationUpdater.run();
+          return AnimationUpdater.run(onComplete);
         }
       } else {
-        return AnimationUpdater.run();
+        debugger;
+        return AnimationUpdater.run(onComplete);
       }
     };
 
@@ -744,7 +746,7 @@
     add: function(object) {
       return AnimationUpdater.elements.push(object);
     },
-    run: function() {
+    run: function(onComplete) {
       var animationFinished, elem, _i, _len, _ref2;
       animationFinished = true;
       _ref2 = AnimationUpdater.elements;
@@ -755,9 +757,15 @@
         }
       }
       if (!animationFinished) {
-        return AnimationUpdater.animId = requestAnimationFrame(AnimationUpdater.run);
+        return AnimationUpdater.animId = requestAnimationFrame(function() {
+          AnimationUpdater.run(onComplete)
+        });
       } else {
-        return cancelAnimationFrame(AnimationUpdater.animId);
+        var result = cancelAnimationFrame(AnimationUpdater.animId);
+        if (onComplete){
+          onComplete();
+        }
+        return result;
       }
     }
   };
