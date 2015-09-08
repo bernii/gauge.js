@@ -1,3 +1,6 @@
+This is a fork of excellent https://github.com/bernii/gauge.js. Please use upstream. This fork only removes the gauge.js
+from bower.json.
+
 gauge.js
 ========
 
