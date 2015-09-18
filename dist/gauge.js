@@ -562,7 +562,7 @@
     };
 
     Gauge.prototype.render = function() {
-      var displayedAngle, fillStyle, gauge, h, j, len, ref, results, w;
+      var displayedAngle, fillStyle, gauge, h, j, k, len, len1, ref, ref1, results, span, start, w, zone;
       w = this.canvas.width / 2;
       h = this.canvas.height * (1 - this.paddingBottom);
       displayedAngle = this.getAngle(this.displayedValue);
@@ -570,34 +570,48 @@
         this.textField.render(this);
       }
       this.ctx.lineCap = "butt";
-      if (this.options.customFillStyle !== void 0) {
-        fillStyle = this.options.customFillStyle(this);
-      } else if (this.percentColors !== null) {
-        fillStyle = this.getColorForValue(this.displayedValue, true);
-      } else if (this.options.colorStop !== void 0) {
-        if (this.options.gradientType === 0) {
-          fillStyle = this.ctx.createRadialGradient(w, h, 9, w, h, 70);
-        } else {
-          fillStyle = this.ctx.createLinearGradient(0, 0, w, 0);
+      if (this.options.staticZones) {
+        start = (1 + this.options.angle) * Math.PI;
+        span = Math.PI - this.options.angle * 2 * Math.PI;
+        ref = this.options.staticZones;
+        for (j = 0, len = ref.length; j < len; j++) {
+          zone = ref[j];
+          this.ctx.strokeStyle = zone.strokeStyle;
+          this.ctx.beginPath();
+          this.ctx.arc(w, h, this.radius, start, start + span * zone.span, false);
+          this.ctx.stroke();
+          start += span * zone.span;
         }
-        fillStyle.addColorStop(0, this.options.colorStart);
-        fillStyle.addColorStop(1, this.options.colorStop);
       } else {
-        fillStyle = this.options.colorStart;
+        if (this.options.customFillStyle !== void 0) {
+          fillStyle = this.options.customFillStyle(this);
+        } else if (this.percentColors !== null) {
+          fillStyle = this.getColorForValue(this.displayedValue, true);
+        } else if (this.options.colorStop !== void 0) {
+          if (this.options.gradientType === 0) {
+            fillStyle = this.ctx.createRadialGradient(w, h, 9, w, h, 70);
+          } else {
+            fillStyle = this.ctx.createLinearGradient(0, 0, w, 0);
+          }
+          fillStyle.addColorStop(0, this.options.colorStart);
+          fillStyle.addColorStop(1, this.options.colorStop);
+        } else {
+          fillStyle = this.options.colorStart;
+        }
+        this.ctx.strokeStyle = fillStyle;
+        this.ctx.beginPath();
+        this.ctx.arc(w, h, this.radius, (1 + this.options.angle) * Math.PI, displayedAngle, false);
+        this.ctx.lineWidth = this.lineWidth;
+        this.ctx.stroke();
+        this.ctx.strokeStyle = this.options.strokeColor;
+        this.ctx.beginPath();
+        this.ctx.arc(w, h, this.radius, displayedAngle, (2 - this.options.angle) * Math.PI, false);
+        this.ctx.stroke();
       }
-      this.ctx.strokeStyle = fillStyle;
-      this.ctx.beginPath();
-      this.ctx.arc(w, h, this.radius, (1 + this.options.angle) * Math.PI, displayedAngle, false);
-      this.ctx.lineWidth = this.lineWidth;
-      this.ctx.stroke();
-      this.ctx.strokeStyle = this.options.strokeColor;
-      this.ctx.beginPath();
-      this.ctx.arc(w, h, this.radius, displayedAngle, (2 - this.options.angle) * Math.PI, false);
-      this.ctx.stroke();
-      ref = this.gp;
+      ref1 = this.gp;
       results = [];
-      for (j = 0, len = ref.length; j < len; j++) {
-        gauge = ref[j];
+      for (k = 0, len1 = ref1.length; k < len1; k++) {
+        gauge = ref1[k];
         results.push(gauge.update(true));
       }
       return results;

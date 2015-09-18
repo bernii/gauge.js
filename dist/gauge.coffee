@@ -384,30 +384,43 @@ class Gauge extends BaseGauge
 			@textField.render(@)
 
 		@ctx.lineCap = "butt"
-		if @options.customFillStyle != undefined
-			fillStyle = @options.customFillStyle(@)
-		else if @percentColors != null
-			fillStyle = @getColorForValue(@displayedValue, true)
-		else if @options.colorStop != undefined
-			if @options.gradientType == 0
-				fillStyle = this.ctx.createRadialGradient(w, h, 9, w, h, 70);
-			else
-				fillStyle = this.ctx.createLinearGradient(0, 0, w, 0);
-			fillStyle.addColorStop(0, @options.colorStart)
-			fillStyle.addColorStop(1, @options.colorStop)
+		
+		if (@options.staticZones)
+			start = (1 + @options.angle) * Math.PI
+			span = Math.PI - @options.angle * 2*Math.PI 
+			
+			for zone in @options.staticZones
+				@ctx.strokeStyle = zone.strokeStyle
+				@ctx.beginPath()
+				@ctx.arc(w, h, @radius, start, start + span * zone.span, false)
+				@ctx.stroke()
+				start += span * zone.span 
 		else
-			fillStyle = @options.colorStart
-		@ctx.strokeStyle = fillStyle
-
-		@ctx.beginPath()
-		@ctx.arc(w, h, @radius, (1 + @options.angle) * Math.PI, displayedAngle, false)
-		@ctx.lineWidth = @lineWidth
-		@ctx.stroke()
-
-		@ctx.strokeStyle = @options.strokeColor
-		@ctx.beginPath()
-		@ctx.arc(w, h, @radius, displayedAngle, (2 - @options.angle) * Math.PI, false)
-		@ctx.stroke()
+			if @options.customFillStyle != undefined
+				fillStyle = @options.customFillStyle(@)
+			else if @percentColors != null
+				fillStyle = @getColorForValue(@displayedValue, true)
+			else if @options.colorStop != undefined
+				if @options.gradientType == 0
+					fillStyle = this.ctx.createRadialGradient(w, h, 9, w, h, 70);
+				else
+					fillStyle = this.ctx.createLinearGradient(0, 0, w, 0);
+				fillStyle.addColorStop(0, @options.colorStart)
+				fillStyle.addColorStop(1, @options.colorStop)
+			else
+				fillStyle = @options.colorStart
+			@ctx.strokeStyle = fillStyle
+		
+			@ctx.beginPath()
+			@ctx.arc(w, h, @radius, (1 + @options.angle) * Math.PI, displayedAngle, false)
+			@ctx.lineWidth = @lineWidth
+			@ctx.stroke()
+	
+			@ctx.strokeStyle = @options.strokeColor
+			@ctx.beginPath()
+			@ctx.arc(w, h, @radius, displayedAngle, (2 - @options.angle) * Math.PI, false)
+			@ctx.stroke()
+			
 		for gauge in @gp
 			gauge.update(true)
 
