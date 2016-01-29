@@ -213,6 +213,7 @@ class GaugePointer extends ValueUpdater
 		@strokeWidth = @canvas.height * @options.strokeWidth
 		@maxValue = @gauge.maxValue
 		@minValue = @gauge.minValue
+		@displayedValue = @gauge.minValue
 		@animationSpeed =  @gauge.animationSpeed
 		@options.angle = @gauge.options.angle
 
@@ -319,7 +320,7 @@ class Gauge extends BaseGauge
 				@percentColors[i] = { pct: @options.percentColors[i][0], color: { r: rval, g: gval, b: bval  } }
 
 	set: (value) ->
-
+		@displayedValue = @minValue
 		if not (value instanceof Array)
 			value = [value]
 		# check if we have enough GaugePointers initialized

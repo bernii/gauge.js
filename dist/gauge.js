@@ -334,6 +334,7 @@
       this.strokeWidth = this.canvas.height * this.options.strokeWidth;
       this.maxValue = this.gauge.maxValue;
       this.minValue = this.gauge.minValue;
+      this.displayedValue = this.gauge.minValue;
       this.animationSpeed = this.gauge.animationSpeed;
       return this.options.angle = this.gauge.options.angle;
     };
@@ -492,6 +493,7 @@
 
     Gauge.prototype.set = function(value) {
       var i, j, k, len, max_hit, ref, val;
+      this.displayedValue = this.minValue;
       if (!(value instanceof Array)) {
         value = [value];
       }
