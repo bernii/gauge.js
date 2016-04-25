@@ -1,5 +1,5 @@
 {
-  "name": "bernii/gauge.js",
+  "name": "gauge.js",
   "version": "1.2.1",
   "main": [
     "dist/gauge.js",
