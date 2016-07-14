@@ -60,8 +60,10 @@ secondsToString = (sec) ->
 	hr = if hr then hr + ':' else ''
 	return hr + min + ':' + sec
 
-formatNumber = (num) ->
-		return addCommas(num.toFixed(0))
+formatNumber = (num...) ->
+	value = num[0]
+	digits = 0 || num[1]
+	return addCommas(value.toFixed(digits))
 
 updateObjectValues = (obj1, obj2) ->
 	for own key, val of obj2
@@ -209,32 +211,29 @@ class GaugePointer extends ValueUpdater
 
 	setOptions: (options=null) ->
 		updateObjectValues(@options, options)
-		@length = @canvas.height * @options.length
+		@length = 2*@gauge.radius * @options.length
 		@strokeWidth = @canvas.height * @options.strokeWidth
 		@maxValue = @gauge.maxValue
 		@minValue = @gauge.minValue
-		@displayedValue = @gauge.minValue
 		@animationSpeed =  @gauge.animationSpeed
 		@options.angle = @gauge.options.angle
 
 	render: () ->
 		angle = @gauge.getAngle.call(@, @displayedValue)
-		centerX = @canvas.width / 2
-		centerY = @canvas.height * 0.9
 
-		x = Math.round(centerX + @length * Math.cos(angle))
-		y = Math.round(centerY + @length * Math.sin(angle))
+		x = Math.round(@length * Math.cos(angle))
+		y = Math.round(@length * Math.sin(angle))
 
-		startX = Math.round(centerX + @strokeWidth * Math.cos(angle - Math.PI/2))
-		startY = Math.round(centerY + @strokeWidth * Math.sin(angle - Math.PI/2))
+		startX = Math.round(@strokeWidth * Math.cos(angle - Math.PI/2))
+		startY = Math.round(@strokeWidth * Math.sin(angle - Math.PI/2))
 
-		endX = Math.round(centerX + @strokeWidth * Math.cos(angle + Math.PI/2))
-		endY = Math.round(centerY + @strokeWidth * Math.sin(angle + Math.PI/2))
+		endX = Math.round(@strokeWidth * Math.cos(angle + Math.PI/2))
+		endY = Math.round(@strokeWidth * Math.sin(angle + Math.PI/2))
 
 		@ctx.fillStyle = @options.color
 		@ctx.beginPath()
 
-		@ctx.arc(centerX, centerY, @strokeWidth, 0, Math.PI*2, true)
+		@ctx.arc(0, 0, @strokeWidth, 0, Math.PI*2, true)
 		@ctx.fill()
 
 		@ctx.beginPath()
@@ -272,6 +271,7 @@ class Gauge extends BaseGauge
 	displayedAngle: 0
 	displayedValue: 0
 	lineWidth: 40
+	paddingTop: 0.1
 	paddingBottom: 0.1
 	percentColors: null,
 	options:
@@ -293,6 +293,11 @@ class Gauge extends BaseGauge
 		if typeof G_vmlCanvasManager != 'undefined'
 			@canvas = window.G_vmlCanvasManager.initElement(@canvas)
 		@ctx = @canvas.getContext('2d')
+		# Set canvas size to parent size
+		h = @canvas.clientHeight;
+		w = @canvas.clientWidth;
+		@canvas.height = h;
+		@canvas.width = w;
 		@gp = [new GaugePointer(@)]
 		@setOptions()
 		@render()
@@ -300,10 +305,15 @@ class Gauge extends BaseGauge
 	setOptions: (options=null) ->
 		super(options)
 		@configPercentColors()
-		@lineWidth = @canvas.height * (1 - @paddingBottom) * @options.lineWidth # .2 - .7
-		@radius = @canvas.height * (1 - @paddingBottom) - @lineWidth
+		@extraPadding = 0
+		if @options.angle < 0
+			phi = Math.PI*(1 + @options.angle)
+			@extraPadding = Math.sin(phi)
+		@availableHeight = @canvas.height * (1 - @paddingTop - @paddingBottom)
+		@lineWidth = @availableHeight * @options.lineWidth # .2 - .7
+		@radius = (@availableHeight - @lineWidth/2) / (1.0 + @extraPadding)
 		@ctx.clearRect(0, 0, @canvas.width, @canvas.height)
-		@render()
+		# @render()
 		for gauge in @gp
 			gauge.setOptions(@options.pointer)
 			gauge.render()
@@ -320,7 +330,7 @@ class Gauge extends BaseGauge
 				@percentColors[i] = { pct: @options.percentColors[i][0], color: { r: rval, g: gval, b: bval  } }
 
 	set: (value) ->
-		@displayedValue = @minValue
+
 		if not (value instanceof Array)
 			value = [value]
 		# check if we have enough GaugePointers initialized
@@ -334,9 +344,12 @@ class Gauge extends BaseGauge
 		max_hit = false
 
 		for val in value
-			if val > @maxValue
-					@maxValue = @value * 1.1
-					max_hit = true
+			# Limit pointer within min and max?
+			if @options.limitMax
+				val = Math.min(Math.max(val, @minValue), @maxValue)
+			else if val > @maxValue
+				@maxValue = @value * 1.1
+				max_hit = true
 			@gp[i].value = val
 			@gp[i++].setOptions({maxValue: @maxValue, angle: @options.angle})
 		@value = value[value.length - 1] # TODO: Span maybe??
@@ -376,41 +389,83 @@ class Gauge extends BaseGauge
 		pct = (val - @minValue) / (@maxValue - @minValue)
 		return @getColorForPercentage(pct, grad);
 
+	renderStaticLabels: (staticLabels, w, h) ->
+		@ctx.save()
+		@ctx.translate(w, h)
+
+		# Scale font size the hard way - assuming size comes first.
+		font = staticLabels.font or "10px Times"
+		re = /\d+\.?\d?/
+		match = font.match(re)[0]
+		rest = font.slice(match.length);
+		fontsize = parseFloat(match) * this.displayScale;
+		@ctx.font = fontsize + rest;
+
+		@ctx.textBaseline = "bottom"
+		@ctx.textAlign = "center"
+		for value in staticLabels.labels
+			rotationAngle = @getAngle(value) - 3*Math.PI/2
+			@ctx.rotate(rotationAngle)
+			@ctx.fillText(formatNumber(value, staticLabels.fractionDigits), 0, -@radius - @lineWidth/2)
+			@ctx.rotate(-rotationAngle)
+		@ctx.restore()
+
 	render: () ->
 		# Draw using canvas
 		w = @canvas.width / 2
-		h = @canvas.height * (1 - @paddingBottom)
+		h = @canvas.height*@paddingTop + @availableHeight - (@radius + @lineWidth/2)*@extraPadding
 		displayedAngle = @getAngle(@displayedValue)
 		if @textField
 			@textField.render(@)
 
 		@ctx.lineCap = "butt"
-		if @options.customFillStyle != undefined
-			fillStyle = @options.customFillStyle(@)
-		else if @percentColors != null
-			fillStyle = @getColorForValue(@displayedValue, true)
-		else if @options.colorStop != undefined
-			if @options.gradientType == 0
-				fillStyle = this.ctx.createRadialGradient(w, h, 9, w, h, 70);
-			else
-				fillStyle = this.ctx.createLinearGradient(0, 0, w, 0);
-			fillStyle.addColorStop(0, @options.colorStart)
-			fillStyle.addColorStop(1, @options.colorStop)
+		
+		if (@options.staticLabels)
+			@renderStaticLabels(@options.staticLabels, w, h)
+
+		if (@options.staticZones)
+			@ctx.save()
+			@ctx.translate(w, h)
+			@ctx.lineWidth = @lineWidth
+			for zone in @options.staticZones
+				@ctx.strokeStyle = zone.strokeStyle
+				@ctx.beginPath()
+				@ctx.arc(0, 0, @radius, @getAngle(zone.min), @getAngle(zone.max), false)
+				@ctx.stroke()
+			@ctx.restore()
+
 		else
-			fillStyle = @options.colorStart
-		@ctx.strokeStyle = fillStyle
+			if @options.customFillStyle != undefined
+				fillStyle = @options.customFillStyle(@)
+			else if @percentColors != null
+				fillStyle = @getColorForValue(@displayedValue, true)
+			else if @options.colorStop != undefined
+				if @options.gradientType == 0
+					fillStyle = this.ctx.createRadialGradient(w, h, 9, w, h, 70);
+				else
+					fillStyle = this.ctx.createLinearGradient(0, 0, w, 0);
+				fillStyle.addColorStop(0, @options.colorStart)
+				fillStyle.addColorStop(1, @options.colorStop)
+			else
+				fillStyle = @options.colorStart
+			@ctx.strokeStyle = fillStyle
+		
+			@ctx.beginPath()
+			@ctx.arc(w, h, @radius, (1 + @options.angle) * Math.PI, displayedAngle, false)
+			@ctx.lineWidth = @lineWidth
+			@ctx.stroke()
+	
+			@ctx.strokeStyle = @options.strokeColor
+			@ctx.beginPath()
+			@ctx.arc(w, h, @radius, displayedAngle, (2 - @options.angle) * Math.PI, false)
+			@ctx.stroke()
 
-		@ctx.beginPath()
-		@ctx.arc(w, h, @radius, (1 + @options.angle) * Math.PI, displayedAngle, false)
-		@ctx.lineWidth = @lineWidth
-		@ctx.stroke()
 
-		@ctx.strokeStyle = @options.strokeColor
-		@ctx.beginPath()
-		@ctx.arc(w, h, @radius, displayedAngle, (2 - @options.angle) * Math.PI, false)
-		@ctx.stroke()
+		# Draw pointers from (w, h)
+		@ctx.translate(w, h)
 		for gauge in @gp
 			gauge.update(true)
+		@ctx.translate(-w, -h)
 
 
 class BaseDonut extends BaseGauge

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+  <script type="text/javascript" src="assets/prettify.js"></script>
+  <script type="text/javascript" src="assets/jscolor.js"></script>
+    <script type="application/javascript" src="dist/gauge.js" ></script>
+</head>
+<body>
+    <div style="width: 400px; height: 200px; background-color: #A0A0A0">
+        <canvas id="foo" style="float: left; width: 100%; height: 200px"></canvas>
+        <div id="foo_value" style="float: right; margin-top: -40px; width: 100%; height: 40px; text-align: center; font-family: 'Arial'; font-size: 24pt"></div>
+    </div>
+    <script language="JavaScript">
+var opts = {
+  lines: 1, // The number of lines to draw
+  angle: -0.2, // The length of each line
+  lineWidth: 0.1, // The line thickness1
+  pointer: {
+    length: 0.5, // The radius of the inner circle
+    strokeWidth: 0.035, // The rotation offset
+    color: '#000000' // Fill color
+  },
+  staticLabels: {
+    font: "10px sans-serif",
+    labels: [100, 130, 150, 220.1, 260, 300],
+    fractionDigits: 1
+  },
+  staticZones: [
+     {strokeStyle: "#F03E3E", min: 100, max: 130}, // Red
+     {strokeStyle: "#FFDD00", min: 130, max: 150}, // Yellow
+     {strokeStyle: "#30B32D", min: 150, max: 220}, // Green
+     {strokeStyle: "#FFDD00", min: 220, max: 260}, // Yellow
+     {strokeStyle: "#F03E3E", min: 260, max: 300}  // Red
+  ],
+  limitMax: 'false',   // If true, the pointer will not go past the end of the gauge
+  colorStart: '#6FADCF',   // Colors
+  colorStop: '#8FC0DA',    // just experiment with them
+  strokeColor: '#E0E0E0',   // to see which ones work best for you
+  generateGradient: true,
+  highDpiSupport: true
+};
+var target = document.getElementById('foo'); // your canvas element
+console.log(target);
+var gauge = new Gauge(target);
+gauge.setTextField(document.getElementById('foo_value'));
+console.log("Setting new options");
+gauge.setOptions(opts); // create sexy gauge!
+gauge.minValue = 100;
+gauge.maxValue = 300; // set max gauge value
+gauge.animationSpeed = 1; // set animation speed (32 is default value)
+gauge.set(250); // set actual value
+
+    </script>
+</body>
+</html>
