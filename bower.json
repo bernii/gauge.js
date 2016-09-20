@@ -6,7 +6,7 @@
     "dist/gauge.min.js",
     "dist/gauge.coffee"
   ],
-  "description": "100% native and cool looking animated JavaScript/CoffeScript gauge F",
+  "description": "100% native and cool looking animated JavaScript/CoffeScript gauge",
   "license": "MIT",
   "ignore": [
   ],
