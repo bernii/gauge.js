@@ -117,8 +117,8 @@ class ValueUpdater
 class BaseGauge extends ValueUpdater
 	displayScale: 1
 
-	setTextField: (textField) ->
-		@textField = if textField instanceof TextRenderer then textField else new TextRenderer(textField)
+	setTextField: (textField, fractionDigits) ->
+		@textField = if textField instanceof TextRenderer then textField else new TextRenderer(textField, fractionDigits)
 
 	setMinValue: (@minValue, updateStartValue=true) ->
 		if updateStartValue
@@ -164,11 +164,11 @@ class BaseGauge extends ValueUpdater
 		return @
 
 class TextRenderer
-	constructor: (@el) ->
+	constructor: (@el, @fractionDigits) ->
 
 	# Default behaviour, override to customize rendering
 	render: (gauge) ->
-		@el.innerHTML = formatNumber(gauge.displayedValue)
+		@el.innerHTML = formatNumber(gauge.displayedValue, @fractionDigits)
 
 class AnimatedText extends ValueUpdater
 	displayedValue: 0
