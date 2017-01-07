@@ -45,18 +45,19 @@
 
   <h4>Variant selection</h4>
   <ul class="horiz-list" id="type-select">
-  	<li class="active" type="gauge"><canvas width=100 height=50 id="select-1"></canvas></li>
+  	<li class="active" type="gauge"><canvas width=80 height=50 id="select-1"></canvas></li>
   	<li type="donut"><canvas width=80 height=40 id="select-2"></canvas></li>
-  </ul>	
+  	<li type="zones"><canvas width=80 height=50 id="select-3"></canvas></li>
+  </ul>
   <div id="preview">
-  	<canvas width=220 height=70 id="canvas-preview"></canvas>
+  	<canvas width=240 height=70 id="canvas-preview"></canvas>
   	<div id="preview-textfield"></div>
   </div>
   <form id="opts" class="opts">
   	<h4>Options:</h4>
   	<label>Current Val:</label><input type="text" name="currval" min="0" max="3000" step="25" value="1244"><br>
     <label>Anim speed:</label><input type="text" name="animationSpeed" min="1" max="128" step="1" value="32"><br><br>
-    <label>Angle:</label><input id="input-angle" type="text" name="angle" min="0" max="50" step="1" value="15"><br>
+    <label>Angle:</label><input id="input-angle" type="text" name="angle" min="-50" max="50" step="1" value="15"><br>
     <label>Line width:</label><input id="input-line-width" type="text" name="lineWidth" min="0" max="70" value="44"><br>
     <label>Ptr length:</label><input id="input-ptr-len" type="text" name="pointer.length" min="0" max="100" value="90"><br>
     <label>Ptr color:</label><input id="input-ptr-color" type="text" class="color" name="pointer.color" value="000000"><br>
@@ -89,18 +90,19 @@
 <pre class="prettyprint">
 var opts = {
   lines: <span id="opt-lines" class="lit">12</span>, // The number of lines to draw
-  angle: <span id="opt-angle" class="lit">7</span>, // The length of each line
+  angle: <span id="opt-angle" class="lit">7</span>, // The span of the gauge arc
   lineWidth: <span id="opt-lineWidth" class="lit">5</span>, // The line thickness
   pointer: {
     length: <span id="opt-pointer-length" class="lit">10</span>, // The radius of the inner circle
-    strokeWidth: <span id="opt-pointer-strokeWidth" class="lit">0</span>, // The rotation offset
+    strokeWidth: <span id="opt-pointer-strokeWidth" class="lit">0</span>, // The thickness
     color: '<span id="opt-pointer-color" class="lit">#000000</span>' // Fill color
   },
-  limitMax: '<span id="opt-limitMax" class="lit">false</span>',   // If true, the pointer will not go past the end of the gauge
+  limitMax: <span id="opt-limitMax" class="lit">false</span>,     // If true, the pointer will not go past the end of the gauge
   colorStart: '<span id="opt-colorStart" class="lit">0</span>',   // Colors
   colorStop: '<span id="opt-colorStop" class="lit">0</span>',    // just experiment with them
-  strokeColor: '<span id="opt-strokeColor" class="lit">0</span>',   // to see which ones work best for you
-  generateGradient: true
+  strokeColor: '<span id="opt-strokeColor" class="lit">0</span>',  // to see which ones work best for you
+  generateGradient: true,
+  highDpiSupport: true     // High resolution support
 };
 var target = document.getElementById('foo'); // your canvas element
 var gauge = new <span id="class-code-name" class="typ">Gauge</span>(target).setOptions(opts); // create sexy gauge!
@@ -121,6 +123,32 @@ gauge.set(<span id="opt-currval" class="lit">1500</span>); // set actual value
 percentColors = [[0.0, "#a9d70b" ], [0.50, "#f9c802"], [1.0, "#ff0000"]];
 </pre>
     see working example at <a href="http://jsfiddle.net/berni/Yb4d7/">JSFiddle</a></p>
+  </li>
+  <li>
+    <b>Value labels</b>
+    <p>For displaying value labels, enable the staticLabels option. A label will be printed at the given value just outside the display arc. </p>
+<pre class="prettyprint">
+staticLabels: {
+  font: "10px sans-serif",  // Specifies font
+  labels: [100, 130, 150, 220.1, 260, 300],  // Print labels at these values
+  fractionDigits: 0  // Optional: Numerical precision. 0=round off.
+},
+</pre>
+  </li>
+  <li>
+    <b>Static zones</b>
+    <p>When separating the background sectors or zones to have static colors, you must supply the staticZones property in the Gauge object's options.</p>
+<pre class="prettyprint">
+staticZones: [
+   {strokeStyle: "#F03E3E", min: 100, max: 130}, // Red from 100 to 130
+   {strokeStyle: "#FFDD00", min: 130, max: 150}, // Yellow
+   {strokeStyle: "#30B32D", min: 150, max: 220}, // Green
+   {strokeStyle: "#FFDD00", min: 220, max: 260}, // Yellow
+   {strokeStyle: "#F03E3E", min: 260, max: 300}  // Red
+],
+</pre>
+    <p>staticZones, percentColors and gradient are mutually exclusive. If staticZones is defined, it will take precedence.</p>
+    <p>Note: Zones should always be defined within the gauge objects .minValue and .maxValue limits.</p>
   </li>
 </ul>
 
@@ -161,6 +189,20 @@ $.fn.gauge = function(opts) {
 </p>
 
 <h2>Changes</h2>
+
+<h3 id="v1.3">Version 1.3 (07.01.2017)</h3>
+  <p>
+  This version is a mix of new functionality and various smaller fixes and improvements. Some of the inner transformations
+  and options definition have been slightly altered/improved and made more consistent.
+  </p>
+  Highlights:
+<ul>
+  <li>New feature: Value lables above the dial.</li>
+  <li>New feature: Static color setting of the dial <a href="https://github.com/bernii/gauge.js/issues/81">issue #81</a>. Based on <a href="https://github.com/rsreimer">rsreimer</a>'s work.</li>
+  <li>Gauge dial can be more than 180 degress. Negative options.angle allowed. (New feature)</li>
+  <li>Better scaling in parent canvas. (Improvement)</li>
+  <li>Set numerical precision for value fiels (Improvement)</li>
+</ul>
 
 <h3 id="v1.2.1">Version 1.2.1 (9.03.2014)</h3>
 <ul>
@@ -269,6 +311,39 @@ $.fn.gauge = function(opts) {
     demoGauge.maxValue = 3000;
     demoGauge.set(1244);
   };
+  function initZones(){
+    document.getElementById("class-code-name").innerHTML = "Gauge";
+    demoGauge = new Gauge(document.getElementById("canvas-preview"));
+    var opts = {
+      lines: 1,
+      angle: -0.25,
+      lineWidth: 0.2,
+      pointer: {
+        length: 0.6,
+        strokeWidth: 0.05,
+        color: '#000000'
+      },
+      staticLabels: {
+        font: "10px sans-serif",
+        labels: [200, 500, 2100, 2800],
+        fractionDigits: 0
+      },
+      staticZones: [
+         {strokeStyle: "#F03E3E", min: 0, max: 200},
+         {strokeStyle: "#FFDD00", min: 200, max: 500},
+         {strokeStyle: "#30B32D", min: 500, max: 2100},
+         {strokeStyle: "#FFDD00", min: 2100, max: 2800},
+         {strokeStyle: "#F03E3E", min: 2800, max: 3000}
+      ],
+      limitMax: true,
+      highDpiSupport: true
+    };
+    demoGauge.setOptions(opts);
+    demoGauge.setTextField(document.getElementById("preview-textfield"));
+    demoGauge.minValue = 0;
+    demoGauge.maxValue = 3000;
+    demoGauge.set(1244);
+  };
   $(function() {
     var params = {};
     var hash = /^#\?(.*)/.exec(location.hash);
@@ -300,23 +375,40 @@ $.fn.gauge = function(opts) {
     	$("#type-select li").removeClass("active")
     	$(this).addClass("active");
     	var type = $(this).attr("type");
-    	if(type=="donut"){
-    		initDonut();
-    		$("input[name=lineWidth]").val(10);
-    		$("input[name=fontSize]").val(24);
-    		$("input[name=angle]").val(35);
+    	if(type=="donut") {
+          initDonut();
+          $("input[name=lineWidth]").val(10);
+          $("input[name=fontSize]").val(24);
+          $("input[name=angle]").val(35);
 
-    		$("input[name=colorStart]").val("6F6EA0")[0].color.importColor();
-    		$("input[name=colorStop]").val("C0C0DB")[0].color.importColor();
-    		$("input[name=strokeColor]").val("EEEEEE")[0].color.importColor();
+          $("input[name=colorStart]").val("6F6EA0")[0].color.importColor();
+          $("input[name=colorStop]").val("C0C0DB")[0].color.importColor();
+          $("input[name=strokeColor]").val("EEEEEE")[0].color.importColor();
 
-    		fdSlider.disable('input-ptr-len');
-    		fdSlider.disable('input-ptr-stroke');
-        $("#input-ptr-color").prop('disabled', true);
+          fdSlider.disable('input-ptr-len');
+          fdSlider.disable('input-ptr-stroke');
+          $("#input-ptr-color").prop('disabled', true);
 
-        selectGaguge1.set(1);
-        selectGaguge2.set(3000);
+          selectGaguge1.set(1);
+          selectGaguge2.set(3000);
+          selectGauge3.set(1);
+        } else if (type=="zones") {
+          initZones();
+          fdSlider.disable('input-ptr-len');
+          fdSlider.disable('input-ptr-stroke');
 
+          $("input[name=angle]").val(-20);
+          $("input[name=lineWidth]").val(20);
+
+          fdSlider.enable('input-ptr-len');
+          fdSlider.enable('input-ptr-stroke');
+          $("input[name=colorStart]").prop('disabled', true); //val("6F6EA0")[0].color.importColor();
+          $("input[name=colorStop]").prop('disabled', true); //.val("C0C0DB")[0].color.importColor();
+          $("input[name=strokeColor]").prop('disabled', true); //.val("EEEEEE")[0].color.importColor();
+
+          selectGaguge1.set(2000);
+          selectGaguge2.set(1);
+          selectGauge3.set(3000);
     	}else{
     		initGauge();
     		$("input[name=lineWidth]").val(44);
@@ -329,11 +421,12 @@ $.fn.gauge = function(opts) {
 
     		fdSlider.enable('input-ptr-len');
     		fdSlider.enable('input-ptr-stroke');
-        $("#input-ptr-color").prop('disabled', false);
-        selectGaguge1.set(3000);
-        selectGaguge2.set(1) ;
+            $("#input-ptr-color").prop('disabled', false);
+            selectGaguge1.set(3000);
+            selectGaguge2.set(1) ;
+            selectGauge3.set(1);
     	}
-    	fdSlider.updateSlider('input-line-width');
+    	//fdSlider.updateSlider('input-line-width');
     	fdSlider.updateSlider('input-font-size');
     	fdSlider.updateSlider('input-angle');
     	$("#example").removeClass("donut, gauge").addClass(type);
@@ -347,6 +440,31 @@ $.fn.gauge = function(opts) {
     selectGaguge2 = new Donut(document.getElementById("select-2"));
     selectGaguge2.maxValue = 3000;
     selectGaguge2.set(1844);
+
+    selectGauge3 = new Gauge(document.getElementById("select-3"));
+    var opts = {
+      angle: -0.25,
+      lineWidth: 0.2,
+      pointer: {
+        length: 0.6,
+        strokeWidth: 0.05,
+        color: '#000000'
+      },
+      staticZones: [
+         {strokeStyle: "#F03E3E", min: 0, max: 200},
+         {strokeStyle: "#FFDD00", min: 200, max: 500},
+         {strokeStyle: "#30B32D", min: 500, max: 2100},
+         {strokeStyle: "#FFDD00", min: 2100, max: 2800},
+         {strokeStyle: "#F03E3E", min: 2800, max: 3000}
+      ],
+      limitMax: 'false',
+      strokeColor: '#E0E0E0',
+      highDpiSupport: true
+    };
+    selectGauge3.minValue = 0;
+    selectGauge3.maxValue = 3000;
+    selectGauge3.setOptions(opts);
+    selectGauge3.set(1607);
     
     initGauge();
     update();

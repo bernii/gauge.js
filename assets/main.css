@@ -135,8 +135,8 @@ h3 {
   background: #f9f9f9; position: relative;
   color: #fff;
   float: left;
-  width: 220px;
-  height: 220px;
+  width: 280px;
+  height: 280px;
   margin: 0 20px 20px 0;
   -webkit-border-radius: 10px;
   -moz-border-radius: 10px;
@@ -144,16 +144,16 @@ h3 {
   clear: both;
 }
 #canvas-preview{
-  width: 220px; top: 70px;
+  width: 280px; top: 100px;
   position: relative;
 }
 #preview-textfield{
-  position: absolute; top: 35px; left: 0; right: 0;
+  position: absolute; top: 65px; left: 0; right: 0;
   text-align: center; font-size: 2em; font-weight: bold;
   color: black; font-family: 'Amaranth', sans-serif;
 }
 .donut #preview-textfield{
-  top: 110px; font-size: 1.3em;
+  top: 140px; font-size: 1.3em;
 }
 .donut #opts-donut{
   display: block;
@@ -209,7 +209,7 @@ a.button:hover {
   background-color: white;
 }
 #type-select li+li{
-  margin-left: 40px;
+  margin-left: 20px;
 }
 #type-select li.active{
   cursor: default;
