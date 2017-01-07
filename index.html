@@ -335,7 +335,7 @@ $.fn.gauge = function(opts) {
          {strokeStyle: "#FFDD00", min: 2100, max: 2800},
          {strokeStyle: "#F03E3E", min: 2800, max: 3000}
       ],
-      limitMax: true,
+      limitMax: 'false',   // If true, the pointer will not go past the end of the gauge
       highDpiSupport: true
     };
     demoGauge.setOptions(opts);
@@ -402,9 +402,15 @@ $.fn.gauge = function(opts) {
 
           fdSlider.enable('input-ptr-len');
           fdSlider.enable('input-ptr-stroke');
-          $("input[name=colorStart]").prop('disabled', true); //val("6F6EA0")[0].color.importColor();
-          $("input[name=colorStop]").prop('disabled', true); //.val("C0C0DB")[0].color.importColor();
-          $("input[name=strokeColor]").prop('disabled', true); //.val("EEEEEE")[0].color.importColor();
+          $("input[name=colorStart]").prop('disabled', true);
+          $("input[name=colorStop]").prop('disabled', true);
+          $("input[name=strokeColor]").prop('disabled', true);
+
+          selectGaguge1.set(2000);
+          selectGaguge2.set(1);
+          selectGauge3.set(3000);
+          $("input[name=colorStop]").prop('disabled', true);
+          $("input[name=strokeColor]").prop('disabled', true);
 
           selectGaguge1.set(2000);
           selectGaguge2.set(1);
