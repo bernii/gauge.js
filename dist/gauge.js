@@ -217,7 +217,7 @@
         this.textField.el.style.fontSize = options.fontSize + 'px';
       }
       if (this.options.angle > .5) {
-        this.gauge.options.angle = .5;
+        this.options.angle = .5;
       }
       this.configDisplayScale();
       return this;
