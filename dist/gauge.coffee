@@ -132,7 +132,7 @@ class BaseGauge extends ValueUpdater
 			@textField.el.style.fontSize = options.fontSize + 'px'
 
 		if @options.angle > .5
-			@gauge.options.angle = .5
+			@options.angle = .5
 		@configDisplayScale()
 		return @
 
