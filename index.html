@@ -106,7 +106,7 @@ var opts = {
 };
 var target = document.getElementById('foo'); // your canvas element
 var gauge = new <span id="class-code-name" class="typ">Gauge</span>(target).setOptions(opts); // create sexy gauge!
-gauge.setTextField(document.getElementById('bar')); // an element where the current gauge value will display
+gauge.setTextField(document.getElementById('bar')); // an element to display the current gauge value
 gauge.maxValue = <span id="opt-maxval" class="lit">3000</span>; // set max gauge value
 gauge.animationSpeed = <span id="opt-animationSpeed" class="lit">3000</span>; // set animation speed (32 is default value)
 gauge.set(<span id="opt-currval" class="lit">1500</span>); // set actual value
@@ -114,6 +114,17 @@ gauge.set(<span id="opt-currval" class="lit">1500</span>); // set actual value
 <p>
   The <code>Gauge</code> class handles drawing on canvas and starts the animation. 
 </p>
+<h4>Notes:</h4>
+<ul>
+    <li>To convert values from the demo sliders into your <code>opts</code> dict,
+        <ul>
+            <li>divide <code>lineWidth</code>, <code>angle</code>, or <code>pointer.length</code> by 100</li>
+            <li>divide <code>pointer.strokeWidth</code> by 1,000</li>
+        </ul>
+    </li>
+    <li>There is no gauge.js setting for fontSize -- you're in charge of that.</li>
+    
+</ul>
 
 <h2 id="advanced-options">Advanced options</h2>
 <ul>
