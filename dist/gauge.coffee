@@ -330,7 +330,6 @@ class Gauge extends BaseGauge
 				@percentColors[i] = { pct: @options.percentColors[i][0], color: { r: rval, g: gval, b: bval  } }
 
 	set: (value) ->
-
 		if not (value instanceof Array)
 			value = [value]
 		# check if we have enough GaugePointers initialized
@@ -372,7 +371,7 @@ class Gauge extends BaseGauge
 				if (pct <= @percentColors[i].pct)
 					if grad == true
 						# Gradually change between colors
-						startColor = @percentColors[i - 1]
+						startColor = @percentColors[i - 1] || @percentColors[0]
 						endColor = @percentColors[i]
 						rangePct = (pct - startColor.pct) / (endColor.pct - startColor.pct)  # How far between both colors
 						color = {
