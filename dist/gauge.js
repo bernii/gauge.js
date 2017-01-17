@@ -437,7 +437,8 @@
       angle: 0.15,
       lineWidth: 0.44,
       fontSize: 40,
-      limitMax: false
+      limitMax: false,
+      limitMin: false
     };
 
     function Gauge(canvas) {
@@ -507,7 +508,7 @@
     };
 
     Gauge.prototype.set = function(value) {
-      var i, j, k, len, max_hit, ref, val;
+      var i, j, k, len, ref, shouldAnimate, val;
       if (!(value instanceof Array)) {
         value = [value];
       }
@@ -517,27 +518,33 @@
         }
       }
       i = 0;
-      max_hit = false;
+      shouldAnimate = false;
       for (k = 0, len = value.length; k < len; k++) {
         val = value[k];
-        if (this.options.limitMax) {
-          val = Math.min(Math.max(val, this.minValue), this.maxValue);
-        } else if (val > this.maxValue) {
-          this.maxValue = this.value * 1.1;
-          max_hit = true;
+        if (val > this.maxValue) {
+          if (this.options.limitMax) {
+            val = this.maxValue;
+          } else {
+            this.maxValue = val + 1;
+            shouldAnimate = true;
+          }
+        } else if (val < this.minValue) {
+          if (this.options.limitMin) {
+            val = this.minValue;
+          } else {
+            this.minValue = val - 1;
+            shouldAnimate = true;
+          }
         }
         this.gp[i].value = val;
         this.gp[i++].setOptions({
+          minValue: this.minValue,
           maxValue: this.maxValue,
           angle: this.options.angle
         });
       }
-      this.value = value[value.length - 1];
-      if (max_hit) {
-        if (!this.options.limitMax) {
-          return AnimationUpdater.run();
-        }
-      } else {
+      this.value = Math.max(Math.min(value[value.length - 1], this.maxValue), this.minValue);
+      if (shouldAnimate) {
         return AnimationUpdater.run();
       }
     };
