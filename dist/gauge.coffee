@@ -65,11 +65,6 @@ formatNumber = (num...) ->
 	digits = 0 || num[1]
 	return addCommas(value.toFixed(digits))
 
-updateObjectValues = (obj1, obj2) ->
-	for own key, val of obj2
-		obj1[key] = val
-	return obj1
-
 mergeObjects = (obj1, obj2) ->
 	out = {}
 	for own key, val of obj1
@@ -210,7 +205,7 @@ class GaugePointer extends ValueUpdater
 		@setOptions()
 
 	setOptions: (options=null) ->
-		updateObjectValues(@options, options)
+		@options = mergeObjects(@options, options)
 		@length = 2*@gauge.radius * @gauge.options.radiusScale * @options.length
 		@strokeWidth = @canvas.height * @options.strokeWidth
 		@maxValue = @gauge.maxValue
