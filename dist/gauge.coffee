@@ -341,7 +341,6 @@ class Gauge extends BaseGauge
 
 		# get max value and update pointer(s)
 		i = 0
-		shouldAnimate = false
 
 		for val in value
 			# Limit pointer within min and max?
@@ -350,21 +349,18 @@ class Gauge extends BaseGauge
 					val = @maxValue
 				else
 					@maxValue = val + 1
-					shouldAnimate = true
 
 			else if val < @minValue
 				if @options.limitMin
 					val = @minValue
 				else
 					@minValue = val - 1
-					shouldAnimate = true
 
 			@gp[i].value = val
 			@gp[i++].setOptions({minValue: @minValue, maxValue: @maxValue, angle: @options.angle})
 		@value = Math.max(Math.min(value[value.length - 1], @maxValue), @minValue) # TODO: Span maybe??
 
-		if shouldAnimate
-			AnimationUpdater.run()
+		AnimationUpdater.run()
 
 	getAngle: (value) ->
 		return (1 + @options.angle) * Math.PI + ((value - @minValue) / (@maxValue - @minValue)) * (1 - @options.angle * 2) * Math.PI

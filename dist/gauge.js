@@ -508,7 +508,7 @@
     };
 
     Gauge.prototype.set = function(value) {
-      var i, j, k, len, ref, shouldAnimate, val;
+      var i, j, k, len, ref, val;
       if (!(value instanceof Array)) {
         value = [value];
       }
@@ -518,7 +518,6 @@
         }
       }
       i = 0;
-      shouldAnimate = false;
       for (k = 0, len = value.length; k < len; k++) {
         val = value[k];
         if (val > this.maxValue) {
@@ -526,14 +525,12 @@
             val = this.maxValue;
           } else {
             this.maxValue = val + 1;
-            shouldAnimate = true;
           }
         } else if (val < this.minValue) {
           if (this.options.limitMin) {
             val = this.minValue;
           } else {
             this.minValue = val - 1;
-            shouldAnimate = true;
           }
         }
         this.gp[i].value = val;
@@ -544,9 +541,7 @@
         });
       }
       this.value = Math.max(Math.min(value[value.length - 1], this.maxValue), this.minValue);
-      if (shouldAnimate) {
-        return AnimationUpdater.run();
-      }
+      return AnimationUpdater.run();
     };
 
     Gauge.prototype.getAngle = function(value) {
