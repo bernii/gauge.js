@@ -332,7 +332,12 @@ class Gauge extends BaseGauge
 		# lazy initialization
 		if value.length > @gp.length
 			for i in [0...(value.length - @gp.length)]
-				@gp.push(new GaugePointer(@))
+				gp = new GaugePointer(@)
+				gp.setOptions(@options.pointer)
+				@gp.push(gp)
+		else if value.length < @gp.length
+			# Delete redundant GaugePointers
+			@gp = @gp.slice(@gp.length-value.length)
 
 		# get max value and update pointer(s)
 		i = 0
@@ -395,6 +400,7 @@ class Gauge extends BaseGauge
 		rest = font.slice(match.length);
 		fontsize = parseFloat(match) * this.displayScale;
 		@ctx.font = fontsize + rest;
+		@ctx.fillStyle = staticLabels.color || "#000000";
 
 		@ctx.textBaseline = "bottom"
 		@ctx.textAlign = "center"

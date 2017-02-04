@@ -498,14 +498,18 @@
     };
 
     Gauge.prototype.set = function(value) {
-      var i, j, k, len, max_hit, ref, val;
+      var gp, i, j, k, len, max_hit, ref, val;
       if (!(value instanceof Array)) {
         value = [value];
       }
       if (value.length > this.gp.length) {
         for (i = j = 0, ref = value.length - this.gp.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
-          this.gp.push(new GaugePointer(this));
+          gp = new GaugePointer(this);
+          gp.setOptions(this.options.pointer);
+          this.gp.push(gp);
         }
+      } else if (value.length < this.gp.length) {
+        this.gp = this.gp.slice(this.gp.length - value.length);
       }
       i = 0;
       max_hit = false;
@@ -580,6 +584,7 @@
       rest = font.slice(match.length);
       fontsize = parseFloat(match) * this.displayScale;
       this.ctx.font = fontsize + rest;
+      this.ctx.fillStyle = staticLabels.color || "#000000";
       this.ctx.textBaseline = "bottom";
       this.ctx.textAlign = "center";
       ref = staticLabels.labels;
