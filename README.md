@@ -28,8 +28,8 @@ var opts = {
 };
 var target = document.getElementById('foo'); // your canvas element
 var gauge = new Gauge(target).setOptions(opts); // create sexy gauge!
-gauge.value = 1250; // set actual value
 gauge.maxValue = 3000; // set max gauge value
+gauge.set(1250); // set actual value
 ```
 
 For an interactive demo and a list of all supported options please refer to the [project's homepage](http://bernii.github.com/gauge.js).
