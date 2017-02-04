@@ -211,7 +211,7 @@ class GaugePointer extends ValueUpdater
 
 	setOptions: (options=null) ->
 		updateObjectValues(@options, options)
-		@length = 2*@gauge.radius * @options.length
+		@length = 2*@gauge.radius * @gauge.options.radiusScale * @options.length
 		@strokeWidth = @canvas.height * @options.strokeWidth
 		@maxValue = @gauge.maxValue
 		@minValue = @gauge.minValue
@@ -284,6 +284,7 @@ class Gauge extends BaseGauge
 			strokeWidth: 0.035
 		angle: 0.15
 		lineWidth: 0.44
+		radiusScale: 1.0
 		fontSize: 40
 		limitMax: false
 
@@ -388,7 +389,7 @@ class Gauge extends BaseGauge
 		pct = (val - @minValue) / (@maxValue - @minValue)
 		return @getColorForPercentage(pct, grad);
 
-	renderStaticLabels: (staticLabels, w, h) ->
+	renderStaticLabels: (staticLabels, w, h, radius) ->
 		@ctx.save()
 		@ctx.translate(w, h)
 
@@ -405,7 +406,7 @@ class Gauge extends BaseGauge
 		for value in staticLabels.labels
 			rotationAngle = @getAngle(value) - 3*Math.PI/2
 			@ctx.rotate(rotationAngle)
-			@ctx.fillText(formatNumber(value, staticLabels.fractionDigits), 0, -@radius - @lineWidth/2)
+			@ctx.fillText(formatNumber(value, staticLabels.fractionDigits), 0, -radius - @lineWidth/2)
 			@ctx.rotate(-rotationAngle)
 		@ctx.restore()
 
@@ -418,9 +419,10 @@ class Gauge extends BaseGauge
 			@textField.render(@)
 
 		@ctx.lineCap = "butt"
-		
+
+		radius = @radius * @options.radiusScale
 		if (@options.staticLabels)
-			@renderStaticLabels(@options.staticLabels, w, h)
+			@renderStaticLabels(@options.staticLabels, w, h, radius)
 
 		if (@options.staticZones)
 			@ctx.save()
@@ -429,7 +431,7 @@ class Gauge extends BaseGauge
 			for zone in @options.staticZones
 				@ctx.strokeStyle = zone.strokeStyle
 				@ctx.beginPath()
-				@ctx.arc(0, 0, @radius, @getAngle(zone.min), @getAngle(zone.max), false)
+				@ctx.arc(0, 0, radius, @getAngle(zone.min), @getAngle(zone.max), false)
 				@ctx.stroke()
 			@ctx.restore()
 
@@ -450,13 +452,13 @@ class Gauge extends BaseGauge
 			@ctx.strokeStyle = fillStyle
 		
 			@ctx.beginPath()
-			@ctx.arc(w, h, @radius, (1 + @options.angle) * Math.PI, displayedAngle, false)
+			@ctx.arc(w, h, radius, (1 + @options.angle) * Math.PI, displayedAngle, false)
 			@ctx.lineWidth = @lineWidth
 			@ctx.stroke()
 	
 			@ctx.strokeStyle = @options.strokeColor
 			@ctx.beginPath()
-			@ctx.arc(w, h, @radius, displayedAngle, (2 - @options.angle) * Math.PI, false)
+			@ctx.arc(w, h, radius, displayedAngle, (2 - @options.angle) * Math.PI, false)
 			@ctx.stroke()
 
 
@@ -481,6 +483,7 @@ class BaseDonut extends BaseGauge
 		strokeColor: "#eeeeee"
 		shadowColor: "#d5d5d5"
 		angle: 0.35
+		radiusScale: 1.0
 
 	constructor: (@canvas) ->
 		super()
@@ -496,7 +499,7 @@ class BaseDonut extends BaseGauge
 	setOptions: (options=null) ->
 		super(options)
 		@lineWidth = @canvas.height * @options.lineWidth
-		@radius = @canvas.height / 2 - @lineWidth/2
+		@radius = @options.radiusScale * (@canvas.height / 2 - @lineWidth/2)
 		return @
 
 	set: (value) ->
