@@ -15,12 +15,11 @@ gauge.js
 
 ```javascript
 var opts = {
-  lines: 12, // The number of lines to draw
-  angle: 0.15, // The length of each line
+  angle: 0.15, /// The span of the gauge arc
   lineWidth: 0.44, // The line thickness
   pointer: {
-    length: 0.9, // The radius of the inner circle
-    strokeWidth: 0.035 // The rotation offset
+    length: 0.9, // Relative to gauge radius
+    strokeWidth: 0.035 // The thickness
   },
   colorStart: '#6FADCF',   // Colors
   colorStop: '#8FC0DA',    // just experiment with them

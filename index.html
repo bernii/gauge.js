@@ -90,12 +90,11 @@
 <h2 id="usage">Usage</h2>
 <pre class="prettyprint">
 var opts = {
-  lines: <span id="opt-lines" class="lit">12</span>, // The number of lines to draw
   angle: <span id="opt-angle" class="lit">7</span>, // The span of the gauge arc
   lineWidth: <span id="opt-lineWidth" class="lit">5</span>, // The line thickness
   radiusScale: <span id="opt-radiusScale" class="lit">1.0</span>, // Relative radius
   pointer: {
-    length: <span id="opt-pointer-length" class="lit">10</span>, // The radius of the inner circle
+    length: <span id="opt-pointer-length" class="lit">10</span>, // // Relative to gauge radius
     strokeWidth: <span id="opt-pointer-strokeWidth" class="lit">0</span>, // The thickness
     color: '<span id="opt-pointer-color" class="lit">#000000</span>' // Fill color
   },
@@ -194,7 +193,18 @@ $.fn.gauge = function(opts) {
 
 <h2>Changes</h2>
 
-<h3 id="v1.3">Version 1.3 (7.01.2017)</h3>
+<h3 id="v1.3.1">Version 1.3.1 (05.02.2017)</h3>
+  Highlights:
+<ul>
+  <li>Added option 'minLimit' and improved max/min-hit value a lot (<a href="https://github.com/bernii/gauge.js/issues/84">issue #84</a>).</li>
+  <li>Fixed multiple pointers color problem, issue <a href="https://github.com/bernii/gauge.js/issues/26">#26</a> and <a href="https://github.com/bernii/gauge.js/issues/72">#72</a>.</li>
+  <li>Added ability to scale the gauge radius to deal with issue <a href="https://github.com/bernii/gauge.js/issues/112">#112</a>.</li>
+</ul>
+  <p>
+  A couple of other bugs and issues sorted out as well.
+  </p>
+
+<h3 id="v1.3">Version 1.3 (07.01.2017)</h3>
   <p>
   This version is a mix of new functionality and various smaller fixes and improvements. Some of the inner transformations
   and options definition have been slightly altered/improved and made more consistent.
@@ -320,7 +330,6 @@ $.fn.gauge = function(opts) {
     document.getElementById("class-code-name").innerHTML = "Gauge";
     demoGauge = new Gauge(document.getElementById("canvas-preview"));
     var opts = {
-      lines: 1,
       angle: -0.25,
       lineWidth: 0.2,
       pointer: {
