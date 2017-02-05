@@ -1,0 +1,12 @@
+{
+  "name": "gauge.js",
+  "version": "1.2.2",
+  "description": "100% native and cool looking animated JavaScript/CoffeeScript gauge",
+  "main": "dist/gauge.js",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:bernii/gauge.js.git"
+  },
+  "author": "bernii",
+  "license": "MIT"
+}

@@ -59,7 +59,8 @@
     <label>Anim speed:</label><input type="text" name="animationSpeed" min="1" max="128" step="1" value="32"><br><br>
     <label>Angle:</label><input id="input-angle" type="text" name="angle" min="-50" max="50" step="1" value="15"><br>
     <label>Line width:</label><input id="input-line-width" type="text" name="lineWidth" min="0" max="70" value="44"><br>
-    <label>Ptr length:</label><input id="input-ptr-len" type="text" name="pointer.length" min="0" max="100" value="90"><br>
+    <label>Radius:</label><input id="input-radius-scale" type="text" name="radiusScale" min="50" max="100" value="100"><br>
+    <label>Ptr length:</label><input id="input-ptr-len" type="text" name="pointer.length" min="0" max="100" value="60"><br>
     <label>Ptr color:</label><input id="input-ptr-color" type="text" class="color" name="pointer.color" value="000000"><br>
     <label>Ptr stroke:</label><input id="input-ptr-stroke" type="text" name="pointer.strokeWidth" min="0" max="300" value="35"><br>
     <label>Font size:</label><input id="input-font-size" type="text" name="fontSize" min="0" max="100" value="41"><br>
@@ -92,6 +93,7 @@ var opts = {
   lines: <span id="opt-lines" class="lit">12</span>, // The number of lines to draw
   angle: <span id="opt-angle" class="lit">7</span>, // The span of the gauge arc
   lineWidth: <span id="opt-lineWidth" class="lit">5</span>, // The line thickness
+  radiusScale: <span id="opt-radiusScale" class="lit">1.0</span>, // Relative radius
   pointer: {
     length: <span id="opt-pointer-length" class="lit">10</span>, // The radius of the inner circle
     strokeWidth: <span id="opt-pointer-strokeWidth" class="lit">0</span>, // The thickness
@@ -132,6 +134,7 @@ percentColors = [[0.0, "#a9d70b" ], [0.50, "#f9c802"], [1.0, "#ff0000"]];
 staticLabels: {
   font: "10px sans-serif",  // Specifies font
   labels: [100, 130, 150, 220.1, 260, 300],  // Print labels at these values
+  color: "#000000",  // Optional: Label text color
   fractionDigits: 0  // Optional: Numerical precision. 0=round off.
 },
 </pre>
@@ -255,6 +258,7 @@ $.fn.gauge = function(opts) {
         val = "#" + val;
       }
       if(this.name.indexOf("lineWidth") != -1 ||
+        this.name.indexOf("radiusScale") != -1 ||
         this.name.indexOf("angle") != -1 ||
         this.name.indexOf("pointer.length") != -1){
         val /= 100;
