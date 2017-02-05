@@ -99,7 +99,8 @@ var opts = {
     strokeWidth: <span id="opt-pointer-strokeWidth" class="lit">0</span>, // The thickness
     color: '<span id="opt-pointer-color" class="lit">#000000</span>' // Fill color
   },
-  limitMax: <span id="opt-limitMax" class="lit">false</span>,     // If true, the pointer will not go past the end of the gauge
+  limitMax: <span id="opt-limitMax" class="lit">false</span>,     // If false, the max value of the gauge will be updated if value surpass max
+  limitMin: <span id="opt-limitMin" class="lit">false</span>,     // If true, the min value of the gauge will be fixed unless you set it manually
   colorStart: '<span id="opt-colorStart" class="lit">0</span>',   // Colors
   colorStop: '<span id="opt-colorStop" class="lit">0</span>',    // just experiment with them
   strokeColor: '<span id="opt-strokeColor" class="lit">0</span>',  // to see which ones work best for you
@@ -193,7 +194,7 @@ $.fn.gauge = function(opts) {
 
 <h2>Changes</h2>
 
-<h3 id="v1.3">Version 1.3 (07.01.2017)</h3>
+<h3 id="v1.3">Version 1.3 (7.01.2017)</h3>
   <p>
   This version is a mix of new functionality and various smaller fixes and improvements. Some of the inner transformations
   and options definition have been slightly altered/improved and made more consistent.
@@ -339,7 +340,8 @@ $.fn.gauge = function(opts) {
          {strokeStyle: "#FFDD00", min: 2100, max: 2800},
          {strokeStyle: "#F03E3E", min: 2800, max: 3000}
       ],
-      limitMax: 'false',   // If true, the pointer will not go past the end of the gauge
+      limitMax: false,
+      limitMin: false,
       highDpiSupport: true
     };
     demoGauge.setOptions(opts);
@@ -467,7 +469,8 @@ $.fn.gauge = function(opts) {
          {strokeStyle: "#FFDD00", min: 2100, max: 2800},
          {strokeStyle: "#F03E3E", min: 2800, max: 3000}
       ],
-      limitMax: 'false',
+      limitMax: false,
+      limitMin: false,
       strokeColor: '#E0E0E0',
       highDpiSupport: true
     };

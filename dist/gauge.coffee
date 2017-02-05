@@ -282,6 +282,7 @@ class Gauge extends BaseGauge
 		radiusScale: 1.0
 		fontSize: 40
 		limitMax: false
+		limitMin: false
 
 	constructor: (@canvas) ->
 		super()
@@ -341,24 +342,26 @@ class Gauge extends BaseGauge
 
 		# get max value and update pointer(s)
 		i = 0
-		max_hit = false
 
 		for val in value
 			# Limit pointer within min and max?
-			if @options.limitMax
-				val = Math.min(Math.max(val, @minValue), @maxValue)
-			else if val > @maxValue
-				@maxValue = @value * 1.1
-				max_hit = true
-			@gp[i].value = val
-			@gp[i++].setOptions({maxValue: @maxValue, angle: @options.angle})
-		@value = value[value.length - 1] # TODO: Span maybe??
+			if val > @maxValue
+				if @options.limitMax
+					val = @maxValue
+				else
+					@maxValue = val + 1
 
-		if max_hit
-			unless @options.limitMax
-				AnimationUpdater.run()
-		else
-			AnimationUpdater.run()
+			else if val < @minValue
+				if @options.limitMin
+					val = @minValue
+				else
+					@minValue = val - 1
+
+			@gp[i].value = val
+			@gp[i++].setOptions({minValue: @minValue, maxValue: @maxValue, angle: @options.angle})
+		@value = Math.max(Math.min(value[value.length - 1], @maxValue), @minValue) # TODO: Span maybe??
+
+		AnimationUpdater.run()
 
 	getAngle: (value) ->
 		return (1 + @options.angle) * Math.PI + ((value - @minValue) / (@maxValue - @minValue)) * (1 - @options.angle * 2) * Math.PI
