@@ -287,6 +287,7 @@ class Gauge extends BaseGauge
 	constructor: (@canvas) ->
 		super()
 		@percentColors = null
+		@forceUpdate = true
 		if typeof G_vmlCanvasManager != 'undefined'
 			@canvas = window.G_vmlCanvasManager.initElement(@canvas)
 		@ctx = @canvas.getContext('2d')
@@ -361,7 +362,9 @@ class Gauge extends BaseGauge
 			@gp[i++].setOptions({minValue: @minValue, maxValue: @maxValue, angle: @options.angle})
 		@value = Math.max(Math.min(value[value.length - 1], @maxValue), @minValue) # TODO: Span maybe??
 
-		AnimationUpdater.run()
+		# Force first .set()
+		AnimationUpdater.run(@forceUpdate)
+		@forceUpdate = false
 
 	getAngle: (value) ->
 		return (1 + @options.angle) * Math.PI + ((value - @minValue) / (@maxValue - @minValue)) * (1 - @options.angle * 2) * Math.PI
@@ -408,10 +411,12 @@ class Gauge extends BaseGauge
 		@ctx.textBaseline = "bottom"
 		@ctx.textAlign = "center"
 		for value in staticLabels.labels
-			rotationAngle = @getAngle(value) - 3*Math.PI/2
-			@ctx.rotate(rotationAngle)
-			@ctx.fillText(formatNumber(value, staticLabels.fractionDigits), 0, -radius - @lineWidth/2)
-			@ctx.rotate(-rotationAngle)
+			# Draw labels depending on limitMin/Max
+			if (not @options.limitMin or value >= @minValue) and (not @options.limitMax or value <= @maxValue)
+				rotationAngle = @getAngle(value) - 3*Math.PI/2
+				@ctx.rotate(rotationAngle)
+				@ctx.fillText(formatNumber(value, staticLabels.fractionDigits), 0, -radius - @lineWidth/2)
+				@ctx.rotate(-rotationAngle)
 		@ctx.restore()
 
 	render: () ->
@@ -433,9 +438,16 @@ class Gauge extends BaseGauge
 			@ctx.translate(w, h)
 			@ctx.lineWidth = @lineWidth
 			for zone in @options.staticZones
+				# Draw zones depending on limitMin/Max
+				min = zone.min
+				if @options.limitMin and min < @minValue
+					min = @minValue
+				max = zone.max
+				if @options.limitMax and max > @maxValue
+					max = @maxValue
 				@ctx.strokeStyle = zone.strokeStyle
 				@ctx.beginPath()
-				@ctx.arc(0, 0, radius, @getAngle(zone.min), @getAngle(zone.max), false)
+				@ctx.arc(0, 0, radius, @getAngle(min), @getAngle(max), false)
 				@ctx.stroke()
 			@ctx.restore()
 
@@ -570,10 +582,10 @@ window.AnimationUpdater =
 	add: (object) ->
 		AnimationUpdater.elements.push(object)
 
-	run: () ->
+	run: (force=false) ->
 		animationFinished = true
 		for elem in AnimationUpdater.elements
-			if elem.update()
+			if elem.update(force is true)
 				animationFinished = false
 		if not animationFinished
 			AnimationUpdater.animId = requestAnimationFrame(AnimationUpdater.run)
