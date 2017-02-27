@@ -516,6 +516,7 @@
       i = 0;
       for (k = 0, len = value.length; k < len; k++) {
         val = value[k];
+        val = Number(val);
         if (val > this.maxValue) {
           if (this.options.limitMax) {
             val = this.maxValue;
