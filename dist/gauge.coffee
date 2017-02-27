@@ -345,6 +345,7 @@ class Gauge extends BaseGauge
 		i = 0
 
 		for val in value
+			val = Number(val)
 			# Limit pointer within min and max?
 			if val > @maxValue
 				if @options.limitMax
