@@ -236,6 +236,15 @@
       return this;
     };
 
+    BaseGauge.prototype.parseValue = function(value) {
+      value = parseFloat(value) || Number(value);
+      if (isFinite(value)) {
+        return value;
+      } else {
+        return 0;
+      }
+    };
+
     return BaseGauge;
 
   })(ValueUpdater);
@@ -500,12 +509,15 @@
     };
 
     Gauge.prototype.set = function(value) {
-      var gp, i, j, k, len, ref, val;
+      var gp, i, j, k, l, len, ref, ref1, val;
       if (!(value instanceof Array)) {
         value = [value];
       }
+      for (i = j = 0, ref = value.length - 1; 0 <= ref ? j <= ref : j >= ref; i = 0 <= ref ? ++j : --j) {
+        value[i] = this.parseValue(value[i]);
+      }
       if (value.length > this.gp.length) {
-        for (i = j = 0, ref = value.length - this.gp.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
+        for (i = k = 0, ref1 = value.length - this.gp.length; 0 <= ref1 ? k < ref1 : k > ref1; i = 0 <= ref1 ? ++k : --k) {
           gp = new GaugePointer(this);
           gp.setOptions(this.options.pointer);
           this.gp.push(gp);
@@ -514,9 +526,8 @@
         this.gp = this.gp.slice(this.gp.length - value.length);
       }
       i = 0;
-      for (k = 0, len = value.length; k < len; k++) {
-        val = value[k];
-        val = Number(val);
+      for (l = 0, len = value.length; l < len; l++) {
+        val = value[l];
         if (val > this.maxValue) {
           if (this.options.limitMax) {
             val = this.maxValue;
@@ -727,7 +738,7 @@
     };
 
     BaseDonut.prototype.set = function(value) {
-      this.value = value;
+      this.value = this.parseValue(value);
       if (this.value > this.maxValue) {
         this.maxValue = this.value * 1.1;
       }
