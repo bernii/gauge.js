@@ -158,6 +158,10 @@ class BaseGauge extends ValueUpdater
 
 		return @
 
+	parseValue: (value) ->
+		value =  parseFloat(value) || Number(value)
+		return if isFinite(value) then value else 0
+
 class TextRenderer
 	constructor: (@el, @fractionDigits) ->
 
@@ -330,6 +334,10 @@ class Gauge extends BaseGauge
 	set: (value) ->
 		if not (value instanceof Array)
 			value = [value]
+		# Ensure values are OK
+		for i in [0..(value.length-1)]
+			value[i] = @parseValue(value[i])
+
 		# check if we have enough GaugePointers initialized
 		# lazy initialization
 		if value.length > @gp.length
@@ -345,7 +353,6 @@ class Gauge extends BaseGauge
 		i = 0
 
 		for val in value
-			val = Number(val)
 			# Limit pointer within min and max?
 			if val > @maxValue
 				if @options.limitMax
@@ -520,7 +527,7 @@ class BaseDonut extends BaseGauge
 		return @
 
 	set: (value) ->
-		@value = value
+		@value = @parseValue(value)
 		if @value > @maxValue
 			@maxValue = @value * 1.1
 		AnimationUpdater.run()
