@@ -229,11 +229,22 @@ class GaugePointer extends ValueUpdater
 		endX = Math.round(@strokeWidth * Math.cos(angle + Math.PI/2))
 		endY = Math.round(@strokeWidth * Math.sin(angle + Math.PI/2))
 
+		img = new Image()
+		img.src = @options.iconPath
+		imgX = Math.round(img.width * @options.iconScale)
+		imgY = Math.round(img.height * @options.iconScale)
+
 		@ctx.fillStyle = @options.color
 		@ctx.beginPath()
 
 		@ctx.arc(0, 0, @strokeWidth, 0, Math.PI*2, true)
 		@ctx.fill()
+
+		@ctx.save()
+		@ctx.translate(x, y)
+		@ctx.rotate(angle)
+		@ctx.drawImage(img, -imgX/2, -imgY/2, imgX, imgY)
+		@ctx.restore()
 
 		@ctx.beginPath()
 		@ctx.moveTo(startX, startY)
@@ -474,12 +485,12 @@ class Gauge extends BaseGauge
 			else
 				fillStyle = @options.colorStart
 			@ctx.strokeStyle = fillStyle
-		
+
 			@ctx.beginPath()
 			@ctx.arc(w, h, radius, (1 + @options.angle) * Math.PI, displayedAngle, false)
 			@ctx.lineWidth = @lineWidth
 			@ctx.stroke()
-	
+
 			@ctx.strokeStyle = @options.strokeColor
 			@ctx.beginPath()
 			@ctx.arc(w, h, radius, displayedAngle, (2 - @options.angle) * Math.PI, false)
