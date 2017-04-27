@@ -352,24 +352,26 @@
       startY = Math.round(this.strokeWidth * Math.sin(angle - Math.PI / 2));
       endX = Math.round(this.strokeWidth * Math.cos(angle + Math.PI / 2));
       endY = Math.round(this.strokeWidth * Math.sin(angle + Math.PI / 2));
-      img = new Image();
-      img.src = this.options.iconPath;
-      imgX = Math.round(img.width * this.options.iconScale);
-      imgY = Math.round(img.height * this.options.iconScale);
       this.ctx.fillStyle = this.options.color;
       this.ctx.beginPath();
       this.ctx.arc(0, 0, this.strokeWidth, 0, Math.PI * 2, true);
       this.ctx.fill();
-      this.ctx.save();
-      this.ctx.translate(x, y);
-      this.ctx.rotate(angle);
-      this.ctx.drawImage(img, -imgX / 2, -imgY / 2, imgX, imgY);
-      this.ctx.restore();
       this.ctx.beginPath();
       this.ctx.moveTo(startX, startY);
       this.ctx.lineTo(x, y);
       this.ctx.lineTo(endX, endY);
-      return this.ctx.fill();
+      this.ctx.fill();
+      if (this.options.iconPath) {
+        img = new Image();
+        img.src = this.options.iconPath;
+        imgX = Math.round(img.width * this.options.iconScale);
+        imgY = Math.round(img.height * this.options.iconScale);
+        this.ctx.save();
+        this.ctx.translate(x, y);
+        this.ctx.rotate(angle);
+        this.ctx.drawImage(img, -imgX / 2, -imgY / 2, imgX, imgY);
+        return this.ctx.restore();
+      }
     };
 
     return GaugePointer;
@@ -440,7 +442,8 @@
       strokeColor: "#e0e0e0",
       pointer: {
         length: 0.8,
-        strokeWidth: 0.035
+        strokeWidth: 0.035,
+        iconScale: 1.0
       },
       angle: 0.15,
       lineWidth: 0.44,
