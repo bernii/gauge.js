@@ -241,6 +241,17 @@ class GaugePointer extends ValueUpdater
 		@ctx.lineTo(endX, endY)
 		@ctx.fill()
 
+		if @options.iconPath
+			img = new Image()
+			img.src = @options.iconPath
+			imgX = Math.round(img.width * @options.iconScale)
+			imgY = Math.round(img.height * @options.iconScale)
+			@ctx.save()
+			@ctx.translate(x, y)
+			@ctx.rotate(angle)
+			@ctx.drawImage(img, -imgX/2, -imgY/2, imgX, imgY)
+			@ctx.restore()
+
 class Bar
 	constructor: (@elem) ->
 	updateValues: (arrValues) ->
@@ -281,6 +292,7 @@ class Gauge extends BaseGauge
 		pointer:
 			length: 0.8
 			strokeWidth: 0.035
+			iconScale: 1.0
 		angle: 0.15
 		lineWidth: 0.44
 		radiusScale: 1.0
@@ -474,12 +486,12 @@ class Gauge extends BaseGauge
 			else
 				fillStyle = @options.colorStart
 			@ctx.strokeStyle = fillStyle
-		
+
 			@ctx.beginPath()
 			@ctx.arc(w, h, radius, (1 + @options.angle) * Math.PI, displayedAngle, false)
 			@ctx.lineWidth = @lineWidth
 			@ctx.stroke()
-	
+
 			@ctx.strokeStyle = @options.strokeColor
 			@ctx.beginPath()
 			@ctx.arc(w, h, radius, displayedAngle, (2 - @options.angle) * Math.PI, false)

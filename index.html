@@ -114,7 +114,7 @@ gauge.animationSpeed = <span id="opt-animationSpeed" class="lit">3000</span>; //
 gauge.set(<span id="opt-currval" class="lit">1500</span>); // set actual value
 </pre>
 <p>
-  The <code>Gauge</code> class handles drawing on canvas and starts the animation. 
+  The <code>Gauge</code> class handles drawing on canvas and starts the animation.
 </p>
 
 <h2 id="advanced-options">Advanced options</h2>
@@ -396,7 +396,7 @@ $.fn.gauge = function(opts) {
     $('#share').click(function() {
       window.location.replace(this.checked ? '#?' + $('form').serialize() : '#!');
     });
-    
+
     $("#type-select li").click(function(){
     	$("#type-select li").removeClass("active")
     	$(this).addClass("active");
@@ -468,7 +468,7 @@ $.fn.gauge = function(opts) {
     selectGaguge1 = new Gauge(document.getElementById("select-1"));
     selectGaguge1.maxValue = 3000;
     selectGaguge1.set(1552);
-    
+
     selectGaguge2 = new Donut(document.getElementById("select-2"));
     selectGaguge2.maxValue = 3000;
     selectGaguge2.set(1844);
@@ -498,10 +498,10 @@ $.fn.gauge = function(opts) {
     selectGauge3.maxValue = 3000;
     selectGauge3.setOptions(opts);
     selectGauge3.set(1607);
-    
+
     initGauge();
     update();
-    
+
   });
 </script>
 <script type="text/javascript">
