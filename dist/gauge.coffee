@@ -111,6 +111,7 @@ class ValueUpdater
 
 class BaseGauge extends ValueUpdater
 	displayScale: 1
+	forceUpdate: true
 
 	setTextField: (textField, fractionDigits) ->
 		@textField = if textField instanceof TextRenderer then textField else new TextRenderer(textField, fractionDigits)
@@ -303,7 +304,6 @@ class Gauge extends BaseGauge
 	constructor: (@canvas) ->
 		super()
 		@percentColors = null
-		@forceUpdate = true
 		if typeof G_vmlCanvasManager != 'undefined'
 			@canvas = window.G_vmlCanvasManager.initElement(@canvas)
 		@ctx = @canvas.getContext('2d')
@@ -542,7 +542,8 @@ class BaseDonut extends BaseGauge
 		@value = @parseValue(value)
 		if @value > @maxValue
 			@maxValue = @value * 1.1
-		AnimationUpdater.run()
+		AnimationUpdater.run(@forceUpdate)
+		@forceUpdate = false
 
 	render: () ->
 		displayedAngle = @getAngle(@displayedValue)
