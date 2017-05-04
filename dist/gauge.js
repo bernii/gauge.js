@@ -321,8 +321,13 @@
     GaugePointer.prototype.options = {
       strokeWidth: 0.035,
       length: 0.1,
-      color: "#000000"
+      color: "#000000",
+      iconPath: null,
+      iconScale: 1.0,
+      iconAngle: 0
     };
+
+    GaugePointer.prototype.img = null;
 
     function GaugePointer(gauge1) {
       this.gauge = gauge1;
@@ -342,11 +347,15 @@
       this.maxValue = this.gauge.maxValue;
       this.minValue = this.gauge.minValue;
       this.animationSpeed = this.gauge.animationSpeed;
-      return this.options.angle = this.gauge.options.angle;
+      this.options.angle = this.gauge.options.angle;
+      if (this.options.iconPath) {
+        this.img = new Image();
+        return this.img.src = this.options.iconPath;
+      }
     };
 
     GaugePointer.prototype.render = function() {
-      var angle, endX, endY, img, imgX, imgY, startX, startY, x, y;
+      var angle, endX, endY, imgX, imgY, startX, startY, x, y;
       angle = this.gauge.getAngle.call(this, this.displayedValue);
       x = Math.round(this.length * Math.cos(angle));
       y = Math.round(this.length * Math.sin(angle));
@@ -363,15 +372,13 @@
       this.ctx.lineTo(x, y);
       this.ctx.lineTo(endX, endY);
       this.ctx.fill();
-      if (this.options.iconPath) {
-        img = new Image();
-        img.src = this.options.iconPath;
-        imgX = Math.round(img.width * this.options.iconScale);
-        imgY = Math.round(img.height * this.options.iconScale);
+      if (this.img) {
+        imgX = Math.round(this.img.width * this.options.iconScale);
+        imgY = Math.round(this.img.height * this.options.iconScale);
         this.ctx.save();
         this.ctx.translate(x, y);
-        this.ctx.rotate(angle);
-        this.ctx.drawImage(img, -imgX / 2, -imgY / 2, imgX, imgY);
+        this.ctx.rotate(angle + Math.PI / 180.0 * (90 + this.options.iconAngle));
+        this.ctx.drawImage(this.img, -imgX / 2, -imgY / 2, imgX, imgY);
         return this.ctx.restore();
       }
     };

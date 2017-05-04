@@ -202,6 +202,10 @@ class GaugePointer extends ValueUpdater
 		strokeWidth: 0.035
 		length: 0.1
 		color: "#000000"
+		iconPath: null
+		iconScale: 1.0
+		iconAngle: 0
+	img: null
 
 	constructor: (@gauge) ->
 		@ctx = @gauge.ctx
@@ -217,6 +221,9 @@ class GaugePointer extends ValueUpdater
 		@minValue = @gauge.minValue
 		@animationSpeed =  @gauge.animationSpeed
 		@options.angle = @gauge.options.angle
+		if @options.iconPath
+			@img = new Image()
+			@img.src = @options.iconPath
 
 	render: () ->
 		angle = @gauge.getAngle.call(@, @displayedValue)
@@ -242,16 +249,15 @@ class GaugePointer extends ValueUpdater
 		@ctx.lineTo(endX, endY)
 		@ctx.fill()
 
-		if @options.iconPath
-			img = new Image()
-			img.src = @options.iconPath
-			imgX = Math.round(img.width * @options.iconScale)
-			imgY = Math.round(img.height * @options.iconScale)
+		if @img
+			imgX = Math.round(@img.width * @options.iconScale)
+			imgY = Math.round(@img.height * @options.iconScale)
 			@ctx.save()
 			@ctx.translate(x, y)
-			@ctx.rotate(angle)
-			@ctx.drawImage(img, -imgX/2, -imgY/2, imgX, imgY)
+			@ctx.rotate(angle + Math.PI/180.0*(90 + @options.iconAngle))
+			@ctx.drawImage(@img, -imgX/2, -imgY/2, imgX, imgY)
 			@ctx.restore()
+
 
 class Bar
 	constructor: (@elem) ->
