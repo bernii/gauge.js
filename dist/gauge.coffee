@@ -37,16 +37,6 @@ do () ->
 		window.cancelAnimationFrame = (id) ->
 			isCancelled[id] = true
 
-String.prototype.hashCode = () ->
-	hash = 0
-	if this.length == 0
-		return hash
-	for i in [0...this.length]
-		char = this.charCodeAt(i)
-		hash = ((hash << 5) - hash) + char
-		hash = hash & hash # Convert to 32bit integer
-	return hash
-
 secondsToString = (sec) ->
 	hr = Math.floor(sec / 3600)
 	min = Math.floor((sec - (hr * 3600))/60)

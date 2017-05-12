@@ -51,20 +51,6 @@
     }
   })();
 
-  String.prototype.hashCode = function() {
-    var char, hash, i, j, ref;
-    hash = 0;
-    if (this.length === 0) {
-      return hash;
-    }
-    for (i = j = 0, ref = this.length; 0 <= ref ? j < ref : j > ref; i = 0 <= ref ? ++j : --j) {
-      char = this.charCodeAt(i);
-      hash = ((hash << 5) - hash) + char;
-      hash = hash & hash;
-    }
-    return hash;
-  };
-
   secondsToString = function(sec) {
     var hr, min;
     hr = Math.floor(sec / 3600);
