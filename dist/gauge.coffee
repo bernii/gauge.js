@@ -101,6 +101,7 @@ class ValueUpdater
 
 class BaseGauge extends ValueUpdater
 	displayScale: 1
+	forceUpdate: true
 
 	setTextField: (textField, fractionDigits) ->
 		@textField = if textField instanceof TextRenderer then textField else new TextRenderer(textField, fractionDigits)
@@ -191,6 +192,10 @@ class GaugePointer extends ValueUpdater
 		strokeWidth: 0.035
 		length: 0.1
 		color: "#000000"
+		iconPath: null
+		iconScale: 1.0
+		iconAngle: 0
+	img: null
 
 	constructor: (@gauge) ->
 		@ctx = @gauge.ctx
@@ -206,6 +211,9 @@ class GaugePointer extends ValueUpdater
 		@minValue = @gauge.minValue
 		@animationSpeed =  @gauge.animationSpeed
 		@options.angle = @gauge.options.angle
+		if @options.iconPath
+			@img = new Image()
+			@img.src = @options.iconPath
 
 	render: () ->
 		angle = @gauge.getAngle.call(@, @displayedValue)
@@ -231,16 +239,15 @@ class GaugePointer extends ValueUpdater
 		@ctx.lineTo(endX, endY)
 		@ctx.fill()
 
-		if @options.iconPath
-			img = new Image()
-			img.src = @options.iconPath
-			imgX = Math.round(img.width * @options.iconScale)
-			imgY = Math.round(img.height * @options.iconScale)
+		if @img
+			imgX = Math.round(@img.width * @options.iconScale)
+			imgY = Math.round(@img.height * @options.iconScale)
 			@ctx.save()
 			@ctx.translate(x, y)
-			@ctx.rotate(angle)
-			@ctx.drawImage(img, -imgX/2, -imgY/2, imgX, imgY)
+			@ctx.rotate(angle + Math.PI/180.0*(90 + @options.iconAngle))
+			@ctx.drawImage(@img, -imgX/2, -imgY/2, imgX, imgY)
 			@ctx.restore()
+
 
 class Bar
 	constructor: (@elem) ->
@@ -293,7 +300,6 @@ class Gauge extends BaseGauge
 	constructor: (@canvas) ->
 		super()
 		@percentColors = null
-		@forceUpdate = true
 		if typeof G_vmlCanvasManager != 'undefined'
 			@canvas = window.G_vmlCanvasManager.initElement(@canvas)
 		@ctx = @canvas.getContext('2d')
@@ -532,7 +538,8 @@ class BaseDonut extends BaseGauge
 		@value = @parseValue(value)
 		if @value > @maxValue
 			@maxValue = @value * 1.1
-		AnimationUpdater.run()
+		AnimationUpdater.run(@forceUpdate)
+		@forceUpdate = false
 
 	render: () ->
 		displayedAngle = @getAngle(@displayedValue)

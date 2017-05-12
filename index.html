@@ -154,6 +154,18 @@ staticZones: [
     <p>staticZones, percentColors and gradient are mutually exclusive. If staticZones is defined, it will take precedence.</p>
     <p>Note: Zones should always be defined within the gauge objects .minValue and .maxValue limits.</p>
   </li>
+  <li>
+    <b>Gauge pointer tip icon</b>
+    <p>From <a src="https://github.com/bernii/gauge.js/pull/133">pull request 133</a>: You can add an icon (image) to the tip of the gauge pointer with the iconPath and iconScale options. The icon also rotates with the angle of the pointer.</p>
+<pre class="prettyprint">
+pointer: {
+  // Extra optional pointer options:
+  iconPath: 'myicon.png',  // Icon image source
+  iconScale: 1,    // Size scaling factor
+  iconAngle: 90.0  // Rotation offset angle, degrees
+},
+</pre>
+  </li>
 </ul>
 
 <h3 id="jquery">jQuery plugin</h3>
