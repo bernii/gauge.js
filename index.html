@@ -98,8 +98,8 @@ var opts = {
     strokeWidth: <span id="opt-pointer-strokeWidth" class="lit">0</span>, // The thickness
     color: '<span id="opt-pointer-color" class="lit">#000000</span>' // Fill color
   },
-  limitMax: <span id="opt-limitMax" class="lit">false</span>,     // If false, the max value of the gauge will be updated if value surpass max
-  limitMin: <span id="opt-limitMin" class="lit">false</span>,     // If true, the min value of the gauge will be fixed unless you set it manually
+  limitMax: <span id="opt-limitMax" class="lit">false</span>,     // If false, max value increases automatically if value > maxValue
+  limitMin: <span id="opt-limitMin" class="lit">false</span>,     // If true, the min value of the gauge will be fixed
   colorStart: '<span id="opt-colorStart" class="lit">0</span>',   // Colors
   colorStop: '<span id="opt-colorStop" class="lit">0</span>',    // just experiment with them
   strokeColor: '<span id="opt-strokeColor" class="lit">0</span>',  // to see which ones work best for you
@@ -205,6 +205,13 @@ $.fn.gauge = function(opts) {
 </p>
 
 <h2>Changes</h2>
+
+<h3 id="v1.3.5">Version 1.3.5 (08.07.2017)</h3>
+  <p>
+<ul>
+  <li>Fixed <a href="https://github.com/bernii/gauge.js/issues/139">issue #139</a>: Donut support for limitMin and -Max.
+</ul>
+  </p>
 
 <h3 id="v1.3.4">Version 1.3.4 (13.05.2017)</h3>
   <p>
