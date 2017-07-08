@@ -746,7 +746,17 @@
     BaseDonut.prototype.set = function(value) {
       this.value = this.parseValue(value);
       if (this.value > this.maxValue) {
-        this.maxValue = this.value * 1.1;
+        if (this.options.limitMax) {
+          this.value = this.maxValue;
+        } else {
+          this.maxValue = this.value;
+        }
+      } else if (this.value < this.minValue) {
+        if (this.options.limitMin) {
+          this.value = this.minValue;
+        } else {
+          this.minValue = this.value;
+        }
       }
       AnimationUpdater.run(this.forceUpdate);
       return this.forceUpdate = false;
@@ -877,3 +887,5 @@
   }
 
 }).call(this);
+
+//# sourceMappingURL=gauge.js.map

@@ -537,7 +537,16 @@ class BaseDonut extends BaseGauge
 	set: (value) ->
 		@value = @parseValue(value)
 		if @value > @maxValue
-			@maxValue = @value * 1.1
+			if @options.limitMax
+				@value = @maxValue
+			else
+				@maxValue = @value
+		else if @value < @minValue
+			if @options.limitMin
+				@value = @minValue
+			else
+				@minValue = @value
+
 		AnimationUpdater.run(@forceUpdate)
 		@forceUpdate = false
 
