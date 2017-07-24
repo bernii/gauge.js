@@ -609,14 +609,22 @@ window.AnimationUpdater =
 		AnimationUpdater.elements.push(object)
 
 	run: (force=false) ->
-		animationFinished = true
-		for elem in AnimationUpdater.elements
-			if elem.update(force is true)
-				animationFinished = false
-		if not animationFinished
+		# 'force' can take three values, for which these paths should be taken
+		#   true: Force repaint of the gauges (typically on first Gauge.set)
+		#   false: Schedule repaint (2nd or later call to Gauge.set)
+		#   a number: It's a callback. Repaint and schedule new callback if not done.
+		isCallback = isFinite(parseFloat(force))
+		if isCallback or force is true
+			finished = true
+			for elem in AnimationUpdater.elements
+				if elem.update(force is true)
+					finished = false
+			AnimationUpdater.animId = if finished then null else requestAnimationFrame(AnimationUpdater.run)
+		else if force is false
+			if AnimationUpdater.animId is not null
+				# Cancel pending callback if animId is already set to avoid overflow
+				cancelAnimationFrame(AnimationUpdater.animId)
 			AnimationUpdater.animId = requestAnimationFrame(AnimationUpdater.run)
-		else
-			cancelAnimationFrame(AnimationUpdater.animId)
 
 if typeof window.define == 'function' && window.define.amd?
 	define(() ->
