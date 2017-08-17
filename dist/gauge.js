@@ -843,22 +843,26 @@
       return AnimationUpdater.elements.push(object);
     },
     run: function(force) {
-      var animationFinished, elem, j, len, ref;
+      var elem, finished, isCallback, j, len, ref;
       if (force == null) {
         force = false;
       }
-      animationFinished = true;
-      ref = AnimationUpdater.elements;
-      for (j = 0, len = ref.length; j < len; j++) {
-        elem = ref[j];
-        if (elem.update(force === true)) {
-          animationFinished = false;
+      isCallback = isFinite(parseFloat(force));
+      if (isCallback || force === true) {
+        finished = true;
+        ref = AnimationUpdater.elements;
+        for (j = 0, len = ref.length; j < len; j++) {
+          elem = ref[j];
+          if (elem.update(force === true)) {
+            finished = false;
+          }
         }
-      }
-      if (!animationFinished) {
+        return AnimationUpdater.animId = finished ? null : requestAnimationFrame(AnimationUpdater.run);
+      } else if (force === false) {
+        if (AnimationUpdater.animId === !null) {
+          cancelAnimationFrame(AnimationUpdater.animId);
+        }
         return AnimationUpdater.animId = requestAnimationFrame(AnimationUpdater.run);
-      } else {
-        return cancelAnimationFrame(AnimationUpdater.animId);
       }
     }
   };
