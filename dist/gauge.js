@@ -660,7 +660,7 @@
         if (this.options.customFillStyle !== void 0) {
           fillStyle = this.options.customFillStyle(this);
         } else if (this.percentColors !== null) {
-          fillStyle = this.getColorForValue(this.displayedValue, true);
+          fillStyle = this.getColorForValue(this.displayedValue, this.options.generateGradient);
         } else if (this.options.colorStop !== void 0) {
           if (this.options.gradientType === 0) {
             fillStyle = this.ctx.createRadialGradient(w, h, 9, w, h, 70);
