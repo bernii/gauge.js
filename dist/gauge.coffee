@@ -433,12 +433,28 @@ class Gauge extends BaseGauge
 		@ctx.textBaseline = "bottom"
 		@ctx.textAlign = "center"
 		for value in staticLabels.labels
-			# Draw labels depending on limitMin/Max
-			if (not @options.limitMin or value >= @minValue) and (not @options.limitMax or value <= @maxValue)
-				rotationAngle = @getAngle(value) - 3*Math.PI/2
-				@ctx.rotate(rotationAngle)
-				@ctx.fillText(formatNumber(value, staticLabels.fractionDigits), 0, -radius - @lineWidth/2)
-				@ctx.rotate(-rotationAngle)
+			if (value.label != undefined)
+				# Draw labels depending on limitMin/Max
+				if (not @options.limitMin or value >= @minValue) and (not @options.limitMax or value <= @maxValue)
+					font = value.font || staticLabels.font;
+					match = font.match(re)[0]
+					rest = font.slice(match.length);
+					fontsize = parseFloat(match) * this.displayScale;
+					@ctx.font = fontsize + rest;
+									
+					rotationAngle = @getAngle(value.label) - 3*Math.PI/2
+					@ctx.rotate(rotationAngle)
+					@ctx.fillText(formatNumber(value.label, staticLabels.fractionDigits), 0, -radius - @lineWidth/2)
+					@ctx.rotate(-rotationAngle)
+
+			else
+				# Draw labels depending on limitMin/Max
+				if (not @options.limitMin or value >= @minValue) and (not @options.limitMax or value <= @maxValue)
+					rotationAngle = @getAngle(value) - 3*Math.PI/2
+					@ctx.rotate(rotationAngle)
+					@ctx.fillText(formatNumber(value, staticLabels.fractionDigits), 0, -radius - @lineWidth/2)
+					@ctx.rotate(-rotationAngle)
+			
 		@ctx.restore()
 
 	render: () ->
@@ -467,9 +483,15 @@ class Gauge extends BaseGauge
 				max = zone.max
 				if @options.limitMax and max > @maxValue
 					max = @maxValue
+				tmpRadius = @radius
+				if (zone.height) 
+					@ctx.lineWidth = @lineWidth * zone.height
+					scaleMutate = (@lineWidth / 2) * (zone.offset || 1 - zone.height)
+					tmpRadius = (@radius * @options.radiusScale) + scaleMutate
+				
 				@ctx.strokeStyle = zone.strokeStyle
 				@ctx.beginPath()
-				@ctx.arc(0, 0, radius, @getAngle(min), @getAngle(max), false)
+				@ctx.arc(0, 0, tmpRadius, @getAngle(min), @getAngle(max), false)
 				@ctx.stroke()
 			@ctx.restore()
 

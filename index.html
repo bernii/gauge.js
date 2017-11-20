@@ -47,10 +47,11 @@
   <ul class="horiz-list" id="type-select">
   	<li class="active" type="gauge"><canvas width=80 height=50 id="select-1"></canvas></li>
   	<li type="donut"><canvas width=80 height=40 id="select-2"></canvas></li>
-  	<li type="zones"><canvas width=80 height=50 id="select-3"></canvas></li>
+    <li type="zones"><canvas width=80 height=50 id="select-3"></canvas></li>
+    <li type="new"><canvas width=80 height=50 id="select-4"></canvas></li>
   </ul>
   <div id="preview">
-  	<canvas width=240 height=70 id="canvas-preview"></canvas>
+  	<canvas width=380 height=150 id="canvas-preview"></canvas>
   	<div id="preview-textfield"></div>
   </div>
   <form id="opts" class="opts">
@@ -397,6 +398,47 @@ $.fn.gauge = function(opts) {
     demoGauge.maxValue = 3000;
     demoGauge.set(1244);
   };
+  function initNew(){
+    document.getElementById("class-code-name").innerHTML = "Gauge";
+    demoGauge = new Gauge(document.getElementById("canvas-preview"));
+    var bigFont = "15px sans-serif";
+    var opts = {
+      angle: 0.1,
+      radiusScale:0.9,
+      lineWidth: 0.2,
+      pointer: {
+        length: 0.6,
+        strokeWidth: 0.05,
+        color: '#000000'
+      },
+      staticLabels: {
+        font: "10px sans-serif",
+        labels: [{label:200, font: bigFont}, 
+        {label:750}, 
+        {label:1500}, 
+        {label:2250}, 
+        {label:3000, font: bigFont}],
+        fractionDigits: 0
+      },
+      staticZones: [
+        {strokeStyle: "rgb(255,0,0)", min: 0, max: 500, height: 1.4},
+        {strokeStyle: "rgb(200,100,0)", min: 500, max: 1000, height: 1.2},
+        {strokeStyle: "rgb(150,150,0)", min: 1000, max: 1500, height: 1},
+        {strokeStyle: "rgb(100,200,0)", min: 1500, max: 2000, height: 0.8},
+        {strokeStyle: "rgb(0,255,0)", min: 2000, max: 3000, height: 0.6},
+        {strokeStyle: "rgb(80,80,80)", min: 2470, max: 2530, height: 1.3}        
+      ],
+      limitMax: false,
+      limitMin: false,
+      highDpiSupport: true
+    };
+    demoGauge.setOptions(opts);
+    document.getElementById("preview-textfield").className = "preview-textfield"; 
+    demoGauge.setTextField(document.getElementById("preview-textfield"));
+    demoGauge.minValue = 0;
+    demoGauge.maxValue = 3000;
+    demoGauge.set(2122);
+  };
   $(function() {
     var params = {};
     var hash = /^#\?(.*)/.exec(location.hash);
@@ -433,7 +475,7 @@ $.fn.gauge = function(opts) {
           $("input[name=lineWidth]").val(10);
           $("input[name=fontSize]").val(24);
           $("input[name=angle]").val(35);
-
+          $("#preview-textfield").removeClass("reset");
           $("input[name=colorStart]").val("6F6EA0")[0].color.importColor();
           $("input[name=colorStop]").val("C0C0DB")[0].color.importColor();
           $("input[name=strokeColor]").val("EEEEEE")[0].color.importColor();
@@ -445,11 +487,13 @@ $.fn.gauge = function(opts) {
           selectGaguge1.set(1);
           selectGaguge2.set(3000);
           selectGauge3.set(1);
+          selectGauge4.set(1);
+          
         } else if (type=="zones") {
           initZones();
           fdSlider.disable('input-ptr-len');
           fdSlider.disable('input-ptr-stroke');
-
+          $("#preview-textfield").removeClass("reset").addClass("reset");
           $("input[name=angle]").val(-20);
           $("input[name=lineWidth]").val(20);
 
@@ -468,11 +512,25 @@ $.fn.gauge = function(opts) {
           selectGaguge1.set(2000);
           selectGaguge2.set(1);
           selectGauge3.set(3000);
-    	}else{
+          selectGauge4.set(1);
+          
+      } else if (type=="new") {
+        initNew();
+        $("input[name=lineWidth]").val(30);
+    		$("input[name=fontSize]").val(41);
+        $("input[name=angle]").val(10);
+        $("#preview-textfield").removeClass("reset").addClass("reset");
+        selectGaguge1.set(1);
+        selectGaguge2.set(1) ;
+        selectGauge3.set(1);
+        selectGauge4.set(2213);
+      } else{
     		initGauge();
     		$("input[name=lineWidth]").val(44);
     		$("input[name=fontSize]").val(41);
-    		$("input[name=angle]").val(15);
+        $("input[name=angle]").val(15);
+        $("#preview-textfield").removeClass("reset").addClass("reset");
+        
 
     		$("input[name=colorStart]").val("6FADCF")[0].color.importColor();
     		$("input[name=colorStop]").val("8FC0DA")[0].color.importColor();
@@ -484,6 +542,7 @@ $.fn.gauge = function(opts) {
             selectGaguge1.set(3000);
             selectGaguge2.set(1) ;
             selectGauge3.set(1);
+            selectGauge4.set(1);
     	}
     	//fdSlider.updateSlider('input-line-width');
     	fdSlider.updateSlider('input-font-size');
@@ -495,6 +554,38 @@ $.fn.gauge = function(opts) {
     selectGaguge1 = new Gauge(document.getElementById("select-1"));
     selectGaguge1.maxValue = 3000;
     selectGaguge1.set(1552);
+
+    selectGauge4 = new Gauge(document.getElementById("select-4"));
+    var opts2 = {
+      angle: 0.1,
+      lineWidth: 0.2,
+      pointer: {
+        length: 0.6,
+        strokeWidth: 0.05,
+        color: '#000000'
+      },
+//      staticLabels: {
+//        font: "10px sans-serif",
+//        labels: [{label:200, font: "13px sans-serif"}, 
+//        {label:500}, 
+//        {label:2100}, 
+//        {label:2800, font: "13px sans-serif"}],
+//        fractionDigits: 0
+//      },
+      staticZones: [
+         {strokeStyle: "#F03E3E", min: 0, max: 500, height: 2},
+         {strokeStyle: "#FFDD00", min: 500, max: 1000, height: 1.5},
+         {strokeStyle: "#30B32D", min: 1000, max: 1500, height: 1},
+         {strokeStyle: "#FFDD00", min: 1500, max: 2000, height: 0.7},
+         {strokeStyle: "#F03E3E", min: 2000, max: 3000, height: 0.3}
+      ],
+      limitMax: false,
+      limitMin: false,
+      highDpiSupport: true
+    };
+    selectGauge4.maxValue = 3000;
+    selectGauge4.setOptions(opts2);
+    selectGauge4.set(2122);
 
     selectGaguge2 = new Donut(document.getElementById("select-2"));
     selectGaguge2.maxValue = 3000;
