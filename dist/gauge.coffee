@@ -168,6 +168,9 @@ class AnimatedText extends ValueUpdater
 		@value = 1 * value
 
 	constructor: (@elem, @text=false) ->
+		super()
+		if @elem is undefined
+			throw new Error 'The element isn\'t defined.'
 		@value = 1 * @elem.innerHTML
 		if @text
 			@value = 0
@@ -198,6 +201,9 @@ class GaugePointer extends ValueUpdater
 	img: null
 
 	constructor: (@gauge) ->
+		super()
+		if @gauge is undefined
+			throw new Error 'The element isn\'t defined.'
 		@ctx = @gauge.ctx
 		@canvas = @gauge.canvas
 		super(false, false)
