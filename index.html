@@ -179,18 +179,48 @@ staticZones: [
 <p>Note: Zones should always be defined within the gauge objects .minValue and .maxValue limits.</p>
 </li>
 <li>
-  <p>Additionally, a <b>height</b> parameter may be passed in to increase the size of the zone (see example 4 gauge above).</p>
-<pre class="prettyprint">
+    <p>Additionally, a <b>height</b> parameter may be passed in to increase the size of the zone (see example 4 gauge above).</p>
+  <pre class="prettyprint">
   staticZones: [
-  {strokeStyle: "rgb(255,0,0)", min: 0, max: 500, height: 1.4},
-  {strokeStyle: "rgb(200,100,0)", min: 500, max: 1000, height: 1.2},
-  {strokeStyle: "rgb(150,150,0)", min: 1000, max: 1500, height: 1},
-  {strokeStyle: "rgb(100,200,0)", min: 1500, max: 2000, height: 0.8},
-  {strokeStyle: "rgb(0,255,0)", min: 2000, max: 3100, height: 0.6},
-  {strokeStyle: "rgb(80,80,80)", min: 2470, max: 2530, height: 1.3}        
-],
-</pre>
-</li>
+    {strokeStyle: "rgb(255,0,0)", min: 0, max: 500, height: 1.4},
+    {strokeStyle: "rgb(200,100,0)", min: 500, max: 1000, height: 1.2},
+    {strokeStyle: "rgb(150,150,0)", min: 1000, max: 1500, height: 1},
+    {strokeStyle: "rgb(100,200,0)", min: 1500, max: 2000, height: 0.8},
+    {strokeStyle: "rgb(0,255,0)", min: 2000, max: 3100, height: 0.6}
+  ],
+  </pre>
+  <p>Note:
+    <pre class="prettyprint">{strokeStyle: "rgb(80,80,80)", min: 2470, max: 2530, height: 1.3}</pre> 
+    You can use this as an additional indicator (like in example 4) by making its color stand out, having a tall height and narrow range.</p>
+  </li>
+  <li>
+    <b>Tick marks</b>
+    <p>Now you may also add Ticks on two levels, major and minor (or divisions and sub divisions).</p>
+    renderTicks options:
+    <ul>
+      <li><b>divisions</b> This is the number of major divisions around your arc.</li>
+      <li><b>divWidth</b> This is to set the width of the indicator.</li>
+      <li><b>divLength</b> This is a fractional percentage of the height of your arc line (0.5 = 50%)</li>
+      <li><b>divColor</b> This sets the color of the division markers</li>
+      <li><b>subDivisions</b> This sets the minor tick marks count between major ticks.</li>
+      <li><b>subLength</b> This is a fractional percentage of the height of your arc line (0.5 = 50%)</li>
+      <li><b>subWidth</b> This is to set the width of the indicator.</li>
+      <li><b>subColor</b> This sets the color of the subdivision markers</li>
+    </ul>
+    <p>Example:</p>
+    <pre class="prettyprint">
+        renderTicks: {
+          divisions: 5,
+          divWidth: 1.1,
+          divLength: 0.7,
+          divColor: #333333,
+          subDivisions: 3,
+          subLength: 0.5,
+          subWidth: 0.6,
+          subColor: #666666
+        }
+    </pre>
+  </li>
   <li>
     <b>Gauge pointer tip icon</b>
     <p>From <a src="https://github.com/bernii/gauge.js/pull/133">pull request 133</a>: You can add an icon (image) to the tip of the gauge pointer with the iconPath and iconScale options. The icon also rotates with the angle of the pointer.</p>
