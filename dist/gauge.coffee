@@ -468,37 +468,40 @@ class Gauge extends BaseGauge
 		
 		@ctx.save()
 		@ctx.translate(w, h)
+		divisionCount = ticksOptions.divisions || 0
+		subdivisionCount = ticksOptions.subDivisions || 0
+		divColor = ticksOptions.divColor || '#fff'
+		subColor = ticksOptions.subColor || '#fff'
 		divLength = ticksOptions.divLength || 0.7; # default
 		subLength = ticksOptions.subLength || 0.2; # default
 		range = parseFloat(@maxValue) - parseFloat(@minValue) # total value range
 		rangeDivisions = parseFloat(range) / parseFloat(ticksOptions.divisions) # get division step
 		subDivisions = parseFloat(rangeDivisions) / parseFloat(ticksOptions.subDivisions)
-
 		currentDivision = parseFloat(@minValue)
 		currentSubDivision = 0.0 + subDivisions
 		lineWidth = range / 400 # base
 		divWidth = lineWidth * (ticksOptions.divWidth || 1)
 		subWidth = lineWidth * (ticksOptions.subWidth || 1)
 
-		for t in [0...ticksOptions.divisions + 1] by 1
+		for t in [0...divisionCount + 1] by 1
 			@ctx.lineWidth = @lineWidth * divLength
 			scaleMutate = (@lineWidth / 2) * ( 1 - divLength)
 			tmpRadius = (@radius * @options.radiusScale) + scaleMutate
 			
-			@ctx.strokeStyle = ticksOptions.divColor
+			@ctx.strokeStyle = divColor
 			@ctx.beginPath()
 			@ctx.arc(0, 0, tmpRadius, @getAngle(currentDivision - divWidth), @getAngle(currentDivision + divWidth), false)
 			@ctx.stroke()
 
 			currentSubDivision = currentDivision + subDivisions
 			currentDivision += rangeDivisions
-			if t != ticksOptions.divisions # if its not the last marker then draw subs
-				for st in [0...ticksOptions.subDivisions - 1] by 1
+			if t != ticksOptions.divisions && subdivisionCount > 0 # if its not the last marker then draw subs
+				for st in [0...subdivisionCount - 1] by 1
 					@ctx.lineWidth = @lineWidth * subLength
 					scaleMutate = (@lineWidth / 2) * ( 1 - subLength)
 					tmpRadius = (@radius * @options.radiusScale) + scaleMutate
 					
-					@ctx.strokeStyle = ticksOptions.subColor
+					@ctx.strokeStyle = subColor
 					@ctx.beginPath()
 					@ctx.arc(0, 0, tmpRadius, @getAngle(currentSubDivision - subWidth), @getAngle(currentSubDivision + subWidth), false)
 					@ctx.stroke()
