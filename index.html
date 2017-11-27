@@ -68,6 +68,16 @@
     <label>Color start:</label><input type="text" name="colorStart" class="color" value="6FADCF"><br>
     <label>Color stop:</label><input type="text" name="colorStop" class="color" value="8FC0DA"><br>
     <label>Background:</label><input type="text" name="strokeColor" class="color" value="E0E0E0"><br>
+
+    <label>Divisions:</label><input type="text" name="divisions" value="5" min="0" max="20" class="renderTicks"><br>
+    <label>Divisions Length:</label><input type="text" name="divLength" value="70" min="0" max="100" class="renderTicks"><br>
+    <label>Division Color:</label><input type="text" name="divColor" value="333333" class="color renderTicks"><br>
+    <label>Division indicator width:</label><input type="text" name="divWidth" value="11" min="1" max="100" class="renderTicks"><br>
+    <label>SubDivisions:</label><input type="text" name="subDivisions" value="3" min="0" max="20" class="renderTicks"><br>
+    <label>SubDivisions Length:</label><input type="text" name="subLength" value="50" min="0" max="100" class="renderTicks"><br>
+    <label>SubDivisions Color:</label><input type="text" name="subColor" value="666666" class="color renderTicks"><br>
+    <label>SubDivisions indicator width:</label><input type="text" name="subWidth" value="6" min="1" max="100" class="renderTicks"><br>
+    
   </form>
 
   <br clear="left">
@@ -105,7 +115,17 @@ var opts = {
   colorStop: '<span id="opt-colorStop" class="lit">0</span>',    // just experiment with them
   strokeColor: '<span id="opt-strokeColor" class="lit">0</span>',  // to see which ones work best for you
   generateGradient: true,
-  highDpiSupport: true     // High resolution support
+  highDpiSupport: true,     // High resolution support
+  renderTicks: {
+    divisions: <span id="opt-divisions" class="lit">8</span>,
+    divWidth: <span id="opt-divWidth" class="lit">1</span>,
+    divLength: <span id="opt-divLength" class="lit">0.8</span>,
+    divColor: <span id="opt-divColor" class="lit">#333333</span>,
+    subDivisions: <span id="opt-subDivisions" class="lit">3</span>,
+    subLength: <span id="opt-subLength" class="lit">0.5</span>,
+    subWidth: <span id="opt-subWidth" class="lit">0.5</span>,
+    subColor: <span id="opt-subColor" class="lit">#333333</span>
+  }
 };
 var target = document.getElementById('foo'); // your canvas element
 var gauge = new <span id="class-code-name" class="typ">Gauge</span>(target).setOptions(opts); // create sexy gauge!
@@ -297,11 +317,53 @@ $.fn.gauge = function(opts) {
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 <script type="text/javascript" src="assets/fd-slider/fd-slider.js"></script>
 <script src="dist/gauge.js"></script>
-<script>
+
+<script type="text/javascript">
   prettyPrint();
+
   function update() {
     var opts = {};
-    $('.opts input[min], .opts .color').each(function() {
+    var tmp_opts = opts;
+    tmp_opts.renderTicks = {};
+
+    $('.renderTicks').each(function() {
+      var val = $(this).hasClass("color") ? this.value : parseFloat(this.value);
+      if($(this).hasClass("color")){
+        val = "#" + val;
+      }
+      if (this.name.indexOf("divLength") != -1 ||
+      this.name.indexOf("subLength") != -1) {
+        val /= 100;
+      }
+      if (this.name.indexOf("divWidth") != -1 ||
+      this.name.indexOf("subWidth") != -1) {
+        val /= 10;
+      }
+
+      $('#opt-' + this.name.replace(".", "-")).text(val);
+
+      if(this.name.indexOf(".") != -1){
+      	var elems = this.name.split(".");
+
+      	for (var i=0; i < elems.length - 1; i++) {
+      		if (!(elems[i] in tmp_opts)) {
+      			tmp_opts.renderTicks[elems[i]] = {};
+      		}
+      		tmp_opts = tmp_opts.renderTicks[elems[i]];
+      	}
+      	tmp_opts.renderTicks[elems[elems.length - 1]] = val;
+      } else if ($(this).hasClass("color")) {
+        // color picker is removing # from color values
+      	opts.renderTicks[this.name] = "#" + this.value
+        $('#opt-' + this.name.replace(".", "-")).text("#" + this.value);
+      } else {
+      	opts.renderTicks[this.name] = val;
+      }
+    });
+
+
+
+    $('.opts input[min], .opts .color').not('.renderTicks').each(function() {
       var val = $(this).hasClass("color") ? this.value : parseFloat(this.value);
       if($(this).hasClass("color")){
         val = "#" + val;
@@ -309,6 +371,7 @@ $.fn.gauge = function(opts) {
       if(this.name.indexOf("lineWidth") != -1 ||
         this.name.indexOf("radiusScale") != -1 ||
         this.name.indexOf("angle") != -1 ||
+
         this.name.indexOf("pointer.length") != -1){
         val /= 100;
       }else if(this.name.indexOf("pointer.strokeWidth") != -1){
@@ -350,6 +413,8 @@ $.fn.gauge = function(opts) {
     if ($('#share').is(':checked')) {
       window.location.replace('#?' + $('form').serialize());
     }
+
+    console.log(tmp_opts);
   }
   function initGauge(){
     document.getElementById("class-code-name").innerHTML = "Gauge";
