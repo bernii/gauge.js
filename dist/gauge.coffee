@@ -233,12 +233,13 @@ class GaugePointer extends ValueUpdater
 		endX = Math.round(@strokeWidth * Math.cos(angle + Math.PI/2))
 		endY = Math.round(@strokeWidth * Math.sin(angle + Math.PI/2))
 
+		console.log(@strokeWidth, startX, startY, @length, endX, endY, @img)
+
 		@ctx.fillStyle = @options.color
 		@ctx.beginPath()
-
 		@ctx.arc(0, 0, @strokeWidth, 0, Math.PI*2, true)
 		@ctx.fill()
-
+	
 		@ctx.beginPath()
 		@ctx.moveTo(startX, startY)
 		@ctx.lineTo(x, y)
@@ -285,7 +286,7 @@ class Gauge extends BaseGauge
 	displayedValue: 0
 	lineWidth: 40
 	paddingTop: 0.1
-	paddingBottom: 0.1
+	paddingBottom: 0.2
 	percentColors: null,
 	options:
 		colorStart: "#6fadcf"
@@ -314,6 +315,7 @@ class Gauge extends BaseGauge
 		w = @canvas.clientWidth;
 		@canvas.height = h;
 		@canvas.width = w;
+
 		@gp = [new GaugePointer(@)]
 		@setOptions()
 		@render()
@@ -467,7 +469,7 @@ class Gauge extends BaseGauge
 		# subLength: 40 }
 		
 		@ctx.save()
-		@ctx.translate(w, h)
+		#@ctx.translate(w, h)
 		divisionCount = ticksOptions.divisions || 0
 		subdivisionCount = ticksOptions.subDivisions || 0
 		divColor = ticksOptions.divColor || '#fff'
@@ -545,7 +547,6 @@ class Gauge extends BaseGauge
 				@ctx.beginPath()
 				@ctx.arc(0, 0, tmpRadius, @getAngle(min), @getAngle(max), false)
 				@ctx.stroke()
-			@ctx.restore()
 
 		else
 			if @options.customFillStyle != undefined
@@ -572,17 +573,17 @@ class Gauge extends BaseGauge
 			@ctx.beginPath()
 			@ctx.arc(w, h, radius, displayedAngle, (2 - @options.angle) * Math.PI, false)
 			@ctx.stroke()
-
-
+		
 		if(@options.renderTicks)
 			@renderTicks(@options.renderTicks, w, h, radius)
 		
+		@ctx.restore()
 		# Draw pointers from (w, h)
 		@ctx.translate(w, h)
 		for gauge in @gp
 			gauge.update(true)
-		@ctx.translate(-w, -h)
 
+		@ctx.translate(-w, -h)
 
 class BaseDonut extends BaseGauge
 	lineWidth: 15

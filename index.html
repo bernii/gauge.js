@@ -518,7 +518,7 @@ $.fn.gauge = function(opts) {
   function initNew(){
     document.getElementById("class-code-name").innerHTML = "Gauge";
     demoGauge = new Gauge(document.getElementById("canvas-preview"));
-    var bigFont = "15px sans-serif";
+    var bigFont = "14px sans-serif";
     var opts = {
       angle: 0.1,
       radiusScale:0.9,
@@ -620,13 +620,10 @@ $.fn.gauge = function(opts) {
           $("input[name=colorStop]").prop('disabled', true);
           $("input[name=strokeColor]").prop('disabled', true);
 
-          selectGaguge1.set(2000);
-          selectGaguge2.set(1);
-          selectGauge3.set(3000);
           $("input[name=colorStop]").prop('disabled', true);
           $("input[name=strokeColor]").prop('disabled', true);
 
-          selectGaguge1.set(2000);
+          selectGaguge1.set(1);
           selectGaguge2.set(1);
           selectGauge3.set(3000);
           selectGauge4.set(1);
@@ -677,7 +674,7 @@ $.fn.gauge = function(opts) {
       angle: 0.1,
       lineWidth: 0.2,
       pointer: {
-        length: 0.6,
+        length: 0.5,
         strokeWidth: 0.05,
         color: '#000000'
       },
@@ -692,6 +689,7 @@ $.fn.gauge = function(opts) {
       limitMin: false,
       highDpiSupport: true
     };
+    selectGauge4.minValue = 0;
     selectGauge4.maxValue = 3000;
     selectGauge4.setOptions(opts2);
     selectGauge4.set(2122);

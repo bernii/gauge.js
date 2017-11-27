@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>gauge.js</title>
+  <meta name="description" content="100% native and cool looking animated JavaScript/CoffeeScript gauge">
+  <meta name="viewport" content="width=1024, maximum-scale=1">
+  <meta property="og:image" content="http://bernii.github.com/gauge.js/assets/preview.jpg?v=1" />
+  <link rel="shortcut icon" href="favicon.ico">
+  <meta http-equiv="X-UA-Compatible" content="IE=7" />
+  <link href="assets/bootstrap.min.css" type="text/css" rel="stylesheet">
+  <link href="assets/main.css?v=5" type="text/css" rel="stylesheet">
+  <link href='http://fonts.googleapis.com/css?family=Amaranth:400,700|Just+Another+Hand' rel='stylesheet' type='text/css'>
+  <link href="assets/prettify.css" type="text/css" rel="stylesheet">
+  <link rel="stylesheet" type="text/css" href="assets/fd-slider/fd-slider.css?v=2">
+  <link rel="stylesheet" type="text/css" href="assets/fd-slider/fd-slider-tooltip.css">
+  <script type="text/javascript" src="assets/prettify.js"></script>
+  <script type="text/javascript" src="assets/jscolor.js"></script>
+  <!--[if lt IE 9]><script type="text/javascript" src="assets/excanvas.compiled.js"></script><![endif]-->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <script type="text/javascript" src="assets/fd-slider/fd-slider.js"></script>
+  <script src="dist/gauge.js"></script>
+</head>
+<body onload="initNew()">
+        <div id="preview">
+                <canvas width="300" height="180" id="canvas-preview"></canvas>
+                <div id="preview-textfield"></div>
+            </div>
+            <script type="text/javascript">
+                function initNew(){
+                    demoGauge = new Gauge(document.getElementById("canvas-preview"));
+                    var bigFont = "14px sans-serif";
+                    var opts = {
+                      angle: 0.1,
+                      radiusScale:0.9,
+                      lineWidth: 0.2,
+                      pointer: {
+                        length: 0.5,
+                        strokeWidth: 0.02,
+                        color: '#000000'
+                      },
+                      staticLabels: {
+                        font: "10px sans-serif",
+                        labels: [{label:200, font: bigFont}, 
+                        {label:750}, 
+                        {label:1500}, 
+                        {label:2250}, 
+                        {label:3000, font: bigFont}],
+                        fractionDigits: 0
+                      },
+                      renderTicks: {
+                        divisions: 4,
+                        divWidth: 1.1,
+                        divLength: 0.7,
+                        divColor: '#333333',
+                        subDivisions: 3,
+                        subLength: 0.25,
+                        subWidth: 0.6,
+                        subColor: '#666666'
+                      },
+                      staticZones: [
+                        {strokeStyle: "rgb(255,0,0)", min: 0, max: 500, height: 1.4},
+                        {strokeStyle: "rgb(200,100,0)", min: 500, max: 1000, height: 1.2},
+                        {strokeStyle: "rgb(150,150,0)", min: 1000, max: 1500, height: 1},
+                        {strokeStyle: "rgb(100,200,0)", min: 1500, max: 2000, height: 0.8},
+                        {strokeStyle: "rgb(0,255,0)", min: 2000, max: 3100, height: 0.6},
+                        {strokeStyle: "rgb(80,80,80)", min: 2470, max: 2530, height: 1.3}        
+                      ],
+                      limitMax: false,
+                      limitMin: false,
+                      highDpiSupport: true
+                    };
+                    demoGauge.setOptions(opts);
+                    document.getElementById("preview-textfield").className = "preview-textfield"; 
+                    demoGauge.setTextField(document.getElementById("preview-textfield"));
+                    demoGauge.minValue = 0;
+                    demoGauge.maxValue = 3100;
+                    demoGauge.set([2122, 1234]);
+                  };
+
+                </script>
+            </body>
+            </html>
+            

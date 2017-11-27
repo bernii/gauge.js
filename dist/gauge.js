@@ -357,6 +357,7 @@
       startY = Math.round(this.strokeWidth * Math.sin(angle - Math.PI / 2));
       endX = Math.round(this.strokeWidth * Math.cos(angle + Math.PI / 2));
       endY = Math.round(this.strokeWidth * Math.sin(angle + Math.PI / 2));
+      console.log(this.strokeWidth, startX, startY, this.length, endX, endY, this.img);
       this.ctx.fillStyle = this.options.color;
       this.ctx.beginPath();
       this.ctx.arc(0, 0, this.strokeWidth, 0, Math.PI * 2, true);
@@ -434,7 +435,7 @@
 
     Gauge.prototype.paddingTop = 0.1;
 
-    Gauge.prototype.paddingBottom = 0.1;
+    Gauge.prototype.paddingBottom = 0.2;
 
     Gauge.prototype.percentColors = null;
 
@@ -647,7 +648,6 @@
     Gauge.prototype.renderTicks = function(ticksOptions, w, h, radius) {
       var currentDivision, currentSubDivision, divColor, divLength, divWidth, divisionCount, j, k, lineWidth, range, rangeDivisions, ref, ref1, scaleMutate, st, subColor, subDivisions, subLength, subWidth, subdivisionCount, t, tmpRadius;
       this.ctx.save();
-      this.ctx.translate(w, h);
       divisionCount = ticksOptions.divisions || 0;
       subdivisionCount = ticksOptions.subDivisions || 0;
       divColor = ticksOptions.divColor || '#fff';
@@ -727,7 +727,6 @@
           this.ctx.arc(0, 0, tmpRadius, this.getAngle(min), this.getAngle(max), false);
           this.ctx.stroke();
         }
-        this.ctx.restore();
       } else {
         if (this.options.customFillStyle !== void 0) {
           fillStyle = this.options.customFillStyle(this);
@@ -757,6 +756,7 @@
       if (this.options.renderTicks) {
         this.renderTicks(this.options.renderTicks, w, h, radius);
       }
+      this.ctx.restore();
       this.ctx.translate(w, h);
       ref1 = this.gp;
       for (k = 0, len1 = ref1.length; k < len1; k++) {
