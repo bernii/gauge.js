@@ -457,6 +457,55 @@ class Gauge extends BaseGauge
 			
 		@ctx.restore()
 
+	renderTicks: (ticksOptions, w, h, radius) ->
+		# ticks = 
+		# {divisions: x (count of big divisions, 
+		# subDivisions: y (count of subDivisions within a division), 
+		# divColor: color,
+		# subColor: color,
+		# divLength: 90,
+		# subLength: 40 }
+		
+		@ctx.save()
+		@ctx.translate(w, h)
+		divLength = ticksOptions.divLength || 0.7; # default
+		subLength = ticksOptions.subLength || 0.2; # default
+		range = parseFloat(@maxValue) - parseFloat(@minValue) # total value range
+		rangeDivisions = parseFloat(range) / parseFloat(ticksOptions.divisions) # get division step
+		subDivisions = parseFloat(rangeDivisions) / parseFloat(ticksOptions.subDivisions)
+
+		currentDivision = parseFloat(@minValue)
+		currentSubDivision = 0.0 + subDivisions
+		lineWidth = range / 400 # base
+		divWidth = lineWidth * (ticksOptions.divWidth || 1)
+		subWidth = lineWidth * (ticksOptions.subWidth || 1)
+
+		for t in [0...ticksOptions.divisions + 1] by 1
+			@ctx.lineWidth = @lineWidth * divLength
+			scaleMutate = (@lineWidth / 2) * ( 1 - divLength)
+			tmpRadius = (@radius * @options.radiusScale) + scaleMutate
+			
+			@ctx.strokeStyle = ticksOptions.divColor
+			@ctx.beginPath()
+			@ctx.arc(0, 0, tmpRadius, @getAngle(currentDivision - divWidth), @getAngle(currentDivision + divWidth), false)
+			@ctx.stroke()
+
+			currentSubDivision = currentDivision + subDivisions
+			currentDivision += rangeDivisions
+			if t != ticksOptions.divisions # if its not the last marker then draw subs
+				for st in [0...ticksOptions.subDivisions - 1] by 1
+					@ctx.lineWidth = @lineWidth * subLength
+					scaleMutate = (@lineWidth / 2) * ( 1 - subLength)
+					tmpRadius = (@radius * @options.radiusScale) + scaleMutate
+					
+					@ctx.strokeStyle = ticksOptions.subColor
+					@ctx.beginPath()
+					@ctx.arc(0, 0, tmpRadius, @getAngle(currentSubDivision - subWidth), @getAngle(currentSubDivision + subWidth), false)
+					@ctx.stroke()
+					currentSubDivision += subDivisions
+
+		@ctx.restore()
+
 	render: () ->
 		# Draw using canvas
 		w = @canvas.width / 2
@@ -470,7 +519,7 @@ class Gauge extends BaseGauge
 		radius = @radius * @options.radiusScale
 		if (@options.staticLabels)
 			@renderStaticLabels(@options.staticLabels, w, h, radius)
-
+		
 		if (@options.staticZones)
 			@ctx.save()
 			@ctx.translate(w, h)
@@ -522,6 +571,9 @@ class Gauge extends BaseGauge
 			@ctx.stroke()
 
 
+		if(@options.renderTicks)
+			@renderTicks(@options.renderTicks, w, h, radius)
+		
 		# Draw pointers from (w, h)
 		@ctx.translate(w, h)
 		for gauge in @gp

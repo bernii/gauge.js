@@ -644,6 +644,46 @@
       return this.ctx.restore();
     };
 
+    Gauge.prototype.renderTicks = function(ticksOptions, w, h, radius) {
+      var currentDivision, currentSubDivision, divLength, divWidth, j, k, lineWidth, range, rangeDivisions, ref, ref1, scaleMutate, st, subDivisions, subLength, subWidth, t, tmpRadius;
+      this.ctx.save();
+      this.ctx.translate(w, h);
+      divLength = ticksOptions.divLength || 0.7;
+      subLength = ticksOptions.subLength || 0.2;
+      range = parseFloat(this.maxValue) - parseFloat(this.minValue);
+      rangeDivisions = parseFloat(range) / parseFloat(ticksOptions.divisions);
+      subDivisions = parseFloat(rangeDivisions) / parseFloat(ticksOptions.subDivisions);
+      currentDivision = parseFloat(this.minValue);
+      currentSubDivision = 0.0 + subDivisions;
+      lineWidth = range / 400;
+      divWidth = lineWidth * (ticksOptions.divWidth || 1);
+      subWidth = lineWidth * (ticksOptions.subWidth || 1);
+      for (t = j = 0, ref = ticksOptions.divisions + 1; j < ref; t = j += 1) {
+        this.ctx.lineWidth = this.lineWidth * divLength;
+        scaleMutate = (this.lineWidth / 2) * (1 - divLength);
+        tmpRadius = (this.radius * this.options.radiusScale) + scaleMutate;
+        this.ctx.strokeStyle = ticksOptions.divColor;
+        this.ctx.beginPath();
+        this.ctx.arc(0, 0, tmpRadius, this.getAngle(currentDivision - divWidth), this.getAngle(currentDivision + divWidth), false);
+        this.ctx.stroke();
+        currentSubDivision = currentDivision + subDivisions;
+        currentDivision += rangeDivisions;
+        if (t !== ticksOptions.divisions) {
+          for (st = k = 0, ref1 = ticksOptions.subDivisions - 1; k < ref1; st = k += 1) {
+            this.ctx.lineWidth = this.lineWidth * subLength;
+            scaleMutate = (this.lineWidth / 2) * (1 - subLength);
+            tmpRadius = (this.radius * this.options.radiusScale) + scaleMutate;
+            this.ctx.strokeStyle = ticksOptions.subColor;
+            this.ctx.beginPath();
+            this.ctx.arc(0, 0, tmpRadius, this.getAngle(currentSubDivision - subWidth), this.getAngle(currentSubDivision + subWidth), false);
+            this.ctx.stroke();
+            currentSubDivision += subDivisions;
+          }
+        }
+      }
+      return this.ctx.restore();
+    };
+
     Gauge.prototype.render = function() {
       var displayedAngle, fillStyle, gauge, h, j, k, len, len1, max, min, radius, ref, ref1, scaleMutate, tmpRadius, w, zone;
       w = this.canvas.width / 2;
@@ -709,6 +749,9 @@
         this.ctx.beginPath();
         this.ctx.arc(w, h, radius, displayedAngle, (2 - this.options.angle) * Math.PI, false);
         this.ctx.stroke();
+      }
+      if (this.options.renderTicks) {
+        this.renderTicks(this.options.renderTicks, w, h, radius);
       }
       this.ctx.translate(w, h);
       ref1 = this.gp;
