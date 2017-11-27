@@ -10,6 +10,5 @@
   "author": "bernii",
   "license": "MIT",
   "devDependencies": {
-    "coffeescript": "^2.0.2"
   }
 }
