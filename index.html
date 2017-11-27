@@ -69,7 +69,7 @@
     <label>Color stop:</label><input type="text" name="colorStop" class="color" value="8FC0DA"><br>
     <label>Background:</label><input type="text" name="strokeColor" class="color" value="E0E0E0"><br>
 
-    <label>SubDivisions:</label><input type="checkbox" id="divisionsCbx" class="renderTicks"><br>
+    <label>Ticks:</label><input type="checkbox" id="divisionsCbx" class="renderTicks"><br>
     <div class="subDivisions" style="display: none;">
     <label>Divisions:</label><input type="text" name="divisions" value="5" min="0" max="20" class="renderTicks"><br>
     <label>Divisions Length:</label><input type="text" name="divLength" value="70" min="0" max="100" class="renderTicks"><br>
@@ -118,6 +118,7 @@ var opts = {
   strokeColor: '<span id="opt-strokeColor" class="lit">0</span>',  // to see which ones work best for you
   generateGradient: true,
   highDpiSupport: true,     // High resolution support
+  <div  class="subDivisions" style="display: none;">
   renderTicks: {
     divisions: <span id="opt-divisions" class="lit">8</span>,
     divWidth: <span id="opt-divWidth" class="lit">1</span>,
@@ -128,6 +129,7 @@ var opts = {
     subWidth: <span id="opt-subWidth" class="lit">0.5</span>,
     subColor: <span id="opt-subColor" class="lit">#333333</span>
   }
+  <div></div>
 };
 var target = document.getElementById('foo'); // your canvas element
 var gauge = new <span id="class-code-name" class="typ">Gauge</span>(target).setOptions(opts); // create sexy gauge!
@@ -376,6 +378,7 @@ $.fn.gauge = function(opts) {
     var tmp_opts = opts;
     tmp_opts.renderTicks = {};
 
+    if ($('.subDivisions:visible').length) {
     $('.renderTicks').each(function() {
       var val = $(this).hasClass("color") ? this.value : parseFloat(this.value);
       if($(this).hasClass("color")){
@@ -410,7 +413,7 @@ $.fn.gauge = function(opts) {
       	opts.renderTicks[this.name] = val;
       }
     });
-
+  }
 
 
     $('.opts input[min], .opts .color').not('.renderTicks').each(function() {
@@ -533,16 +536,6 @@ $.fn.gauge = function(opts) {
         {label:2250}, 
         {label:3000, font: bigFont}],
         fractionDigits: 0
-      },
-      renderTicks: {
-        divisions: 6,
-        divLength: .5,
-        divColor: '#fff',
-        divWidth: 2,
-        subDivisions: 4, 
-        subLength: .3,
-        subColor: '#fff',
-        subWidth: 0.6
       },
       staticZones: [
         {strokeStyle: "rgb(255,0,0)", min: 0, max: 500, height: 1.4},
