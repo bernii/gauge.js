@@ -52,8 +52,10 @@
   </ul>
   <div id="preview">
   	<canvas width=380 height=150 id="canvas-preview"></canvas>
-  	<div id="preview-textfield"></div>
+    <div id="preview-textfield"></div>
+    <div id="auto-animator"><input type="checkbox" id="animator"> <label for="animator">Auto-Animate?</label></div>
   </div>
+  
   <form id="opts" class="opts">
   	<h4>Options:</h4>
   	<label>Current Val:</label><input type="text" name="currval" min="0" max="3000" step="25" value="1244"><br>
@@ -394,6 +396,24 @@ $.fn.gauge = function(opts) {
     $('#subDivisions').toggle();
     fdSlider.redrawAll();
   })
+  function setTimerHolder() {
+    timerHolder = setTimeout(function() {
+      autoAnimate();
+    },3000);
+  }
+  var timerHolder = [];
+  function autoAnimate(){
+    var newValue = demoGauge.minValue + Math.floor(Math.random() * demoGauge.maxValue) ;
+    demoGauge.set(newValue);
+    setTimerHolder();
+  }
+  $('#animator').on('click', function(){
+    if(this.checked){
+      setTimerHolder();
+    } else {
+      clearTimeout(timerHolder);
+    }
+  });
 
   function update() {
     var opts = {};
