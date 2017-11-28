@@ -79,9 +79,12 @@ label {
   font-size: 14px;
   vertical-align: top;
 }
-.opts label {
+.opts label:not(.omit) {
   line-height: 25px;
   width: 80px;
+}
+.omit{
+  width: 40px;
 }
 span.fd-slider {
   vertical-align: top;

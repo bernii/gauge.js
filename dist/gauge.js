@@ -310,6 +310,7 @@
 
     GaugePointer.prototype.options = {
       pointerType: "triangle",
+      pointerEnd: "butt",
       hideCentre: false,
       strokeWidth: 0.035,
       length: 0.1,
@@ -338,6 +339,7 @@
       }
       this.options = mergeObjects(this.options, options);
       this.length = 2 * this.gauge.radius * this.gauge.options.radiusScale * this.options.length;
+      this.pointerEnd = this.options.pointerEnd || "butt";
       this.strokeWidth = this.canvas.height * this.options.strokeWidth;
       this.maxValue = this.gauge.maxValue;
       this.minValue = this.gauge.minValue;
@@ -372,6 +374,7 @@
         this.ctx.fill();
       } else {
         this.ctx.beginPath();
+        this.ctx.lineCap = this.pointerEnd;
         this.ctx.strokeStyle = this.options.color;
         this.ctx.lineWidth = this.strokeWidth;
         this.ctx.moveTo(0, 0);
@@ -457,6 +460,7 @@
       strokeColor: "#e0e0e0",
       pointer: {
         pointerType: "triangle",
+        pointerEnd: "butt",
         hideCenter: false,
         length: 0.8,
         strokeWidth: 0.035,

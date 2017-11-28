@@ -71,6 +71,11 @@
 
     <label>Pointer line:</label><input type="checkbox" id="pointerType" name="pointerType" class=""><br>
     <label>Hide centre:</label><input type="checkbox" id="hideCentre" name="hideCentre" class=""><br>
+    <label>Pointer End:</label>
+      <input type="radio" id="pointerEnd-butt" name="selector"><label class="omit" for="pointerEnd-butt">butt</label>
+      <input type="radio" id="pointerEnd-round" name="selector"><label class="omit" for="pointerEnd-round">round</label>
+      <input type="radio" id="pointerEnd-square" name="selector"><label class="omit" for="pointerEnd-square">square</label>
+    <br>
     
     <label>Ticks:</label><input type="checkbox" id="divisionsCbx" class="renderTicks"><br>
 
@@ -112,6 +117,7 @@ var opts = {
   radiusScale: <span id="opt-radiusScale" class="lit">1.0</span>, // Relative radius
   pointer: {
     pointerType: '<span id="opt-pointerType" class="lit">triangle</span>', // triangle / line 
+    pointerEnd: '<span id="opt-pointerEnd" class="lit">butt</span>', // butt / round / square 
     hideCentre: <span id="opt-hideCentre" class="lit">false</span>, // show/hide pointer center circle 
     length: <span id="opt-pointer-length" class="lit">10</span>, // Relative to gauge radius
     strokeWidth: <span id="opt-pointer-strokeWidth" class="lit">0</span>, // The thickness
@@ -481,6 +487,10 @@ $.fn.gauge = function(opts) {
       opts.pointer.hideCentre = this.checked ? true : false;
       $('#opt-' + this.name).text(opts.pointer.hideCentre);
     });
+    $('[name=selector]:checked').each(function(){
+        opts.pointer.pointerEnd = this.id.substring(this.id.indexOf('-') + 1);
+        $('#opt-pointerEnd').text(opts.pointer.pointerEnd);
+    });
     demoGauge.animationSpeed = opts.animationSpeed;
     opts.generateGradient = true;
     demoGauge.setOptions(opts);
@@ -602,6 +612,9 @@ $.fn.gauge = function(opts) {
 
     $('.opts input:checkbox').each(function() {
       this.checked = !!params[this.name];
+      this.onclick = update;
+    });
+    $('.opts input:radio').each(function() {
       this.onclick = update;
     });
     $('#share').click(function() {

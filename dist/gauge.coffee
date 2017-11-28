@@ -193,6 +193,7 @@ class GaugePointer extends ValueUpdater
 	value: 0
 	options:
 		pointerType: "triangle" # triangle / line
+		pointerEnd: "butt" # butt / round / square
 		hideCentre: false
 		strokeWidth: 0.035
 		length: 0.1
@@ -214,6 +215,7 @@ class GaugePointer extends ValueUpdater
 	setOptions: (options=null) ->
 		@options = mergeObjects(@options, options)
 		@length = 2*@gauge.radius * @gauge.options.radiusScale * @options.length
+		@pointerEnd = @options.pointerEnd || "butt"
 		@strokeWidth = @canvas.height * @options.strokeWidth
 		@maxValue = @gauge.maxValue
 		@minValue = @gauge.minValue
@@ -249,6 +251,7 @@ class GaugePointer extends ValueUpdater
 			@ctx.fill()
 		else
 			@ctx.beginPath()
+			@ctx.lineCap = @pointerEnd
 			@ctx.strokeStyle = @options.color
 			@ctx.lineWidth = @strokeWidth
 			@ctx.moveTo(0, 0)
@@ -304,6 +307,7 @@ class Gauge extends BaseGauge
 		strokeColor: "#e0e0e0"
 		pointer:
 			pointerType: "triangle"
+			pointerEnd: "butt"
 			hideCenter: false
 			length: 0.8
 			strokeWidth: 0.035
