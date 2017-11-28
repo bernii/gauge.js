@@ -130,8 +130,8 @@ var opts = {
   strokeColor: '<span id="opt-strokeColor" class="lit">0</span>',  // to see which ones work best for you
   generateGradient: true,
   highDpiSupport: true,     // High resolution support
-  <span  class="subDivisions" style="display: none;">// renderTicks is Optional
-  renderTicks: {
+  <span id="subDivisions" style="display: none;"> 
+  renderTicks: { // renderTicks is Optional
     divisions: <span id="opt-divisions" class="lit">8</span>,
     divWidth: <span id="opt-divWidth" class="lit">1</span>,
     divLength: <span id="opt-divLength" class="lit">0.8</span>,
@@ -391,6 +391,7 @@ $.fn.gauge = function(opts) {
 
   $('#divisionsCbx').click(function(){
     $('.subDivisions').toggle();
+    $('#subDivisions').toggle();
     fdSlider.redrawAll();
   })
 
