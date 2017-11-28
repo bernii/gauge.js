@@ -305,6 +305,7 @@ class Gauge extends BaseGauge
 		colorStop: undefined
 		gradientType: 0       	# 0 : radial, 1 : linear
 		strokeColor: "#e0e0e0"
+		labelHoriz: false
 		pointer:
 			pointerType: "triangle"
 			pointerEnd: "butt"
@@ -443,36 +444,55 @@ class Gauge extends BaseGauge
 		font = staticLabels.font or "10px Times"
 		re = /\d+\.?\d?/
 		match = font.match(re)[0]
-		rest = font.slice(match.length);
-		fontsize = parseFloat(match) * this.displayScale;
-		@ctx.font = fontsize + rest;
-		@ctx.fillStyle = staticLabels.color || "#000000";
-
+		rest = font.slice(match.length)
+		fontsize = parseFloat(match) * this.displayScale
+		labelHoriz = @options.labelHoriz
+		@ctx.font = fontsize + rest
+		@ctx.fillStyle = staticLabels.color || "#000000"
+		
 		@ctx.textBaseline = "bottom"
 		@ctx.textAlign = "center"
+						
 		for value in staticLabels.labels
 			if (value.label != undefined)
 				# Draw labels depending on limitMin/Max
 				if (not @options.limitMin or value >= @minValue) and (not @options.limitMax or value <= @maxValue)
-					font = value.font || staticLabels.font;
+					font = value.font || staticLabels.font
 					match = font.match(re)[0]
-					rest = font.slice(match.length);
-					fontsize = parseFloat(match) * this.displayScale;
-					@ctx.font = fontsize + rest;
-									
-					rotationAngle = @getAngle(value.label) - 3*Math.PI/2
+					rest = font.slice(match.length)
+					fontsize = parseFloat(match) * this.displayScale
+					@ctx.font = fontsize + rest
+					rotationAngle = @getAngle(value.label) - 3 * Math.PI / 2
 					@ctx.rotate(rotationAngle)
-					@ctx.fillText(formatNumber(value.label, staticLabels.fractionDigits), 0, -radius - @lineWidth/2)
-					@ctx.rotate(-rotationAngle)
+					if(labelHoriz == true)
+						# translate to position then render horizontal then reset
+						offset = (-radius - @lineWidth / 2) * (1.01 + (fontsize / 100)) + (value.label.toString().length / 20)
+						console.log(offset, value.label, fontsize)
+						@ctx.translate(0, offset)
+						@ctx.rotate(-rotationAngle)
+						@ctx.fillText(formatNumber(value.label, staticLabels.fractionDigits), 0, 0)
+						@ctx.rotate(rotationAngle)
+						@ctx.translate(0, -offset)
+					else
+						@ctx.fillText(formatNumber(value.label, staticLabels.fractionDigits), 0, -radius - @lineWidth / 2)
 
+					@ctx.rotate(-rotationAngle)
 			else
 				# Draw labels depending on limitMin/Max
 				if (not @options.limitMin or value >= @minValue) and (not @options.limitMax or value <= @maxValue)
-					rotationAngle = @getAngle(value) - 3*Math.PI/2
+					rotationAngle = @getAngle(value) - 3 * Math.PI / 2
 					@ctx.rotate(rotationAngle)
-					@ctx.fillText(formatNumber(value, staticLabels.fractionDigits), 0, -radius - @lineWidth/2)
+					if(labelHoriz == true)
+						offset = (-radius - @lineWidth / 2) * (1.01 + (fontsize / 100)) + (value.toString().length / 20)
+						@ctx.translate(0, offset)
+						@ctx.rotate(-rotationAngle)
+						@ctx.fillText(formatNumber(value, staticLabels.fractionDigits), 0, 0)
+						@ctx.rotate(rotationAngle)
+						@ctx.translate(0, -offset)
+					else
+						@ctx.fillText(formatNumber(value, staticLabels.fractionDigits), 0, -radius - @lineWidth / 2)
 					@ctx.rotate(-rotationAngle)
-			
+						
 		@ctx.restore()
 
 	renderTicks: (ticksOptions, w, h, radius) ->

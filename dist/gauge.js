@@ -458,6 +458,7 @@
       colorStop: void 0,
       gradientType: 0,
       strokeColor: "#e0e0e0",
+      labelHoriz: false,
       pointer: {
         pointerType: "triangle",
         pointerEnd: "butt",
@@ -623,7 +624,7 @@
     };
 
     Gauge.prototype.renderStaticLabels = function(staticLabels, w, h, radius) {
-      var font, fontsize, j, len, match, re, ref, rest, rotationAngle, value;
+      var font, fontsize, j, labelHoriz, len, match, offset, re, ref, rest, rotationAngle, value;
       this.ctx.save();
       this.ctx.translate(w, h);
       font = staticLabels.font || "10px Times";
@@ -631,6 +632,7 @@
       match = font.match(re)[0];
       rest = font.slice(match.length);
       fontsize = parseFloat(match) * this.displayScale;
+      labelHoriz = this.options.labelHoriz;
       this.ctx.font = fontsize + rest;
       this.ctx.fillStyle = staticLabels.color || "#000000";
       this.ctx.textBaseline = "bottom";
@@ -647,14 +649,33 @@
             this.ctx.font = fontsize + rest;
             rotationAngle = this.getAngle(value.label) - 3 * Math.PI / 2;
             this.ctx.rotate(rotationAngle);
-            this.ctx.fillText(formatNumber(value.label, staticLabels.fractionDigits), 0, -radius - this.lineWidth / 2);
+            if (labelHoriz === true) {
+              offset = (-radius - this.lineWidth / 2) * (1.01 + (fontsize / 100)) + (value.label.toString().length / 20);
+              console.log(offset, value.label, fontsize);
+              this.ctx.translate(0, offset);
+              this.ctx.rotate(-rotationAngle);
+              this.ctx.fillText(formatNumber(value.label, staticLabels.fractionDigits), 0, 0);
+              this.ctx.rotate(rotationAngle);
+              this.ctx.translate(0, -offset);
+            } else {
+              this.ctx.fillText(formatNumber(value.label, staticLabels.fractionDigits), 0, -radius - this.lineWidth / 2);
+            }
             this.ctx.rotate(-rotationAngle);
           }
         } else {
           if ((!this.options.limitMin || value >= this.minValue) && (!this.options.limitMax || value <= this.maxValue)) {
             rotationAngle = this.getAngle(value) - 3 * Math.PI / 2;
             this.ctx.rotate(rotationAngle);
-            this.ctx.fillText(formatNumber(value, staticLabels.fractionDigits), 0, -radius - this.lineWidth / 2);
+            if (labelHoriz === true) {
+              offset = (-radius - this.lineWidth / 2) * (1.01 + (fontsize / 100)) + (value.toString().length / 20);
+              this.ctx.translate(0, offset);
+              this.ctx.rotate(-rotationAngle);
+              this.ctx.fillText(formatNumber(value, staticLabels.fractionDigits), 0, 0);
+              this.ctx.rotate(rotationAngle);
+              this.ctx.translate(0, -offset);
+            } else {
+              this.ctx.fillText(formatNumber(value, staticLabels.fractionDigits), 0, -radius - this.lineWidth / 2);
+            }
             this.ctx.rotate(-rotationAngle);
           }
         }

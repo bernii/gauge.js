@@ -62,7 +62,7 @@
     <label>Anim speed:</label><input type="text" name="animationSpeed" min="1" max="128" step="1" value="32"><br><br>
     <label>Angle:</label><input id="input-angle" type="text" name="angle" min="-50" max="50" step="1" value="15"><br>
     <label>Line width:</label><input id="input-line-width" type="text" name="lineWidth" min="0" max="70" value="44"><br>
-    <label>Radius:</label><input id="input-radius-scale" type="text" name="radiusScale" min="50" max="100" value="100"><br>
+    <label>Radius:</label><input id="input-radius-scale" type="text" name="radiusScale" min="50" max="100" value="90"><br>
     <label>Ptr length:</label><input id="input-ptr-len" type="text" name="pointer.length" min="0" max="100" value="60"><br>
     <label>Ptr color:</label><input id="input-ptr-color" type="text" class="color" name="pointer.color" value="000000"><br>
     <label>Ptr stroke:</label><input id="input-ptr-stroke" type="text" name="pointer.strokeWidth" min="0" max="300" value="35"><br>
@@ -78,6 +78,7 @@
       <input type="radio" id="pointerEnd-round" name="selector"><label class="omit" for="pointerEnd-round">round</label>
       <input type="radio" id="pointerEnd-square" name="selector"><label class="omit" for="pointerEnd-square">square</label>
     <br>
+    <label>Horizontal Labels:</label><input type="checkbox" id="labelHoriz" name="labelHoriz" class=""><br>
     
     <label>Ticks:</label><input type="checkbox" id="divisionsCbx" class="renderTicks"><br>
 
@@ -117,6 +118,7 @@ var opts = {
   angle: <span id="opt-angle" class="lit">7</span>, // The span of the gauge arc
   lineWidth: <span id="opt-lineWidth" class="lit">5</span>, // The line thickness
   radiusScale: <span id="opt-radiusScale" class="lit">1.0</span>, // Relative radius
+  labelHoriz: <span id="opt-labelHoriz" class="lit">true</span>, // Show Horizontal labels with arc
   pointer: {
     pointerType: '<span id="opt-pointerType" class="lit">triangle</span>', // triangle / line 
     pointerEnd: '<span id="opt-pointerEnd" class="lit">butt</span>', // butt / round / square 
@@ -286,92 +288,93 @@ $.fn.gauge = function(opts) {
     <li>Android 2.3+</li>
   </ul>
 </p>
+<div id="history">
+  <h2>Changes</h2>
 
-<h2>Changes</h2>
-
-<h3 id="v1.3.6">Version 1.3.6 (28.11.2017)</h3>
-<p>
-<ul>
-<li>Added support for scalable staticzone sections</li>
-<li>Added optional Ticks(Major/Minor)</li>
-</ul>
-</p>
-
-<h3 id="v1.3.5">Version 1.3.5 (08.07.2017)</h3>
+  <h3 id="v1.3.6">Version 1.3.6 (28.11.2017)</h3>
   <p>
-<ul>
-  <li>Fixed <a href="https://github.com/bernii/gauge.js/issues/139">issue #139</a>: Donut support for limitMin and -Max.
-</ul>
+  <ul>
+  <li>Added support for scalable staticzone sections</li>
+  <li>Added optional Ticks(Major/Minor)</li>
+  </ul>
   </p>
 
-<h3 id="v1.3.4">Version 1.3.4 (13.05.2017)</h3>
-  <p>
-<ul>
-  <li>New feature: Add icon to tip of gauge pointer <a href="https://github.com/bernii/gauge.js/pull/133">PR #133</a>
-  <li>Fixed <a href="https://github.com/bernii/gauge.js/issues/124">issue #17</a> for Donut.
-</ul>
-  </p>
+  <h3 id="v1.3.5">Version 1.3.5 (08.07.2017)</h3>
+    <p>
+  <ul>
+    <li>Fixed <a href="https://github.com/bernii/gauge.js/issues/139">issue #139</a>: Donut support for limitMin and -Max.
+  </ul>
+    </p>
 
-<h3 id="v1.3.3">Version 1.3.3 (09.04.2017)</h3>
-  <p>
-  Improved protection for non-numerical inputs to .set(), which could cause problems like <a href="https://github.com/bernii/gauge.js/issues/124">#124</a>.
-  </p>
+  <h3 id="v1.3.4">Version 1.3.4 (13.05.2017)</h3>
+    <p>
+  <ul>
+    <li>New feature: Add icon to tip of gauge pointer <a href="https://github.com/bernii/gauge.js/pull/133">PR #133</a>
+    <li>Fixed <a href="https://github.com/bernii/gauge.js/issues/124">issue #17</a> for Donut.
+  </ul>
+    </p>
 
-  <h3 id="v1.3.2">Version 1.3.2 (11.02.2017)</h3>
-  <p>
-  Bug-fixes (<a href="https://github.com/bernii/gauge.js/issues/116">#116</a> and <a href="https://github.com/bernii/gauge.js/issues/117">#117</a>), performance improvements.
-  </p>
+  <h3 id="v1.3.3">Version 1.3.3 (09.04.2017)</h3>
+    <p>
+    Improved protection for non-numerical inputs to .set(), which could cause problems like <a href="https://github.com/bernii/gauge.js/issues/124">#124</a>.
+    </p>
 
-<h3 id="v1.3.1">Version 1.3.1 (05.02.2017)</h3>
-  Highlights:
-<ul>
-  <li>Added option 'minLimit' and improved max/min-hit value a lot (<a href="https://github.com/bernii/gauge.js/issues/84">issue #84</a>).</li>
-  <li>Fixed multiple pointers color problem, issue <a href="https://github.com/bernii/gauge.js/issues/26">#26</a> and <a href="https://github.com/bernii/gauge.js/issues/72">#72</a>.</li>
-  <li>Added ability to scale the gauge radius to deal with issue <a href="https://github.com/bernii/gauge.js/issues/112">#112</a>.</li>
-</ul>
-  <p>
-  A couple of other bugs and issues sorted out as well.
-  </p>
+    <h3 id="v1.3.2">Version 1.3.2 (11.02.2017)</h3>
+    <p>
+    Bug-fixes (<a href="https://github.com/bernii/gauge.js/issues/116">#116</a> and <a href="https://github.com/bernii/gauge.js/issues/117">#117</a>), performance improvements.
+    </p>
 
-<h3 id="v1.3">Version 1.3 (07.01.2017)</h3>
-  <p>
-  This version is a mix of new functionality and various smaller fixes and improvements. Some of the inner transformations
-  and options definition have been slightly altered/improved and made more consistent.
-  </p>
-  Highlights:
-<ul>
-  <li>New feature: Value lables above the dial.</li>
-  <li>New feature: Static color setting of the dial <a href="https://github.com/bernii/gauge.js/issues/81">issue #81</a>. Based on <a href="https://github.com/rsreimer">rsreimer</a>'s work.</li>
-  <li>Gauge dial can be more than 180 degress. Negative options.angle allowed. (New feature)</li>
-  <li>Better scaling in parent canvas. (Improvement)</li>
-  <li>Set numerical precision for value fiels (Improvement)</li>
-</ul>
+  <h3 id="v1.3.1">Version 1.3.1 (05.02.2017)</h3>
+    Highlights:
+  <ul>
+    <li>Added option 'minLimit' and improved max/min-hit value a lot (<a href="https://github.com/bernii/gauge.js/issues/84">issue #84</a>).</li>
+    <li>Fixed multiple pointers color problem, issue <a href="https://github.com/bernii/gauge.js/issues/26">#26</a> and <a href="https://github.com/bernii/gauge.js/issues/72">#72</a>.</li>
+    <li>Added ability to scale the gauge radius to deal with issue <a href="https://github.com/bernii/gauge.js/issues/112">#112</a>.</li>
+  </ul>
+    <p>
+    A couple of other bugs and issues sorted out as well.
+    </p>
 
-<h3 id="v1.2.1">Version 1.2.1 (9.03.2014)</h3>
-<ul>
-  <li>Proper handling of color params <a href="https://github.com/bernii/gauge.js/issues/47">issue #47</a>.</li>
-  <li>Moved percentage color to example/docs + <a href="http://jsfiddle.net/berni/Yb4d7/">JSFiddle</a></li>
-</ul>
+  <h3 id="v1.3">Version 1.3 (07.01.2017)</h3>
+    <p>
+    This version is a mix of new functionality and various smaller fixes and improvements. Some of the inner transformations
+    and options definition have been slightly altered/improved and made more consistent.
+    </p>
+    Highlights:
+  <ul>
+    <li>New feature: Value lables above the dial.</li>
+    <li>New feature: Static color setting of the dial <a href="https://github.com/bernii/gauge.js/issues/81">issue #81</a>. Based on <a href="https://github.com/rsreimer">rsreimer</a>'s work.</li>
+    <li>Gauge dial can be more than 180 degress. Negative options.angle allowed. (New feature)</li>
+    <li>Better scaling in parent canvas. (Improvement)</li>
+    <li>Set numerical precision for value fiels (Improvement)</li>
+  </ul>
 
-<h3 id="v1.2">Version 1.2 (16.08.2012)</h3>
-<ul>
-  <li>Prototype chain fix. See <a href="https://github.com/bernii/gauge.js/issues/7">issue #7</a>.</li>
-  <li>Refactored code a bit to make it more flexible. Default class that has some extra features like gradient shadows is called Donut while more flexible one (for devs) is called BaseDonut - use it if you would don't need extra automatic stuff.</li>
-  <li>Ability to scale gauges (requested via email) - example at <a href="http://jsfiddle.net/7Z2z2/">JSFiddle</a></li>
-</ul>
+  <h3 id="v1.2.1">Version 1.2.1 (9.03.2014)</h3>
+  <ul>
+    <li>Proper handling of color params <a href="https://github.com/bernii/gauge.js/issues/47">issue #47</a>.</li>
+    <li>Moved percentage color to example/docs + <a href="http://jsfiddle.net/berni/Yb4d7/">JSFiddle</a></li>
+  </ul>
 
-<h3 id="v1.1">Version 1.1 (15.08.2012)</h3>
-<ul>
-  <li>Fixed color picker <a href="https://github.com/bernii/gauge.js/issues/2">bug</a> in FF & Opera</li>
-  <li>Added a shadow option. See <a href="https://github.com/bernii/gauge.js/pull/5">issue #5</a>.</li>
-  <li>Added multiple pointer option (requested via email). This needed some code refactoring. No demo for it yet. Use array of values to check it ex. gauge.set([44, 554]);</li>
-  <li>Added wrapper for formatting text output <a href="https://github.com/bernii/gauge.js/issues/4">issue #4</a>.</li>
-</ul>
+  <h3 id="v1.2">Version 1.2 (16.08.2012)</h3>
+  <ul>
+    <li>Prototype chain fix. See <a href="https://github.com/bernii/gauge.js/issues/7">issue #7</a>.</li>
+    <li>Refactored code a bit to make it more flexible. Default class that has some extra features like gradient shadows is called Donut while more flexible one (for devs) is called BaseDonut - use it if you would don't need extra automatic stuff.</li>
+    <li>Ability to scale gauges (requested via email) - example at <a href="http://jsfiddle.net/7Z2z2/">JSFiddle</a></li>
+  </ul>
 
-<h3 id="v1.0">Version 1.0 (27.6.2012)</h3>
-<ul>
-  <li>Initial release</li>
-</ul>
+  <h3 id="v1.1">Version 1.1 (15.08.2012)</h3>
+  <ul>
+    <li>Fixed color picker <a href="https://github.com/bernii/gauge.js/issues/2">bug</a> in FF & Opera</li>
+    <li>Added a shadow option. See <a href="https://github.com/bernii/gauge.js/pull/5">issue #5</a>.</li>
+    <li>Added multiple pointer option (requested via email). This needed some code refactoring. No demo for it yet. Use array of values to check it ex. gauge.set([44, 554]);</li>
+    <li>Added wrapper for formatting text output <a href="https://github.com/bernii/gauge.js/issues/4">issue #4</a>.</li>
+  </ul>
+
+  <h3 id="v1.0">Version 1.0 (27.6.2012)</h3>
+  <ul>
+    <li>Initial release</li>
+  </ul>
+</div>
 
 <h2>Contact</h2>
 <p id="contact">
@@ -516,6 +519,7 @@ $.fn.gauge = function(opts) {
     });
     demoGauge.animationSpeed = opts.animationSpeed;
     opts.generateGradient = true;
+    console.log(opts);
     demoGauge.setOptions(opts);
     demoGauge.ctx.clearRect(0, 0, demoGauge.ctx.canvas.width, demoGauge.ctx.canvas.height);
     demoGauge.render();
@@ -579,6 +583,7 @@ $.fn.gauge = function(opts) {
       angle: 0.1,
       radiusScale:0.9,
       lineWidth: 0.2,
+      labelRotate: false,
       pointer: {
         length: 0.6,
         strokeWidth: 0.05,
