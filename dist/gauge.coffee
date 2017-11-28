@@ -192,6 +192,8 @@ class GaugePointer extends ValueUpdater
 	displayedValue: 0
 	value: 0
 	options:
+		pointerType: "triangle" # triangle / line
+		hideCentre: false
 		strokeWidth: 0.035
 		length: 0.1
 		color: "#000000"
@@ -233,16 +235,25 @@ class GaugePointer extends ValueUpdater
 		endX = Math.round(@strokeWidth * Math.cos(angle + Math.PI/2))
 		endY = Math.round(@strokeWidth * Math.sin(angle + Math.PI/2))
 
-		@ctx.beginPath()
-		@ctx.fillStyle = @options.color
-		@ctx.arc(0, 0, @strokeWidth, 0, Math.PI*2, false)
-		@ctx.fill()
-
-		@ctx.beginPath()
-		@ctx.moveTo(startX, startY)
-		@ctx.lineTo(x, y)
-		@ctx.lineTo(endX, endY)
-		@ctx.fill()
+		if(!@options.hideCentre)
+			@ctx.beginPath()
+			@ctx.fillStyle = @options.color
+			@ctx.arc(0, 0, @strokeWidth, 0, Math.PI*2, false)
+			@ctx.fill()
+			
+		if(@options.pointerType == "triangle")
+			@ctx.beginPath()
+			@ctx.moveTo(startX, startY)
+			@ctx.lineTo(x, y)
+			@ctx.lineTo(endX, endY)
+			@ctx.fill()
+		else
+			@ctx.beginPath()
+			@ctx.strokeStyle = @options.color
+			@ctx.lineWidth = @strokeWidth
+			@ctx.moveTo(0, 0)
+			@ctx.lineTo(x, y)
+			@ctx.stroke()
 
 		if @img
 			imgX = Math.round(@img.width * @options.iconScale)
@@ -292,6 +303,8 @@ class Gauge extends BaseGauge
 		gradientType: 0       	# 0 : radial, 1 : linear
 		strokeColor: "#e0e0e0"
 		pointer:
+			pointerType: "triangle"
+			hideCenter: false
 			length: 0.8
 			strokeWidth: 0.035
 			iconScale: 1.0
