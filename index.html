@@ -591,12 +591,13 @@ $.fn.gauge = function(opts) {
       },
       staticLabels: {
         font: "10px sans-serif",
-        labels: [{label:200, font: bigFont}, 
-        {label:750}, 
+        labels: [{label:0, font: bigFont}, 
+        {label:500}, 
+        {label:1000}, 
         {label:1500}, 
-        {label:2250}, 
-        {label:3000}, 
-        {label:3500, font: bigFont}],
+        {label:2000}, 
+        {label:2500}, 
+        {label:3000, font: "20px sans-serif"}],
         fractionDigits: 0
       },
       staticZones: [
@@ -604,8 +605,7 @@ $.fn.gauge = function(opts) {
         {strokeStyle: "rgb(200,100,0)", min: 500, max: 1000, height: 1.1},
         {strokeStyle: "rgb(150,150,0)", min: 1000, max: 1500, height: 1},
         {strokeStyle: "rgb(100,200,0)", min: 1500, max: 2000, height: 0.9},
-        {strokeStyle: "rgb(0,255,0)", min: 2000, max: 3100, height: 0.8},
-        {strokeStyle: "rgb(80,255,80)", min: 3100, max: 3500, height: 0.7},
+        {strokeStyle: "rgb(0,255,0)", min: 2000, max: 3000, height: 0.8},
         {strokeStyle: "rgb(130,130,130)", min: 2470, max: 2530, height: 1}        
       ],
       limitMax: false,
@@ -616,7 +616,7 @@ $.fn.gauge = function(opts) {
     document.getElementById("preview-textfield").className = "preview-textfield"; 
     demoGauge.setTextField(document.getElementById("preview-textfield"));
     demoGauge.minValue = 0;
-    demoGauge.maxValue = 3500;
+    demoGauge.maxValue = 3000;
     demoGauge.set(2122);
   };
   $(function() {
