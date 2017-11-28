@@ -1,6 +1,6 @@
 {
   "name": "gaugeJS",
-  "version": "1.3.5",
+  "version": "1.3.6",
   "description": "100% native and cool looking animated JavaScript/CoffeeScript gauge",
   "main": "dist/gauge.js",
   "repository": {

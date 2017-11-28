@@ -459,49 +459,47 @@ class Gauge extends BaseGauge
 		@ctx.restore()
 
 	renderTicks: (ticksOptions, w, h, radius) ->
+		if ticksOptions != {}
+			divisionCount = ticksOptions.divisions || 0
+			subdivisionCount = ticksOptions.subDivisions || 0
+			divColor = ticksOptions.divColor || '#fff'
+			subColor = ticksOptions.subColor || '#fff'
+			divLength = ticksOptions.divLength || 0.7; # default
+			subLength = ticksOptions.subLength || 0.2; # default
+			range = parseFloat(@maxValue) - parseFloat(@minValue) # total value range
+			rangeDivisions = parseFloat(range) / parseFloat(ticksOptions.divisions) # get division step
+			subDivisions = parseFloat(rangeDivisions) / parseFloat(ticksOptions.subDivisions)
+			currentDivision = parseFloat(@minValue)
+			currentSubDivision = 0.0 + subDivisions
+			lineWidth = range / 400 # base
+			divWidth = lineWidth * (ticksOptions.divWidth || 1)
+			subWidth = lineWidth * (ticksOptions.subWidth || 1)
 
-		#@ctx.save()
-		
-		divisionCount = ticksOptions.divisions || 0
-		subdivisionCount = ticksOptions.subDivisions || 0
-		divColor = ticksOptions.divColor || '#fff'
-		subColor = ticksOptions.subColor || '#fff'
-		divLength = ticksOptions.divLength || 0.7; # default
-		subLength = ticksOptions.subLength || 0.2; # default
-		range = parseFloat(@maxValue) - parseFloat(@minValue) # total value range
-		rangeDivisions = parseFloat(range) / parseFloat(ticksOptions.divisions) # get division step
-		subDivisions = parseFloat(rangeDivisions) / parseFloat(ticksOptions.subDivisions)
-		currentDivision = parseFloat(@minValue)
-		currentSubDivision = 0.0 + subDivisions
-		lineWidth = range / 400 # base
-		divWidth = lineWidth * (ticksOptions.divWidth || 1)
-		subWidth = lineWidth * (ticksOptions.subWidth || 1)
+			for t in [0...divisionCount + 1] by 1
+				@ctx.lineWidth = @lineWidth * divLength
+				scaleMutate = (@lineWidth / 2) * ( 1 - divLength)
+				tmpRadius = (@radius * @options.radiusScale) + scaleMutate
+				
+				@ctx.strokeStyle = divColor
+				@ctx.beginPath()
+				@ctx.arc(0, 0, tmpRadius, @getAngle(currentDivision - divWidth), @getAngle(currentDivision + divWidth), false)
+				@ctx.stroke()
 
-		for t in [0...divisionCount + 1] by 1
-			@ctx.lineWidth = @lineWidth * divLength
-			scaleMutate = (@lineWidth / 2) * ( 1 - divLength)
-			tmpRadius = (@radius * @options.radiusScale) + scaleMutate
-			
-			@ctx.strokeStyle = divColor
-			@ctx.beginPath()
-			@ctx.arc(0, 0, tmpRadius, @getAngle(currentDivision - divWidth), @getAngle(currentDivision + divWidth), false)
-			@ctx.stroke()
+				currentSubDivision = currentDivision + subDivisions
+				currentDivision += rangeDivisions
+				if t != ticksOptions.divisions && subdivisionCount > 0 # if its not the last marker then draw subs
+					for st in [0...subdivisionCount - 1] by 1
+						@ctx.lineWidth = @lineWidth * subLength
+						scaleMutate = (@lineWidth / 2) * ( 1 - subLength)
+						tmpRadius = (@radius * @options.radiusScale) + scaleMutate
+						
+						@ctx.strokeStyle = subColor
+						@ctx.beginPath()
+						@ctx.arc(0, 0, tmpRadius, @getAngle(currentSubDivision - subWidth), @getAngle(currentSubDivision + subWidth), false)
+						@ctx.stroke()
+						currentSubDivision += subDivisions
 
-			currentSubDivision = currentDivision + subDivisions
-			currentDivision += rangeDivisions
-			if t != ticksOptions.divisions && subdivisionCount > 0 # if its not the last marker then draw subs
-				for st in [0...subdivisionCount - 1] by 1
-					@ctx.lineWidth = @lineWidth * subLength
-					scaleMutate = (@lineWidth / 2) * ( 1 - subLength)
-					tmpRadius = (@radius * @options.radiusScale) + scaleMutate
-					
-					@ctx.strokeStyle = subColor
-					@ctx.beginPath()
-					@ctx.arc(0, 0, tmpRadius, @getAngle(currentSubDivision - subWidth), @getAngle(currentSubDivision + subWidth), false)
-					@ctx.stroke()
-					currentSubDivision += subDivisions
-
-		#@ctx.restore()
+			#@ctx.restore()
 
 	render: () ->
 		# Draw using canvas
@@ -565,21 +563,20 @@ class Gauge extends BaseGauge
 			@ctx.beginPath()
 			@ctx.arc(w, h, radius, displayedAngle, (2 - @options.angle) * Math.PI, false)
 			@ctx.stroke()
+			@ctx.save()
+			@ctx.translate(w, h)
 		
 		if (@options.renderTicks)
 			@renderTicks(@options.renderTicks, w, h, radius)
+
 		
 		@ctx.restore()
 		# Draw pointers from (w, h)
 
-
+		@ctx.translate(w, h)
 		for gauge in @gp
-			@ctx.translate(w, h)
 			gauge.update(true)
-			@ctx.translate(-w, -h)
-
-	
-
+		@ctx.translate(-w, -h)
 
 
 class BaseDonut extends BaseGauge

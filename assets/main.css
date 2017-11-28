@@ -46,6 +46,21 @@ ul {
    bottom: 30px;
    right: 30px;
 }
+.subDivisions {
+  background-color: rgba(255,255,255,0.2);
+  padding: 0.2em;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.subDivisions label {
+  width: 150px !important;
+}
+.subDivisions > span.fd-slider {
+  width: 80px !important;
+}
+.subDivisions > input {
+  width: 80px !important;
+}
 a {
   color: #333;
 }

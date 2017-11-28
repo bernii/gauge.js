@@ -645,56 +645,58 @@
 
     Gauge.prototype.renderTicks = function(ticksOptions, w, h, radius) {
       var currentDivision, currentSubDivision, divColor, divLength, divWidth, divisionCount, j, lineWidth, range, rangeDivisions, ref, results, scaleMutate, st, subColor, subDivisions, subLength, subWidth, subdivisionCount, t, tmpRadius;
-      divisionCount = ticksOptions.divisions || 0;
-      subdivisionCount = ticksOptions.subDivisions || 0;
-      divColor = ticksOptions.divColor || '#fff';
-      subColor = ticksOptions.subColor || '#fff';
-      divLength = ticksOptions.divLength || 0.7;
-      subLength = ticksOptions.subLength || 0.2;
-      range = parseFloat(this.maxValue) - parseFloat(this.minValue);
-      rangeDivisions = parseFloat(range) / parseFloat(ticksOptions.divisions);
-      subDivisions = parseFloat(rangeDivisions) / parseFloat(ticksOptions.subDivisions);
-      currentDivision = parseFloat(this.minValue);
-      currentSubDivision = 0.0 + subDivisions;
-      lineWidth = range / 400;
-      divWidth = lineWidth * (ticksOptions.divWidth || 1);
-      subWidth = lineWidth * (ticksOptions.subWidth || 1);
-      results = [];
-      for (t = j = 0, ref = divisionCount + 1; j < ref; t = j += 1) {
-        this.ctx.lineWidth = this.lineWidth * divLength;
-        scaleMutate = (this.lineWidth / 2) * (1 - divLength);
-        tmpRadius = (this.radius * this.options.radiusScale) + scaleMutate;
-        this.ctx.strokeStyle = divColor;
-        this.ctx.beginPath();
-        this.ctx.arc(0, 0, tmpRadius, this.getAngle(currentDivision - divWidth), this.getAngle(currentDivision + divWidth), false);
-        this.ctx.stroke();
-        currentSubDivision = currentDivision + subDivisions;
-        currentDivision += rangeDivisions;
-        if (t !== ticksOptions.divisions && subdivisionCount > 0) {
-          results.push((function() {
-            var k, ref1, results1;
-            results1 = [];
-            for (st = k = 0, ref1 = subdivisionCount - 1; k < ref1; st = k += 1) {
-              this.ctx.lineWidth = this.lineWidth * subLength;
-              scaleMutate = (this.lineWidth / 2) * (1 - subLength);
-              tmpRadius = (this.radius * this.options.radiusScale) + scaleMutate;
-              this.ctx.strokeStyle = subColor;
-              this.ctx.beginPath();
-              this.ctx.arc(0, 0, tmpRadius, this.getAngle(currentSubDivision - subWidth), this.getAngle(currentSubDivision + subWidth), false);
-              this.ctx.stroke();
-              results1.push(currentSubDivision += subDivisions);
-            }
-            return results1;
-          }).call(this));
-        } else {
-          results.push(void 0);
+      if (ticksOptions !== {}) {
+        divisionCount = ticksOptions.divisions || 0;
+        subdivisionCount = ticksOptions.subDivisions || 0;
+        divColor = ticksOptions.divColor || '#fff';
+        subColor = ticksOptions.subColor || '#fff';
+        divLength = ticksOptions.divLength || 0.7;
+        subLength = ticksOptions.subLength || 0.2;
+        range = parseFloat(this.maxValue) - parseFloat(this.minValue);
+        rangeDivisions = parseFloat(range) / parseFloat(ticksOptions.divisions);
+        subDivisions = parseFloat(rangeDivisions) / parseFloat(ticksOptions.subDivisions);
+        currentDivision = parseFloat(this.minValue);
+        currentSubDivision = 0.0 + subDivisions;
+        lineWidth = range / 400;
+        divWidth = lineWidth * (ticksOptions.divWidth || 1);
+        subWidth = lineWidth * (ticksOptions.subWidth || 1);
+        results = [];
+        for (t = j = 0, ref = divisionCount + 1; j < ref; t = j += 1) {
+          this.ctx.lineWidth = this.lineWidth * divLength;
+          scaleMutate = (this.lineWidth / 2) * (1 - divLength);
+          tmpRadius = (this.radius * this.options.radiusScale) + scaleMutate;
+          this.ctx.strokeStyle = divColor;
+          this.ctx.beginPath();
+          this.ctx.arc(0, 0, tmpRadius, this.getAngle(currentDivision - divWidth), this.getAngle(currentDivision + divWidth), false);
+          this.ctx.stroke();
+          currentSubDivision = currentDivision + subDivisions;
+          currentDivision += rangeDivisions;
+          if (t !== ticksOptions.divisions && subdivisionCount > 0) {
+            results.push((function() {
+              var k, ref1, results1;
+              results1 = [];
+              for (st = k = 0, ref1 = subdivisionCount - 1; k < ref1; st = k += 1) {
+                this.ctx.lineWidth = this.lineWidth * subLength;
+                scaleMutate = (this.lineWidth / 2) * (1 - subLength);
+                tmpRadius = (this.radius * this.options.radiusScale) + scaleMutate;
+                this.ctx.strokeStyle = subColor;
+                this.ctx.beginPath();
+                this.ctx.arc(0, 0, tmpRadius, this.getAngle(currentSubDivision - subWidth), this.getAngle(currentSubDivision + subWidth), false);
+                this.ctx.stroke();
+                results1.push(currentSubDivision += subDivisions);
+              }
+              return results1;
+            }).call(this));
+          } else {
+            results.push(void 0);
+          }
         }
+        return results;
       }
-      return results;
     };
 
     Gauge.prototype.render = function() {
-      var displayedAngle, fillStyle, gauge, h, j, k, len, len1, max, min, radius, ref, ref1, results, scaleMutate, tmpRadius, w, zone;
+      var displayedAngle, fillStyle, gauge, h, j, k, len, len1, max, min, radius, ref, ref1, scaleMutate, tmpRadius, w, zone;
       w = this.canvas.width / 2;
       h = (this.canvas.height * this.paddingTop + this.availableHeight) - ((this.radius + this.lineWidth / 2) * this.extraPadding);
       displayedAngle = this.getAngle(this.displayedValue);
@@ -757,20 +759,20 @@
         this.ctx.beginPath();
         this.ctx.arc(w, h, radius, displayedAngle, (2 - this.options.angle) * Math.PI, false);
         this.ctx.stroke();
+        this.ctx.save();
+        this.ctx.translate(w, h);
       }
       if (this.options.renderTicks) {
         this.renderTicks(this.options.renderTicks, w, h, radius);
       }
       this.ctx.restore();
+      this.ctx.translate(w, h);
       ref1 = this.gp;
-      results = [];
       for (k = 0, len1 = ref1.length; k < len1; k++) {
         gauge = ref1[k];
-        this.ctx.translate(w, h);
         gauge.update(true);
-        results.push(this.ctx.translate(-w, -h));
       }
-      return results;
+      return this.ctx.translate(-w, -h);
     };
 
     return Gauge;

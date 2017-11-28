@@ -70,6 +70,7 @@
     <label>Background:</label><input type="text" name="strokeColor" class="color" value="E0E0E0"><br>
 
     <label>Ticks:</label><input type="checkbox" id="divisionsCbx" class="renderTicks"><br>
+
     <div class="subDivisions" style="display: none;">
     <label>Divisions:</label><input type="text" name="divisions" value="5" min="0" max="20" class="renderTicks"><br>
     <label>Divisions Length:</label><input type="text" name="divLength" value="70" min="0" max="100" class="renderTicks"><br>
@@ -118,7 +119,7 @@ var opts = {
   strokeColor: '<span id="opt-strokeColor" class="lit">0</span>',  // to see which ones work best for you
   generateGradient: true,
   highDpiSupport: true,     // High resolution support
-  <div  class="subDivisions" style="display: none;">
+  <span  class="subDivisions" style="display: none;">// renderTicks is Optional
   renderTicks: {
     divisions: <span id="opt-divisions" class="lit">8</span>,
     divWidth: <span id="opt-divWidth" class="lit">1</span>,
@@ -129,7 +130,7 @@ var opts = {
     subWidth: <span id="opt-subWidth" class="lit">0.5</span>,
     subColor: <span id="opt-subColor" class="lit">#333333</span>
   }
-  <div></div>
+  </span>
 };
 var target = document.getElementById('foo'); // your canvas element
 var gauge = new <span id="class-code-name" class="typ">Gauge</span>(target).setOptions(opts); // create sexy gauge!
@@ -274,6 +275,14 @@ $.fn.gauge = function(opts) {
 </p>
 
 <h2>Changes</h2>
+
+<h3 id="v1.3.6">Version 1.3.6 (28.11.2017)</h3>
+<p>
+<ul>
+<li>Added support for scalable staticzone sections</li>
+<li>Added optional Ticks(Major/Minor)</li>
+</ul>
+</p>
 
 <h3 id="v1.3.5">Version 1.3.5 (08.07.2017)</h3>
   <p>
@@ -535,16 +544,18 @@ $.fn.gauge = function(opts) {
         {label:750}, 
         {label:1500}, 
         {label:2250}, 
-        {label:3000, font: bigFont}],
+        {label:3000}, 
+        {label:3500, font: bigFont}],
         fractionDigits: 0
       },
       staticZones: [
-        {strokeStyle: "rgb(255,0,0)", min: 0, max: 500, height: 1.4},
-        {strokeStyle: "rgb(200,100,0)", min: 500, max: 1000, height: 1.2},
+        {strokeStyle: "rgb(255,0,0)", min: 0, max: 500, height: 1.2},
+        {strokeStyle: "rgb(200,100,0)", min: 500, max: 1000, height: 1.1},
         {strokeStyle: "rgb(150,150,0)", min: 1000, max: 1500, height: 1},
-        {strokeStyle: "rgb(100,200,0)", min: 1500, max: 2000, height: 0.8},
-        {strokeStyle: "rgb(0,255,0)", min: 2000, max: 3100, height: 0.6},
-        {strokeStyle: "rgb(80,80,80)", min: 2470, max: 2530, height: 1.3}        
+        {strokeStyle: "rgb(100,200,0)", min: 1500, max: 2000, height: 0.9},
+        {strokeStyle: "rgb(0,255,0)", min: 2000, max: 3100, height: 0.8},
+        {strokeStyle: "rgb(80,255,80)", min: 3100, max: 3500, height: 0.7},
+        {strokeStyle: "rgb(130,130,130)", min: 2470, max: 2530, height: 1}        
       ],
       limitMax: false,
       limitMin: false,
@@ -554,7 +565,7 @@ $.fn.gauge = function(opts) {
     document.getElementById("preview-textfield").className = "preview-textfield"; 
     demoGauge.setTextField(document.getElementById("preview-textfield"));
     demoGauge.minValue = 0;
-    demoGauge.maxValue = 3100;
+    demoGauge.maxValue = 3500;
     demoGauge.set(2122);
   };
   $(function() {
@@ -636,7 +647,7 @@ $.fn.gauge = function(opts) {
         $("input[name=angle]").val(10);
         $("#preview-textfield").removeClass("reset").addClass("reset");
         selectGaguge1.set(1);
-        selectGaguge2.set(1) ;
+        selectGaguge2.set(1);
         selectGauge3.set(1);
         selectGauge4.set(2213);
       } else{
