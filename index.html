@@ -58,7 +58,7 @@
   
   <form id="opts" class="opts">
   	<h4>Options:</h4>
-  	<label>Current Val:</label><input type="text" name="currval" min="0" max="3000" step="25" value="1244"><br>
+  	<label>Current Val:</label><input type="text" name="currval" id="currval" min="0" max="3000" step="25" value="1244"><br>
     <label>Anim speed:</label><input type="text" name="animationSpeed" min="1" max="128" step="1" value="32"><br><br>
     <label>Angle:</label><input id="input-angle" type="text" name="angle" min="-50" max="50" step="1" value="15"><br>
     <label>Line width:</label><input id="input-line-width" type="text" name="lineWidth" min="0" max="70" value="44"><br>
@@ -405,6 +405,8 @@ $.fn.gauge = function(opts) {
   function autoAnimate(){
     var newValue = demoGauge.minValue + Math.floor(Math.random() * demoGauge.maxValue) ;
     demoGauge.set(newValue);
+    $('[name=currval]').val(newValue);
+    fdSlider.updateSlider('currval');
     setTimerHolder();
   }
   $('#animator').on('click', function(){
