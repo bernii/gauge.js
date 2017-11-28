@@ -201,7 +201,7 @@ class GaugePointer extends ValueUpdater
 	img: null
 
 	constructor: (@gauge) ->
-		super()
+		#super()
 		if @gauge is undefined
 			throw new Error 'The element isn\'t defined.'
 		@ctx = @gauge.ctx
@@ -233,13 +233,11 @@ class GaugePointer extends ValueUpdater
 		endX = Math.round(@strokeWidth * Math.cos(angle + Math.PI/2))
 		endY = Math.round(@strokeWidth * Math.sin(angle + Math.PI/2))
 
-		console.log(@strokeWidth, startX, startY, @length, endX, endY, @img)
-
-		@ctx.fillStyle = @options.color
 		@ctx.beginPath()
-		@ctx.arc(0, 0, @strokeWidth, 0, Math.PI*2, true)
+		@ctx.fillStyle = @options.color
+		@ctx.arc(0, 0, @strokeWidth, 0, Math.PI*2, false)
 		@ctx.fill()
-	
+
 		@ctx.beginPath()
 		@ctx.moveTo(startX, startY)
 		@ctx.lineTo(x, y)
@@ -286,7 +284,7 @@ class Gauge extends BaseGauge
 	displayedValue: 0
 	lineWidth: 40
 	paddingTop: 0.1
-	paddingBottom: 0.2
+	paddingBottom: 0.1
 	percentColors: null,
 	options:
 		colorStart: "#6fadcf"
@@ -318,7 +316,7 @@ class Gauge extends BaseGauge
 
 		@gp = [new GaugePointer(@)]
 		@setOptions()
-		@render()
+		
 
 	setOptions: (options=null) ->
 		super(options)
@@ -331,10 +329,11 @@ class Gauge extends BaseGauge
 		@lineWidth = @availableHeight * @options.lineWidth # .2 - .7
 		@radius = (@availableHeight - @lineWidth/2) / (1.0 + @extraPadding)
 		@ctx.clearRect(0, 0, @canvas.width, @canvas.height)
-		# @render()
+		
 		for gauge in @gp
 			gauge.setOptions(@options.pointer)
 			gauge.render()
+		@render()
 		return @
 
 	configPercentColors: () ->
@@ -460,16 +459,9 @@ class Gauge extends BaseGauge
 		@ctx.restore()
 
 	renderTicks: (ticksOptions, w, h, radius) ->
-		# ticks = 
-		# {divisions: x (count of big divisions, 
-		# subDivisions: y (count of subDivisions within a division), 
-		# divColor: color,
-		# subColor: color,
-		# divLength: 90,
-		# subLength: 40 }
+
+		#@ctx.save()
 		
-		@ctx.save()
-		#@ctx.translate(w, h)
 		divisionCount = ticksOptions.divisions || 0
 		subdivisionCount = ticksOptions.subDivisions || 0
 		divColor = ticksOptions.divColor || '#fff'
@@ -509,18 +501,18 @@ class Gauge extends BaseGauge
 					@ctx.stroke()
 					currentSubDivision += subDivisions
 
-		@ctx.restore()
+		#@ctx.restore()
 
 	render: () ->
 		# Draw using canvas
 		w = @canvas.width / 2
-		h = @canvas.height*@paddingTop + @availableHeight - (@radius + @lineWidth/2)*@extraPadding
+		#h = (@canvas.height * @paddingTop + @availableHeight) - ((@radius + @lineWidth / 2) * @extraPadding)
+		h = (@canvas.height * @paddingTop + @availableHeight) - ((@radius + @lineWidth /2) * @extraPadding)
 		displayedAngle = @getAngle(@displayedValue)
 		if @textField
 			@textField.render(@)
 
 		@ctx.lineCap = "butt"
-
 		radius = @radius * @options.radiusScale
 		if (@options.staticLabels)
 			@renderStaticLabels(@options.staticLabels, w, h, radius)
@@ -574,16 +566,21 @@ class Gauge extends BaseGauge
 			@ctx.arc(w, h, radius, displayedAngle, (2 - @options.angle) * Math.PI, false)
 			@ctx.stroke()
 		
-		if(@options.renderTicks)
+		if (@options.renderTicks)
 			@renderTicks(@options.renderTicks, w, h, radius)
 		
 		@ctx.restore()
 		# Draw pointers from (w, h)
-		@ctx.translate(w, h)
-		for gauge in @gp
-			gauge.update(true)
 
-		@ctx.translate(-w, -h)
+
+		for gauge in @gp
+			@ctx.translate(w, h)
+			gauge.update(true)
+			@ctx.translate(-w, -h)
+
+	
+
+
 
 class BaseDonut extends BaseGauge
 	lineWidth: 15
