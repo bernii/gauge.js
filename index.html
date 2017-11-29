@@ -68,6 +68,19 @@
     <label>Color start:</label><input type="text" name="colorStart" class="color" value="6FADCF"><br>
     <label>Color stop:</label><input type="text" name="colorStop" class="color" value="8FC0DA"><br>
     <label>Background:</label><input type="text" name="strokeColor" class="color" value="E0E0E0"><br>
+
+    <label>Ticks:</label><input type="checkbox" id="divisionsCbx" class="renderTicks"><br>
+
+    <div class="subDivisions" style="display: none;">
+    <label>Divisions:</label><input type="text" name="divisions" value="5" min="0" max="20" class="renderTicks"><br>
+    <label>Divisions Length:</label><input type="text" name="divLength" value="70" min="0" max="100" class="renderTicks"><br>
+    <label>Division Color:</label><input type="text" name="divColor" value="333333" class="color renderTicks"><br>
+    <label>Division indicator width:</label><input type="text" name="divWidth" value="11" min="1" max="100" class="renderTicks"><br>
+    <label>SubDivisions:</label><input type="text" name="subDivisions" value="3" min="0" max="20" class="renderTicks"><br>
+    <label>SubDivisions Length:</label><input type="text" name="subLength" value="50" min="0" max="100" class="renderTicks"><br>
+    <label>SubDivisions Color:</label><input type="text" name="subColor" value="666666" class="color renderTicks"><br>
+    <label>SubDivisions indicator width:</label><input type="text" name="subWidth" value="6" min="1" max="100" class="renderTicks"><br>
+    </div>
   </form>
 
   <br clear="left">
@@ -105,7 +118,19 @@ var opts = {
   colorStop: '<span id="opt-colorStop" class="lit">0</span>',    // just experiment with them
   strokeColor: '<span id="opt-strokeColor" class="lit">0</span>',  // to see which ones work best for you
   generateGradient: true,
-  highDpiSupport: true     // High resolution support
+  highDpiSupport: true,     // High resolution support
+  <span  class="subDivisions" style="display: none;">// renderTicks is Optional
+  renderTicks: {
+    divisions: <span id="opt-divisions" class="lit">8</span>,
+    divWidth: <span id="opt-divWidth" class="lit">1</span>,
+    divLength: <span id="opt-divLength" class="lit">0.8</span>,
+    divColor: <span id="opt-divColor" class="lit">#333333</span>,
+    subDivisions: <span id="opt-subDivisions" class="lit">3</span>,
+    subLength: <span id="opt-subLength" class="lit">0.5</span>,
+    subWidth: <span id="opt-subWidth" class="lit">0.5</span>,
+    subColor: <span id="opt-subColor" class="lit">#333333</span>
+  }
+  </span>
 };
 var target = document.getElementById('foo'); // your canvas element
 var gauge = new <span id="class-code-name" class="typ">Gauge</span>(target).setOptions(opts); // create sexy gauge!
@@ -138,6 +163,7 @@ staticLabels: {
   color: "#000000",  // Optional: Label text color
   fractionDigits: 0  // Optional: Numerical precision. 0=round off.
 },
+
 </pre>
   </li>
   <li>
@@ -152,8 +178,51 @@ staticZones: [
    {strokeStyle: "#F03E3E", min: 260, max: 300}  // Red
 ],
 </pre>
-    <p>staticZones, percentColors and gradient are mutually exclusive. If staticZones is defined, it will take precedence.</p>
-    <p>Note: Zones should always be defined within the gauge objects .minValue and .maxValue limits.</p>
+<p>staticZones, percentColors and gradient are mutually exclusive. If staticZones is defined, it will take precedence.</p>
+<p>Note: Zones should always be defined within the gauge objects .minValue and .maxValue limits.</p>
+</li>
+<li>
+    <p>Additionally, a <b>height</b> parameter may be passed in to increase the size of the zone (see example 4 gauge above).</p>
+  <pre class="prettyprint">
+  staticZones: [
+    {strokeStyle: "rgb(255,0,0)", min: 0, max: 500, height: 1.4},
+    {strokeStyle: "rgb(200,100,0)", min: 500, max: 1000, height: 1.2},
+    {strokeStyle: "rgb(150,150,0)", min: 1000, max: 1500, height: 1},
+    {strokeStyle: "rgb(100,200,0)", min: 1500, max: 2000, height: 0.8},
+    {strokeStyle: "rgb(0,255,0)", min: 2000, max: 3100, height: 0.6}
+  ],
+  </pre>
+  <p>Note:
+    <pre class="prettyprint">{strokeStyle: "rgb(80,80,80)", min: 2470, max: 2530, height: 1.3}</pre> 
+    You can use this as an additional indicator (like in example 4) by making its color stand out, having a tall height and narrow range.</p>
+  </li>
+  <li>
+    <b>Tick marks</b>
+    <p>Now you may also add Ticks on two levels, major and minor (or divisions and sub divisions).</p>
+    renderTicks options:
+    <ul>
+      <li><b>divisions</b> This is the number of major divisions around your arc.</li>
+      <li><b>divWidth</b> This is to set the width of the indicator.</li>
+      <li><b>divLength</b> This is a fractional percentage of the height of your arc line (0.5 = 50%)</li>
+      <li><b>divColor</b> This sets the color of the division markers</li>
+      <li><b>subDivisions</b> This sets the minor tick marks count between major ticks.</li>
+      <li><b>subLength</b> This is a fractional percentage of the height of your arc line (0.5 = 50%)</li>
+      <li><b>subWidth</b> This is to set the width of the indicator.</li>
+      <li><b>subColor</b> This sets the color of the subdivision markers</li>
+    </ul>
+    <p>Example:</p>
+    <pre class="prettyprint">
+        renderTicks: {
+          divisions: 5,
+          divWidth: 1.1,
+          divLength: 0.7,
+          divColor: #333333,
+          subDivisions: 3,
+          subLength: 0.5,
+          subWidth: 0.6,
+          subColor: #666666
+        }
+    </pre>
   </li>
   <li>
     <b>Gauge pointer tip icon</b>
@@ -206,6 +275,16 @@ $.fn.gauge = function(opts) {
 </p>
 
 <h2>Changes</h2>
+
+<h3 id="v1.3.6">Version 1.3.6 (28.11.2017)</h3>
+<p>
+<ul>
+<li>Added support for scalable staticzone sections</li>
+<li>Added optional Ticks(Major/Minor)</li>
+<li>Fixed <a href='https://github.com/bernii/gauge.js/pull/146'>issue #146</a>: Prevent requestAnimationFrame() callbacks from piling up</li>
+<li>Fixed <a href='https://github.com/bernii/gauge.js/pull/147'>issue #147</a>: Correct use of options.generateGradient for Donut </li>
+</ul>
+</p>
 
 <h3 id="v1.3.5">Version 1.3.5 (08.07.2017)</h3>
   <p>
@@ -297,11 +376,59 @@ $.fn.gauge = function(opts) {
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 <script type="text/javascript" src="assets/fd-slider/fd-slider.js"></script>
 <script src="dist/gauge.js"></script>
-<script>
+
+<script type="text/javascript">
   prettyPrint();
+
+  $('#divisionsCbx').click(function(){
+    $('.subDivisions').toggle();
+    fdSlider.redrawAll();
+  })
+
   function update() {
     var opts = {};
-    $('.opts input[min], .opts .color').each(function() {
+    var tmp_opts = opts;
+    tmp_opts.renderTicks = {};
+
+    if ($('.subDivisions:visible').length) {
+    $('.renderTicks').each(function() {
+      var val = $(this).hasClass("color") ? this.value : parseFloat(this.value);
+      if($(this).hasClass("color")){
+        val = "#" + val;
+      }
+      if (this.name.indexOf("divLength") != -1 ||
+      this.name.indexOf("subLength") != -1) {
+        val /= 100;
+      }
+      if (this.name.indexOf("divWidth") != -1 ||
+      this.name.indexOf("subWidth") != -1) {
+        val /= 10;
+      }
+
+      $('#opt-' + this.name.replace(".", "-")).text(val);
+
+      if(this.name.indexOf(".") != -1){
+      	var elems = this.name.split(".");
+
+      	for (var i=0; i < elems.length - 1; i++) {
+      		if (!(elems[i] in tmp_opts)) {
+      			tmp_opts.renderTicks[elems[i]] = {};
+      		}
+      		tmp_opts = tmp_opts.renderTicks[elems[i]];
+      	}
+      	tmp_opts.renderTicks[elems[elems.length - 1]] = val;
+      } else if ($(this).hasClass("color")) {
+        // color picker is removing # from color values
+      	opts.renderTicks[this.name] = "#" + this.value
+        $('#opt-' + this.name.replace(".", "-")).text("#" + this.value);
+      } else {
+      	opts.renderTicks[this.name] = val;
+      }
+    });
+  }
+
+
+    $('.opts input[min], .opts .color').not('.renderTicks').each(function() {
       var val = $(this).hasClass("color") ? this.value : parseFloat(this.value);
       if($(this).hasClass("color")){
         val = "#" + val;
@@ -309,6 +436,7 @@ $.fn.gauge = function(opts) {
       if(this.name.indexOf("lineWidth") != -1 ||
         this.name.indexOf("radiusScale") != -1 ||
         this.name.indexOf("angle") != -1 ||
+
         this.name.indexOf("pointer.length") != -1){
         val /= 100;
       }else if(this.name.indexOf("pointer.strokeWidth") != -1){
@@ -350,6 +478,7 @@ $.fn.gauge = function(opts) {
     if ($('#share').is(':checked')) {
       window.location.replace('#?' + $('form').serialize());
     }
+
   }
   function initGauge(){
     document.getElementById("class-code-name").innerHTML = "Gauge";
@@ -401,7 +530,7 @@ $.fn.gauge = function(opts) {
   function initNew(){
     document.getElementById("class-code-name").innerHTML = "Gauge";
     demoGauge = new Gauge(document.getElementById("canvas-preview"));
-    var bigFont = "15px sans-serif";
+    var bigFont = "14px sans-serif";
     var opts = {
       angle: 0.1,
       radiusScale:0.9,
@@ -417,16 +546,18 @@ $.fn.gauge = function(opts) {
         {label:750}, 
         {label:1500}, 
         {label:2250}, 
-        {label:3000, font: bigFont}],
+        {label:3000}, 
+        {label:3500, font: bigFont}],
         fractionDigits: 0
       },
       staticZones: [
-        {strokeStyle: "rgb(255,0,0)", min: 0, max: 500, height: 1.4},
-        {strokeStyle: "rgb(200,100,0)", min: 500, max: 1000, height: 1.2},
+        {strokeStyle: "rgb(255,0,0)", min: 0, max: 500, height: 1.2},
+        {strokeStyle: "rgb(200,100,0)", min: 500, max: 1000, height: 1.1},
         {strokeStyle: "rgb(150,150,0)", min: 1000, max: 1500, height: 1},
-        {strokeStyle: "rgb(100,200,0)", min: 1500, max: 2000, height: 0.8},
-        {strokeStyle: "rgb(0,255,0)", min: 2000, max: 3000, height: 0.6},
-        {strokeStyle: "rgb(80,80,80)", min: 2470, max: 2530, height: 1.3}        
+        {strokeStyle: "rgb(100,200,0)", min: 1500, max: 2000, height: 0.9},
+        {strokeStyle: "rgb(0,255,0)", min: 2000, max: 3100, height: 0.8},
+        {strokeStyle: "rgb(80,255,80)", min: 3100, max: 3500, height: 0.7},
+        {strokeStyle: "rgb(130,130,130)", min: 2470, max: 2530, height: 1}        
       ],
       limitMax: false,
       limitMin: false,
@@ -436,7 +567,7 @@ $.fn.gauge = function(opts) {
     document.getElementById("preview-textfield").className = "preview-textfield"; 
     demoGauge.setTextField(document.getElementById("preview-textfield"));
     demoGauge.minValue = 0;
-    demoGauge.maxValue = 3000;
+    demoGauge.maxValue = 3500;
     demoGauge.set(2122);
   };
   $(function() {
@@ -503,13 +634,10 @@ $.fn.gauge = function(opts) {
           $("input[name=colorStop]").prop('disabled', true);
           $("input[name=strokeColor]").prop('disabled', true);
 
-          selectGaguge1.set(2000);
-          selectGaguge2.set(1);
-          selectGauge3.set(3000);
           $("input[name=colorStop]").prop('disabled', true);
           $("input[name=strokeColor]").prop('disabled', true);
 
-          selectGaguge1.set(2000);
+          selectGaguge1.set(1);
           selectGaguge2.set(1);
           selectGauge3.set(3000);
           selectGauge4.set(1);
@@ -521,7 +649,7 @@ $.fn.gauge = function(opts) {
         $("input[name=angle]").val(10);
         $("#preview-textfield").removeClass("reset").addClass("reset");
         selectGaguge1.set(1);
-        selectGaguge2.set(1) ;
+        selectGaguge2.set(1);
         selectGauge3.set(1);
         selectGauge4.set(2213);
       } else{
@@ -560,7 +688,7 @@ $.fn.gauge = function(opts) {
       angle: 0.1,
       lineWidth: 0.2,
       pointer: {
-        length: 0.6,
+        length: 0.5,
         strokeWidth: 0.05,
         color: '#000000'
       },
@@ -575,6 +703,7 @@ $.fn.gauge = function(opts) {
       limitMin: false,
       highDpiSupport: true
     };
+    selectGauge4.minValue = 0;
     selectGauge4.maxValue = 3000;
     selectGauge4.setOptions(opts2);
     selectGauge4.set(2122);

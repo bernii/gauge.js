@@ -321,7 +321,6 @@
 
     function GaugePointer(gauge1) {
       this.gauge = gauge1;
-      GaugePointer.__super__.constructor.call(this);
       if (this.gauge === void 0) {
         throw new Error('The element isn\'t defined.');
       }
@@ -357,9 +356,9 @@
       startY = Math.round(this.strokeWidth * Math.sin(angle - Math.PI / 2));
       endX = Math.round(this.strokeWidth * Math.cos(angle + Math.PI / 2));
       endY = Math.round(this.strokeWidth * Math.sin(angle + Math.PI / 2));
-      this.ctx.fillStyle = this.options.color;
       this.ctx.beginPath();
-      this.ctx.arc(0, 0, this.strokeWidth, 0, Math.PI * 2, true);
+      this.ctx.fillStyle = this.options.color;
+      this.ctx.arc(0, 0, this.strokeWidth, 0, Math.PI * 2, false);
       this.ctx.fill();
       this.ctx.beginPath();
       this.ctx.moveTo(startX, startY);
@@ -471,7 +470,6 @@
       this.canvas.width = w;
       this.gp = [new GaugePointer(this)];
       this.setOptions();
-      this.render();
     }
 
     Gauge.prototype.setOptions = function(options) {
@@ -496,6 +494,7 @@
         gauge.setOptions(this.options.pointer);
         gauge.render();
       }
+      this.render();
       return this;
     };
 
@@ -644,10 +643,62 @@
       return this.ctx.restore();
     };
 
+    Gauge.prototype.renderTicks = function(ticksOptions, w, h, radius) {
+      var currentDivision, currentSubDivision, divColor, divLength, divWidth, divisionCount, j, lineWidth, range, rangeDivisions, ref, results, scaleMutate, st, subColor, subDivisions, subLength, subWidth, subdivisionCount, t, tmpRadius;
+      if (ticksOptions !== {}) {
+        divisionCount = ticksOptions.divisions || 0;
+        subdivisionCount = ticksOptions.subDivisions || 0;
+        divColor = ticksOptions.divColor || '#fff';
+        subColor = ticksOptions.subColor || '#fff';
+        divLength = ticksOptions.divLength || 0.7;
+        subLength = ticksOptions.subLength || 0.2;
+        range = parseFloat(this.maxValue) - parseFloat(this.minValue);
+        rangeDivisions = parseFloat(range) / parseFloat(ticksOptions.divisions);
+        subDivisions = parseFloat(rangeDivisions) / parseFloat(ticksOptions.subDivisions);
+        currentDivision = parseFloat(this.minValue);
+        currentSubDivision = 0.0 + subDivisions;
+        lineWidth = range / 400;
+        divWidth = lineWidth * (ticksOptions.divWidth || 1);
+        subWidth = lineWidth * (ticksOptions.subWidth || 1);
+        results = [];
+        for (t = j = 0, ref = divisionCount + 1; j < ref; t = j += 1) {
+          this.ctx.lineWidth = this.lineWidth * divLength;
+          scaleMutate = (this.lineWidth / 2) * (1 - divLength);
+          tmpRadius = (this.radius * this.options.radiusScale) + scaleMutate;
+          this.ctx.strokeStyle = divColor;
+          this.ctx.beginPath();
+          this.ctx.arc(0, 0, tmpRadius, this.getAngle(currentDivision - divWidth), this.getAngle(currentDivision + divWidth), false);
+          this.ctx.stroke();
+          currentSubDivision = currentDivision + subDivisions;
+          currentDivision += rangeDivisions;
+          if (t !== ticksOptions.divisions && subdivisionCount > 0) {
+            results.push((function() {
+              var k, ref1, results1;
+              results1 = [];
+              for (st = k = 0, ref1 = subdivisionCount - 1; k < ref1; st = k += 1) {
+                this.ctx.lineWidth = this.lineWidth * subLength;
+                scaleMutate = (this.lineWidth / 2) * (1 - subLength);
+                tmpRadius = (this.radius * this.options.radiusScale) + scaleMutate;
+                this.ctx.strokeStyle = subColor;
+                this.ctx.beginPath();
+                this.ctx.arc(0, 0, tmpRadius, this.getAngle(currentSubDivision - subWidth), this.getAngle(currentSubDivision + subWidth), false);
+                this.ctx.stroke();
+                results1.push(currentSubDivision += subDivisions);
+              }
+              return results1;
+            }).call(this));
+          } else {
+            results.push(void 0);
+          }
+        }
+        return results;
+      }
+    };
+
     Gauge.prototype.render = function() {
       var displayedAngle, fillStyle, gauge, h, j, k, len, len1, max, min, radius, ref, ref1, scaleMutate, tmpRadius, w, zone;
       w = this.canvas.width / 2;
-      h = this.canvas.height * this.paddingTop + this.availableHeight - (this.radius + this.lineWidth / 2) * this.extraPadding;
+      h = (this.canvas.height * this.paddingTop + this.availableHeight) - ((this.radius + this.lineWidth / 2) * this.extraPadding);
       displayedAngle = this.getAngle(this.displayedValue);
       if (this.textField) {
         this.textField.render(this);
@@ -683,7 +734,6 @@
           this.ctx.arc(0, 0, tmpRadius, this.getAngle(min), this.getAngle(max), false);
           this.ctx.stroke();
         }
-        this.ctx.restore();
       } else {
         if (this.options.customFillStyle !== void 0) {
           fillStyle = this.options.customFillStyle(this);
@@ -709,7 +759,13 @@
         this.ctx.beginPath();
         this.ctx.arc(w, h, radius, displayedAngle, (2 - this.options.angle) * Math.PI, false);
         this.ctx.stroke();
+        this.ctx.save();
+        this.ctx.translate(w, h);
       }
+      if (this.options.renderTicks) {
+        this.renderTicks(this.options.renderTicks, w, h, radius);
+      }
+      this.ctx.restore();
       this.ctx.translate(w, h);
       ref1 = this.gp;
       for (k = 0, len1 = ref1.length; k < len1; k++) {
