@@ -146,6 +146,7 @@ h3 {
   _background: none;
   _filter:progid:DXImageTransform.Microsoft.AlphaImageLoader(src=ribbon.png);
 }
+
 #preview {
   background: #f9f9f9; position: relative;
   color: #fff;
