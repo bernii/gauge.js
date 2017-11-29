@@ -593,6 +593,7 @@ class BaseDonut extends BaseGauge
 		shadowColor: "#d5d5d5"
 		angle: 0.35
 		radiusScale: 1.0
+		lineCap: "round"
 
 	constructor: (@canvas) ->
 		super()
@@ -646,7 +647,7 @@ class BaseDonut extends BaseGauge
 		@ctx.beginPath()
 		@ctx.arc(w, h, @radius, (1 - @options.angle) * Math.PI, (2 + @options.angle) * Math.PI, false)
 		@ctx.lineWidth = @lineWidth
-		@ctx.lineCap = "round"
+		@ctx.lineCap = @options.lineCap
 		@ctx.stroke()
 
 		@ctx.strokeStyle = grdFill
