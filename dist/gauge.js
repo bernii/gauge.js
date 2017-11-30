@@ -723,7 +723,7 @@
           if (this.options.limitMax && max > this.maxValue) {
             max = this.maxValue;
           }
-          tmpRadius = this.radius;
+          tmpRadius = this.radius * this.options.radiusScale;
           if (zone.height) {
             this.ctx.lineWidth = this.lineWidth * zone.height;
             scaleMutate = (this.lineWidth / 2) * (zone.offset || 1 - zone.height);
