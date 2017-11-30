@@ -544,8 +544,8 @@ class Gauge extends BaseGauge
 				max = zone.max
 				if @options.limitMax and max > @maxValue
 					max = @maxValue
-				tmpRadius = @radius
-				if (zone.height) 
+				tmpRadius = (@radius * @options.radiusScale)
+				if (zone.height)
 					@ctx.lineWidth = @lineWidth * zone.height
 					scaleMutate = (@lineWidth / 2) * (zone.offset || 1 - zone.height)
 					tmpRadius = (@radius * @options.radiusScale) + scaleMutate
