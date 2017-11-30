@@ -118,9 +118,9 @@ var opts = {
   lineWidth: <span id="opt-lineWidth" class="lit">5</span>, // The line thickness
   radiusScale: <span id="opt-radiusScale" class="lit">1.0</span>, // Relative radius
   pointer: {
-    pointerType: '<span id="opt-pointerType" class="lit">triangle</span>', // triangle / line 
-    pointerEnd: '<span id="opt-pointerEnd" class="lit">butt</span>', // butt / round / square 
-    hideCentre: <span id="opt-hideCentre" class="lit">false</span>, // show/hide pointer center circle 
+    pointerType: '<span id="opt-pointerType" class="lit">triangle</span>', // [triangle] / line 
+    pointerEnd: '<span id="opt-pointerEnd" class="lit">butt</span>', // butt / round / square (line)
+    hideCentre: <span id="opt-hideCentre" class="lit">false</span>, // [show]/hide pointer center circle 
     length: <span id="opt-pointer-length" class="lit">10</span>, // Relative to gauge radius
     strokeWidth: <span id="opt-pointer-strokeWidth" class="lit">0</span>, // The thickness
     color: '<span id="opt-pointer-color" class="lit">#000000</span>' // Fill color
@@ -289,11 +289,18 @@ $.fn.gauge = function(opts) {
 
 <h2>Changes</h2>
 
+<h3 id="v1.3.7">Version 1.3.7 (30.11.2017)</h3>
+<p>
+<ul>
+<li>Added pointer/indicator options for Gauge type</li>
+</ul>
+</p>
+
 <h3 id="v1.3.6">Version 1.3.6 (28.11.2017)</h3>
 <p>
 <ul>
-<li>Added support for scalable staticzone sections</li>
-<li>Added optional Ticks(Major/Minor)</li>
+<li>Added support for scalable staticZone section heights on Gauge type</li>
+<li>Added optional Ticks(Major/Minor) on Gauge type</li>
 </ul>
 </p>
 
