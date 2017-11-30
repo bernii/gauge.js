@@ -39,7 +39,7 @@ do () ->
 
 secondsToString = (sec) ->
 	hr = Math.floor(sec / 3600)
-	min = Math.floor((sec - (hr * 3600))/60)
+	min = Math.floor((sec - (hr * 3600)) / 60)
 	sec -= ((hr * 3600) + (min * 60))
 	sec += ''
 	min += ''
@@ -77,16 +77,16 @@ addCommas = (nStr) ->
 
 cutHex = (nStr) ->
 	if nStr.charAt(0) == "#"
-		return nStr.substring(1,7)
+		return nStr.substring(1, 7)
 	return nStr
 
 class ValueUpdater
 	animationSpeed: 32
-	constructor: (addToAnimationQueue=true, @clear=true) ->
+	constructor: (addToAnimationQueue = true, @clear = true) ->
 		if addToAnimationQueue
 			AnimationUpdater.add(@)
 
-	update: (force=false) ->
+	update: (force = false) ->
 		if force or @displayedValue != @value
 			if @ctx and @clear
 				@ctx.clearRect(0, 0, @canvas.width, @canvas.height)
@@ -106,13 +106,13 @@ class BaseGauge extends ValueUpdater
 	setTextField: (textField, fractionDigits) ->
 		@textField = if textField instanceof TextRenderer then textField else new TextRenderer(textField, fractionDigits)
 
-	setMinValue: (@minValue, updateStartValue=true) ->
+	setMinValue: (@minValue, updateStartValue = true) ->
 		if updateStartValue
 			@displayedValue = @minValue
 			for gauge in @gp or []
 				gauge.displayedValue = @minValue
 
-	setOptions: (options=null) ->
+	setOptions: (options = null) ->
 		@options = mergeObjects(@options, options)
 		if @textField
 			@textField.el.style.fontSize = options.fontSize + 'px'
@@ -167,7 +167,7 @@ class AnimatedText extends ValueUpdater
 	setVal: (value) ->
 		@value = 1 * value
 
-	constructor: (@elem, @text=false) ->
+	constructor: (@elem, @text = false) ->
 		super()
 		if @elem is undefined
 			throw new Error 'The element isn\'t defined.'
@@ -212,7 +212,7 @@ class GaugePointer extends ValueUpdater
 		super(false, false)
 		@setOptions()
 
-	setOptions: (options=null) ->
+	setOptions: (options = null) ->
 		@options = mergeObjects(@options, options)
 		@length = 2*@gauge.radius * @gauge.options.radiusScale * @options.length
 		@pointerEnd = @options.pointerEnd || "butt"
@@ -231,11 +231,11 @@ class GaugePointer extends ValueUpdater
 		x = Math.round(@length * Math.cos(angle))
 		y = Math.round(@length * Math.sin(angle))
 
-		startX = Math.round(@strokeWidth * Math.cos(angle - Math.PI/2))
-		startY = Math.round(@strokeWidth * Math.sin(angle - Math.PI/2))
+		startX = Math.round(@strokeWidth * Math.cos(angle - Math.PI / 2))
+		startY = Math.round(@strokeWidth * Math.sin(angle - Math.PI / 2))
 
-		endX = Math.round(@strokeWidth * Math.cos(angle + Math.PI/2))
-		endY = Math.round(@strokeWidth * Math.sin(angle + Math.PI/2))
+		endX = Math.round(@strokeWidth * Math.cos(angle + Math.PI / 2))
+		endY = Math.round(@strokeWidth * Math.sin(angle + Math.PI / 2))
 
 		if(!@options.hideCentre)
 			@ctx.beginPath()
@@ -263,8 +263,8 @@ class GaugePointer extends ValueUpdater
 			imgY = Math.round(@img.height * @options.iconScale)
 			@ctx.save()
 			@ctx.translate(x, y)
-			@ctx.rotate(angle + Math.PI/180.0*(90 + @options.iconAngle))
-			@ctx.drawImage(@img, -imgX/2, -imgY/2, imgX, imgY)
+			@ctx.rotate(angle + Math.PI / 180.0 * (90 + @options.iconAngle))
+			@ctx.drawImage(@img, -imgX / 2, -imgY / 2, imgX, imgY)
 			@ctx.restore()
 
 
@@ -286,8 +286,8 @@ class Bar
 		valPercent = (@value / @maxValue) * 100
 		avgPercent = (@avgValue / @maxValue) * 100
 
-		$(".bar-value", @elem).css({"width": valPercent + "%"})
-		$(".typical-value", @elem).css({"width": avgPercent + "%"})
+		$(".bar-value", @elem).css( { "width": valPercent + "%" } )
+		$(".typical-value", @elem).css( { "width": avgPercent + "%" } )
 
 class Gauge extends BaseGauge
 	elem: null
@@ -326,25 +326,25 @@ class Gauge extends BaseGauge
 			@canvas = window.G_vmlCanvasManager.initElement(@canvas)
 		@ctx = @canvas.getContext('2d')
 		# Set canvas size to parent size
-		h = @canvas.clientHeight;
-		w = @canvas.clientWidth;
-		@canvas.height = h;
-		@canvas.width = w;
+		h = @canvas.clientHeight
+		w = @canvas.clientWidth
+		@canvas.height = h
+		@canvas.width = w
 
 		@gp = [new GaugePointer(@)]
 		@setOptions()
 		
 
-	setOptions: (options=null) ->
+	setOptions: (options = null) ->
 		super(options)
 		@configPercentColors()
 		@extraPadding = 0
 		if @options.angle < 0
-			phi = Math.PI*(1 + @options.angle)
+			phi = Math.PI * (1 + @options.angle)
 			@extraPadding = Math.sin(phi)
 		@availableHeight = @canvas.height * (1 - @paddingTop - @paddingBottom)
 		@lineWidth = @availableHeight * @options.lineWidth # .2 - .7
-		@radius = (@availableHeight - @lineWidth/2) / (1.0 + @extraPadding)
+		@radius = (@availableHeight - @lineWidth / 2) / (1.0 + @extraPadding)
 		@ctx.clearRect(0, 0, @canvas.width, @canvas.height)
 		
 		for gauge in @gp
@@ -354,20 +354,20 @@ class Gauge extends BaseGauge
 		return @
 
 	configPercentColors: () ->
-		@percentColors = null;
+		@percentColors = null
 		if (@options.percentColors != undefined)
 			@percentColors = new Array()
-			for i in [0..(@options.percentColors.length-1)]
-				rval = parseInt((cutHex(@options.percentColors[i][1])).substring(0,2),16)
-				gval = parseInt((cutHex(@options.percentColors[i][1])).substring(2,4),16)
-				bval = parseInt((cutHex(@options.percentColors[i][1])).substring(4,6),16)
-				@percentColors[i] = { pct: @options.percentColors[i][0], color: { r: rval, g: gval, b: bval  } }
+			for i in [0..(@options.percentColors.length - 1)]
+				rval = parseInt((cutHex(@options.percentColors[i][1])).substring(0, 2), 16)
+				gval = parseInt((cutHex(@options.percentColors[i][1])).substring(2, 4), 16)
+				bval = parseInt((cutHex(@options.percentColors[i][1])).substring(4, 6), 16)
+				@percentColors[i] = { pct: @options.percentColors[i][0], color: { r: rval, g: gval, b: bval } }
 
 	set: (value) ->
 		if not (value instanceof Array)
 			value = [value]
 		# Ensure values are OK
-		for i in [0..(value.length-1)]
+		for i in [0..(value.length - 1)]
 			value[i] = @parseValue(value[i])
 
 		# check if we have enough GaugePointers initialized
@@ -379,7 +379,7 @@ class Gauge extends BaseGauge
 				@gp.push(gp)
 		else if value.length < @gp.length
 			# Delete redundant GaugePointers
-			@gp = @gp.slice(@gp.length-value.length)
+			@gp = @gp.slice(@gp.length - value.length)
 
 		# get max value and update pointer(s)
 		i = 0
@@ -399,7 +399,7 @@ class Gauge extends BaseGauge
 					@minValue = val - 1
 
 			@gp[i].value = val
-			@gp[i++].setOptions({minValue: @minValue, maxValue: @maxValue, angle: @options.angle})
+			@gp[i++].setOptions( { minValue: @minValue, maxValue: @maxValue, angle: @options.angle } )
 		@value = Math.max(Math.min(value[value.length - 1], @maxValue), @minValue) # TODO: Span maybe??
 
 		# Force first .set()
@@ -411,9 +411,9 @@ class Gauge extends BaseGauge
 
 	getColorForPercentage: (pct, grad) ->
 		if pct == 0
-			color = @percentColors[0].color;
+			color = @percentColors[0].color
 		else
-			color = @percentColors[@percentColors.length - 1].color;
+			color = @percentColors[@percentColors.length - 1].color
 			for i in [0..(@percentColors.length - 1)]
 				if (pct <= @percentColors[i].pct)
 					if grad == true
@@ -433,7 +433,7 @@ class Gauge extends BaseGauge
 
 	getColorForValue: (val, grad) ->
 		pct = (val - @minValue) / (@maxValue - @minValue)
-		return @getColorForPercentage(pct, grad);
+		return @getColorForPercentage(pct, grad)
 
 	renderStaticLabels: (staticLabels, w, h, radius) ->
 		@ctx.save()
@@ -443,10 +443,10 @@ class Gauge extends BaseGauge
 		font = staticLabels.font or "10px Times"
 		re = /\d+\.?\d?/
 		match = font.match(re)[0]
-		rest = font.slice(match.length);
-		fontsize = parseFloat(match) * this.displayScale;
-		@ctx.font = fontsize + rest;
-		@ctx.fillStyle = staticLabels.color || "#000000";
+		rest = font.slice(match.length)
+		fontsize = parseFloat(match) * this.displayScale
+		@ctx.font = fontsize + rest
+		@ctx.fillStyle = staticLabels.color || "#000000"
 
 		@ctx.textBaseline = "bottom"
 		@ctx.textAlign = "center"
@@ -454,23 +454,23 @@ class Gauge extends BaseGauge
 			if (value.label != undefined)
 				# Draw labels depending on limitMin/Max
 				if (not @options.limitMin or value >= @minValue) and (not @options.limitMax or value <= @maxValue)
-					font = value.font || staticLabels.font;
+					font = value.font || staticLabels.font
 					match = font.match(re)[0]
-					rest = font.slice(match.length);
-					fontsize = parseFloat(match) * this.displayScale;
-					@ctx.font = fontsize + rest;
+					rest = font.slice(match.length)
+					fontsize = parseFloat(match) * this.displayScale
+					@ctx.font = fontsize + rest
 									
-					rotationAngle = @getAngle(value.label) - 3*Math.PI/2
+					rotationAngle = @getAngle(value.label) - 3 * Math.PI / 2
 					@ctx.rotate(rotationAngle)
-					@ctx.fillText(formatNumber(value.label, staticLabels.fractionDigits), 0, -radius - @lineWidth/2)
+					@ctx.fillText(formatNumber(value.label, staticLabels.fractionDigits), 0, -radius - @lineWidth / 2)
 					@ctx.rotate(-rotationAngle)
 
 			else
 				# Draw labels depending on limitMin/Max
 				if (not @options.limitMin or value >= @minValue) and (not @options.limitMax or value <= @maxValue)
-					rotationAngle = @getAngle(value) - 3*Math.PI/2
+					rotationAngle = @getAngle(value) - 3 * Math.PI / 2
 					@ctx.rotate(rotationAngle)
-					@ctx.fillText(formatNumber(value, staticLabels.fractionDigits), 0, -radius - @lineWidth/2)
+					@ctx.fillText(formatNumber(value, staticLabels.fractionDigits), 0, -radius - @lineWidth / 2)
 					@ctx.rotate(-rotationAngle)
 			
 		@ctx.restore()
@@ -481,8 +481,8 @@ class Gauge extends BaseGauge
 			subdivisionCount = ticksOptions.subDivisions || 0
 			divColor = ticksOptions.divColor || '#fff'
 			subColor = ticksOptions.subColor || '#fff'
-			divLength = ticksOptions.divLength || 0.7; # default
-			subLength = ticksOptions.subLength || 0.2; # default
+			divLength = ticksOptions.divLength || 0.7 # default
+			subLength = ticksOptions.subLength || 0.2 # default
 			range = parseFloat(@maxValue) - parseFloat(@minValue) # total value range
 			rangeDivisions = parseFloat(range) / parseFloat(ticksOptions.divisions) # get division step
 			subDivisions = parseFloat(rangeDivisions) / parseFloat(ticksOptions.subDivisions)
@@ -521,8 +521,7 @@ class Gauge extends BaseGauge
 	render: () ->
 		# Draw using canvas
 		w = @canvas.width / 2
-		#h = (@canvas.height * @paddingTop + @availableHeight) - ((@radius + @lineWidth / 2) * @extraPadding)
-		h = (@canvas.height * @paddingTop + @availableHeight) - ((@radius + @lineWidth /2) * @extraPadding)
+		h = (@canvas.height * @paddingTop + @availableHeight) - ((@radius + @lineWidth / 2) * @extraPadding)
 		displayedAngle = @getAngle(@displayedValue)
 		if @textField
 			@textField.render(@)
@@ -562,9 +561,9 @@ class Gauge extends BaseGauge
 				fillStyle = @getColorForValue(@displayedValue, @options.generateGradient)
 			else if @options.colorStop != undefined
 				if @options.gradientType == 0
-					fillStyle = this.ctx.createRadialGradient(w, h, 9, w, h, 70);
+					fillStyle = this.ctx.createRadialGradient(w, h, 9, w, h, 70)
 				else
-					fillStyle = this.ctx.createLinearGradient(0, 0, w, 0);
+					fillStyle = this.ctx.createLinearGradient(0, 0, w, 0)
 				fillStyle.addColorStop(0, @options.colorStart)
 				fillStyle.addColorStop(1, @options.colorStop)
 			else
@@ -623,10 +622,10 @@ class BaseDonut extends BaseGauge
 	getAngle: (value) ->
 		return (1 - @options.angle) * Math.PI + ((value - @minValue) / (@maxValue - @minValue)) * ((2 + @options.angle) - (1 - @options.angle)) * Math.PI
 
-	setOptions: (options=null) ->
+	setOptions: (options = null) ->
 		super(options)
 		@lineWidth = @canvas.height * @options.lineWidth
-		@radius = @options.radiusScale * (@canvas.height / 2 - @lineWidth/2)
+		@radius = @options.radiusScale * (@canvas.height / 2 - @lineWidth / 2)
 		return @
 
 	set: (value) ->
@@ -682,7 +681,7 @@ class Donut extends BaseDonut
 		grd.addColorStop(1, @options.shadowColor)
 		return grd
 
-	setOptions: (options=null) ->
+	setOptions: (options = null) ->
 		super(options)
 		w = @canvas.width / 2
 		h = @canvas.height / 2
@@ -703,7 +702,7 @@ window.AnimationUpdater =
 	add: (object) ->
 		AnimationUpdater.elements.push(object)
 
-	run: (force=false) ->
+	run: (force = false) ->
 		# 'force' can take three values, for which these paths should be taken
 		#   true: Force repaint of the gauges (typically on first Gauge.set)
 		#   false: Schedule repaint (2nd or later call to Gauge.set)

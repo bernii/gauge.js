@@ -301,6 +301,8 @@ $.fn.gauge = function(opts) {
 <ul>
 <li>Added support for scalable staticZone section heights on Gauge type</li>
 <li>Added optional Ticks(Major/Minor) on Gauge type</li>
+<li>Fixed <a href='https://github.com/bernii/gauge.js/pull/146'>issue #146</a>: Prevent requestAnimationFrame() callbacks from piling up</li>
+<li>Fixed <a href='https://github.com/bernii/gauge.js/pull/147'>issue #147</a>: Correct use of options.generateGradient for Donut </li>
 </ul>
 </p>
 
@@ -523,6 +525,7 @@ $.fn.gauge = function(opts) {
     });
     demoGauge.animationSpeed = opts.animationSpeed;
     opts.generateGradient = true;
+    console.log(opts);
     demoGauge.setOptions(opts);
     demoGauge.ctx.clearRect(0, 0, demoGauge.ctx.canvas.width, demoGauge.ctx.canvas.height);
     demoGauge.render();
@@ -551,6 +554,7 @@ $.fn.gauge = function(opts) {
     var opts = {
       angle: -0.25,
       lineWidth: 0.2,
+      radiusScale:0.9,
       pointer: {
         length: 0.6,
         strokeWidth: 0.05,
