@@ -433,7 +433,15 @@ class Gauge extends BaseGauge
 
 		@ctx.textBaseline = "bottom"
 		@ctx.textAlign = "center"
-		for value in staticLabels.labels
+		firstLastHorizontal = false
+		if (@options.angle == 0 && staticLabels.firstLastHorizontal)
+			firstLastHorizontal = true
+		FIRST_INDEX = 0
+		LAST_INDEX = staticLabels.labels.length - 1
+		
+		for value, j in staticLabels.labels
+			if (firstLastHorizontal && j!=LAST_INDEX && value==staticLabels.labels[LAST_INDEX])
+				continue
 			if (value.label != undefined)
 				# Draw labels depending on limitMin/Max
 				if (not @options.limitMin or value >= @minValue) and (not @options.limitMax or value <= @maxValue)
@@ -442,19 +450,33 @@ class Gauge extends BaseGauge
 					rest = font.slice(match.length)
 					fontsize = parseFloat(match) * this.displayScale
 					@ctx.font = fontsize + rest
-									
-					rotationAngle = @getAngle(value.label) - 3 * Math.PI / 2
-					@ctx.rotate(rotationAngle)
-					@ctx.fillText(formatNumber(value.label, staticLabels.fractionDigits), 0, -radius - @lineWidth / 2)
-					@ctx.rotate(-rotationAngle)
+					
+					if (firstLastHorizontal && j==FIRST_INDEX)
+						@ctx.textAlign = "left"
+						@ctx.fillText(formatNumber(value, staticLabels.fractionDigits), -radius - @lineWidth / 2, fontsize + 5);
+					else if (firstLastHorizontal && j==LAST_INDEX)
+						@ctx.textAlign = "right"
+						@ctx.fillText(formatNumber(value, staticLabels.fractionDigits), radius + @lineWidth / 2, fontsize + 5);
+					else 
+						rotationAngle = @getAngle(value.label) - 3 * Math.PI / 2
+						@ctx.rotate(rotationAngle)
+						@ctx.fillText(formatNumber(value.label, staticLabels.fractionDigits), 0, -radius - @lineWidth / 2)
+						@ctx.rotate(-rotationAngle)
 
 			else
 				# Draw labels depending on limitMin/Max
 				if (not @options.limitMin or value >= @minValue) and (not @options.limitMax or value <= @maxValue)
-					rotationAngle = @getAngle(value) - 3 * Math.PI / 2
-					@ctx.rotate(rotationAngle)
-					@ctx.fillText(formatNumber(value, staticLabels.fractionDigits), 0, -radius - @lineWidth / 2)
-					@ctx.rotate(-rotationAngle)
+					if (firstLastHorizontal && j==FIRST_INDEX)
+						@ctx.textAlign = "left"
+						@ctx.fillText(formatNumber(value, staticLabels.fractionDigits), -radius - @lineWidth / 2, fontsize + 5);
+					else if (firstLastHorizontal && j==LAST_INDEX)
+						@ctx.textAlign = "right"
+						@ctx.fillText(formatNumber(value, staticLabels.fractionDigits), radius + @lineWidth / 2, fontsize + 5);
+					else 
+						rotationAngle = @getAngle(value) - 3 * Math.PI / 2
+						@ctx.rotate(rotationAngle)
+						@ctx.fillText(formatNumber(value, staticLabels.fractionDigits), 0, -radius - @lineWidth / 2)
+						@ctx.rotate(-rotationAngle)
 			
 		@ctx.restore()
 
