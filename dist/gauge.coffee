@@ -440,6 +440,8 @@ class Gauge extends BaseGauge
 		LAST_INDEX = staticLabels.labels.length - 1
 		
 		for value, j in staticLabels.labels
+			if (firstLastHorizontal && j!=LAST_INDEX && value==staticLabels.labels[LAST_INDEX])
+				continue
 			if (value.label != undefined)
 				# Draw labels depending on limitMin/Max
 				if (not @options.limitMin or value >= @minValue) and (not @options.limitMax or value <= @maxValue)

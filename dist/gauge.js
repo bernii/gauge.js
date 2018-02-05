@@ -624,6 +624,9 @@
       _ref = staticLabels.labels;
       for (j = _i = 0, _len = _ref.length; _i < _len; j = ++_i) {
         value = _ref[j];
+        if (firstLastHorizontal && j !== LAST_INDEX && value === staticLabels.labels[LAST_INDEX]) {
+          continue;
+        }
         if (value.label !== void 0) {
           if ((!this.options.limitMin || value >= this.minValue) && (!this.options.limitMax || value <= this.maxValue)) {
             font = value.font || staticLabels.font;
