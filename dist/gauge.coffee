@@ -458,6 +458,30 @@ class Gauge extends BaseGauge
 			
 		@ctx.restore()
 
+	renderStartEndLabels: (startEndLabels, w, h, radius) ->
+		@ctx.save()
+		@ctx.translate(w, h)
+
+		# Scale font size the hard way - assuming size comes first.
+		font = startEndLabels.font or "10px Times"
+		re = /\d+\.?\d?/
+		match = font.match(re)[0]
+		rest = font.slice(match.length);
+		fontsize = parseFloat(match) * this.displayScale;
+		@ctx.font = fontsize + rest;
+		@ctx.fillStyle = startEndLabels.color || "#000000";
+		@ctx.textAlign = 'center'
+
+		# Render start labels
+		labels = startEndLabels.labels
+		if labels[0] != undefined
+			@ctx.fillText(labels[0], -radius, fontsize - 5);
+
+		# Render end labels
+		if labels[1] != undefined
+			@ctx.fillText(labels[1], radius, fontsize - 5);
+		@ctx.restore()
+
 	renderTicks: (ticksOptions, w, h, radius) ->
 		if ticksOptions != {}
 			divisionCount = ticksOptions.divisions || 0
@@ -513,6 +537,10 @@ class Gauge extends BaseGauge
 		radius = @radius * @options.radiusScale
 		if (@options.staticLabels)
 			@renderStaticLabels(@options.staticLabels, w, h, radius)
+
+		# start and end label only show when gauge is half circle (@options.angle == 0)
+		if (@options.angle == 0 && @options.startEndLabels)
+			@renderStartEndLabels(@options.startEndLabels, w, h, radius)
 		
 		if (@options.staticZones)
 			@ctx.save()

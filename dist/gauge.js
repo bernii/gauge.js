@@ -643,6 +643,28 @@
       return this.ctx.restore();
     };
 
+    Gauge.prototype.renderStartEndLabels = function(startEndLabels, w, h, radius) {
+      var font, fontsize, labels, match, re, rest;
+      this.ctx.save();
+      this.ctx.translate(w, h);
+      font = startEndLabels.font || "10px Times";
+      re = /\d+\.?\d?/;
+      match = font.match(re)[0];
+      rest = font.slice(match.length);
+      fontsize = parseFloat(match) * this.displayScale;
+      this.ctx.font = fontsize + rest;
+      this.ctx.fillStyle = startEndLabels.color || "#000000";
+      this.ctx.textAlign = 'center';
+      labels = startEndLabels.labels;
+      if (labels[0] !== void 0) {
+        this.ctx.fillText(labels[0], -radius, fontsize - 5);
+      }
+      if (labels[1] !== void 0) {
+        this.ctx.fillText(labels[1], radius, fontsize - 5);
+      }
+      return this.ctx.restore();
+    };
+
     Gauge.prototype.renderTicks = function(ticksOptions, w, h, radius) {
       var currentDivision, currentSubDivision, divColor, divLength, divWidth, divisionCount, j, lineWidth, range, rangeDivisions, ref, results, scaleMutate, st, subColor, subDivisions, subLength, subWidth, subdivisionCount, t, tmpRadius;
       if (ticksOptions !== {}) {
@@ -707,6 +729,9 @@
       radius = this.radius * this.options.radiusScale;
       if (this.options.staticLabels) {
         this.renderStaticLabels(this.options.staticLabels, w, h, radius);
+      }
+      if (this.options.startEndLabels) {
+        this.renderStartEndLabels(this.options.startEndLabels, w, h, radius);
       }
       if (this.options.staticZones) {
         this.ctx.save();
