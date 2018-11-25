@@ -769,7 +769,6 @@
         this.ctx.arc(w, h, radius, displayedAngle, (2 - this.options.angle) * Math.PI, false);
         this.ctx.stroke();
         if (this.options.value.show == true) {
-          this.ctx.globalCompositeOperation='destination-over';
           this.ctx.font = this.options.value.font;
           this.ctx.fillStyle = this.options.value.color;
           this.ctx.textAlign = "center";
