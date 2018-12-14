@@ -309,6 +309,9 @@
     GaugePointer.prototype.value = 0;
 
     GaugePointer.prototype.options = {
+      pointerType: "triangle",
+      pointerEnd: "butt",
+      hideCentre: false,
       strokeWidth: 0.035,
       length: 0.1,
       color: "#000000",
@@ -336,6 +339,7 @@
       }
       this.options = mergeObjects(this.options, options);
       this.length = 2 * this.gauge.radius * this.gauge.options.radiusScale * this.options.length;
+      this.pointerEnd = this.options.pointerEnd || "butt";
       this.strokeWidth = this.canvas.height * this.options.strokeWidth;
       this.maxValue = this.gauge.maxValue;
       this.minValue = this.gauge.minValue;
@@ -356,15 +360,27 @@
       startY = Math.round(this.strokeWidth * Math.sin(angle - Math.PI / 2));
       endX = Math.round(this.strokeWidth * Math.cos(angle + Math.PI / 2));
       endY = Math.round(this.strokeWidth * Math.sin(angle + Math.PI / 2));
-      this.ctx.beginPath();
-      this.ctx.fillStyle = this.options.color;
-      this.ctx.arc(0, 0, this.strokeWidth, 0, Math.PI * 2, false);
-      this.ctx.fill();
-      this.ctx.beginPath();
-      this.ctx.moveTo(startX, startY);
-      this.ctx.lineTo(x, y);
-      this.ctx.lineTo(endX, endY);
-      this.ctx.fill();
+      if (!this.options.hideCentre) {
+        this.ctx.beginPath();
+        this.ctx.fillStyle = this.options.color;
+        this.ctx.arc(0, 0, this.strokeWidth, 0, Math.PI * 2, false);
+        this.ctx.fill();
+      }
+      if (this.options.pointerType === "triangle") {
+        this.ctx.beginPath();
+        this.ctx.moveTo(startX, startY);
+        this.ctx.lineTo(x, y);
+        this.ctx.lineTo(endX, endY);
+        this.ctx.fill();
+      } else {
+        this.ctx.beginPath();
+        this.ctx.lineCap = this.pointerEnd;
+        this.ctx.strokeStyle = this.options.color;
+        this.ctx.lineWidth = this.strokeWidth;
+        this.ctx.moveTo(0, 0);
+        this.ctx.lineTo(x, y);
+        this.ctx.stroke();
+      }
       if (this.img) {
         imgX = Math.round(this.img.width * this.options.iconScale);
         imgY = Math.round(this.img.height * this.options.iconScale);
@@ -443,6 +459,9 @@
       gradientType: 0,
       strokeColor: "#e0e0e0",
       pointer: {
+        pointerType: "triangle",
+        pointerEnd: "butt",
+        hideCenter: false,
         length: 0.8,
         strokeWidth: 0.035,
         iconScale: 1.0

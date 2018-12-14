@@ -79,9 +79,12 @@ label {
   font-size: 14px;
   vertical-align: top;
 }
-.opts label {
+.opts label:not(.omit) {
   line-height: 25px;
   width: 80px;
+}
+.omit{
+  width: 40px;
 }
 span.fd-slider {
   vertical-align: top;
@@ -168,6 +171,15 @@ h3 {
   text-align: center; font-size: 2em; font-weight: bold;
   color: black; font-family: 'Amaranth', sans-serif;
 }
+#auto-animator {
+  position: absolute; top: 320px; left: 0; right: 0;
+  text-align: left; font-size: 2em; font-weight: bold;
+  color: black; font-family: 'Amaranth', sans-serif;
+}
+#auto-animator label{
+  width: 200px;
+  vertical-align: baseline;
+}  
 .reset {
   top: 65px !important; 
   font-size: 2em;
