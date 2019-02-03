@@ -854,7 +854,7 @@
       if (this.textField) {
         this.textField.render(this);
       }
-      grdFill = this.ctx.createRadialGradient(w, h, 39, w, h, 70);
+      grdFill = this.ctx.createLinearGradient(0, h, w, h);
       grdFill.addColorStop(0, this.options.colorStart);
       grdFill.addColorStop(1, this.options.colorStop);
       start = this.radius - this.lineWidth / 2;

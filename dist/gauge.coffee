@@ -635,7 +635,7 @@ class BaseDonut extends BaseGauge
 		if @textField
 			@textField.render(@)
 
-		grdFill = @ctx.createRadialGradient(w, h, 39, w, h, 70)
+		grdFill = @ctx.createLinearGradient(0, h, w, h)
 		grdFill.addColorStop(0, @options.colorStart)
 		grdFill.addColorStop(1, @options.colorStop)
 
