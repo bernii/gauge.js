@@ -434,18 +434,18 @@ class Gauge extends BaseGauge
 		@ctx.textBaseline = "bottom"
 		@ctx.textAlign = "center"
 		for value in staticLabels.labels
-			if (value.label != undefined)
+			if (value.label != undefined && value.value != undefined)
 				# Draw labels depending on limitMin/Max
-				if (not @options.limitMin or value >= @minValue) and (not @options.limitMax or value <= @maxValue)
-					font = value.font || staticLabels.font
+				if (not @options.limitMin or value.value >= @minValue) and (not @options.limitMax or value.value <= @maxValue)
+					font = value.font || staticLabels.font || font
 					match = font.match(re)[0]
 					rest = font.slice(match.length)
 					fontsize = parseFloat(match) * this.displayScale
 					@ctx.font = fontsize + rest
 									
-					rotationAngle = @getAngle(value.label) - 3 * Math.PI / 2
+					rotationAngle = @getAngle(value.value) - 3 * Math.PI / 2
 					@ctx.rotate(rotationAngle)
-					@ctx.fillText(formatNumber(value.label, staticLabels.fractionDigits), 0, -radius - @lineWidth / 2)
+					@ctx.fillText(value.label, 0, -radius - @lineWidth / 2)
 					@ctx.rotate(-rotationAngle)
 
 			else
