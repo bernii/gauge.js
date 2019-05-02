@@ -621,7 +621,7 @@
         value = ref[j];
         if (value.label !== void 0 && value.value !== void 0) {
           if ((!this.options.limitMin || value.value >= this.minValue) && (!this.options.limitMax || value.value <= this.maxValue)) {
-            font = value.font || staticLabels.font;
+            font = value.font || staticLabels.font || font;
             match = font.match(re)[0];
             rest = font.slice(match.length);
             fontsize = parseFloat(match) * this.displayScale;

@@ -437,7 +437,7 @@ class Gauge extends BaseGauge
 			if (value.label != undefined && value.value != undefined)
 				# Draw labels depending on limitMin/Max
 				if (not @options.limitMin or value.value >= @minValue) and (not @options.limitMax or value.value <= @maxValue)
-					font = value.font || staticLabels.font
+					font = value.font || staticLabels.font || font
 					match = font.match(re)[0]
 					rest = font.slice(match.length)
 					fontsize = parseFloat(match) * this.displayScale
