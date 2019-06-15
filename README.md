@@ -33,3 +33,10 @@ gauge.set(1250); // set actual value
 ```
 
 For an interactive demo and a list of all supported options please refer to the [project's homepage](http://bernii.github.com/gauge.js).
+
+## Wrappers
+
+gauge.js can be wrapped to a number of frameworks. Here are some examples:
+
+* **Vue**
+  * [vgauge](https://github.com/amroessam/vgauge)
