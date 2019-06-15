@@ -386,6 +386,7 @@ class Gauge extends BaseGauge
 		@value = Math.max(Math.min(value[value.length - 1], @maxValue), @minValue) # TODO: Span maybe??
 
 		# Force first .set()
+		AnimationUpdater.add(@)
 		AnimationUpdater.run(@forceUpdate)
 		@forceUpdate = false
 
@@ -624,6 +625,7 @@ class BaseDonut extends BaseGauge
 			else
 				@minValue = @value
 
+		AnimationUpdater.add(@)
 		AnimationUpdater.run(@forceUpdate)
 		@forceUpdate = false
 
@@ -683,7 +685,8 @@ window.AnimationUpdater =
 			AnimationUpdater.elements.push(elem)
 
 	add: (object) ->
-		AnimationUpdater.elements.push(object)
+		if object not in AnimationUpdater.elements
+			AnimationUpdater.elements.push object
 
 	run: (force = false) ->
 		# 'force' can take three values, for which these paths should be taken
@@ -693,9 +696,17 @@ window.AnimationUpdater =
 		isCallback = isFinite(parseFloat(force))
 		if isCallback or force is true
 			finished = true
-			for elem in AnimationUpdater.elements
+			toRemove = []
+			for elem, k in AnimationUpdater.elements
 				if elem.update(force is true)
 					finished = false
+				else
+					toRemove.push k
+
+			# Remove finished elements
+			for k in toRemove by -1
+				AnimationUpdater.elements.splice k, 1
+
 			AnimationUpdater.animId = if finished then null else requestAnimationFrame(AnimationUpdater.run)
 		else if force is false
 			if AnimationUpdater.animId is not null
