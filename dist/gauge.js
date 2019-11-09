@@ -94,19 +94,10 @@
   };
 
   addCommas = function(nStr) {
-    var rgx, x, x1, x2;
-    nStr += '';
-    x = nStr.split('.');
+    x = nStr.toString().split('.');
     x1 = x[0];
-    x2 = '';
-    if (x.length > 1) {
-      x2 = '.' + x[1];
-    }
-    rgx = /(\d+)(\d{3})/;
-    while (rgx.test(x1)) {
-      x1 = x1.replace(rgx, '$1' + ',' + '$2');
-    }
-    return x1 + x2;
+    x2 = (x.length > 1) ? '.' + x[1] : '';
+    return x1.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,') + x2;
   };
 
   cutHex = function(nStr) {
