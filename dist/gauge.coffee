@@ -131,10 +131,10 @@ class BaseGauge extends ValueUpdater
 			devicePixelRatio = window.devicePixelRatio or 1
 			backingStorePixelRatio =
 				@ctx.webkitBackingStorePixelRatio or
-					@ctx.mozBackingStorePixelRatio or
-					@ctx.msBackingStorePixelRatio or
-					@ctx.oBackingStorePixelRatio or
-					@ctx.backingStorePixelRatio or 1
+				@ctx.mozBackingStorePixelRatio or
+				@ctx.msBackingStorePixelRatio or
+				@ctx.oBackingStorePixelRatio or
+				@ctx.backingStorePixelRatio or 1
 			@displayScale = devicePixelRatio / backingStorePixelRatio
 
 		if @displayScale != prevDisplayScale
@@ -150,13 +150,13 @@ class BaseGauge extends ValueUpdater
 		return @
 
 	parseValue: (value) ->
-		value = parseFloat(value) || Number(value)
+		value =  parseFloat(value) || Number(value)
 		return if isFinite(value) then value else 0
 
 class TextRenderer
 	constructor: (@el, @fractionDigits) ->
 
-# Default behaviour, override to customize rendering
+	# Default behaviour, override to customize rendering
 	render: (gauge) ->
 		@el.innerHTML = formatNumber(gauge.displayedValue, @fractionDigits)
 
@@ -201,7 +201,7 @@ class GaugePointer extends ValueUpdater
 	img: null
 
 	constructor: (@gauge) ->
-		super()
+		#super()
 		if @gauge is undefined
 			throw new Error 'The element isn\'t defined.'
 		@ctx = @gauge.ctx
@@ -215,7 +215,7 @@ class GaugePointer extends ValueUpdater
 		@strokeWidth = @canvas.height * @options.strokeWidth
 		@maxValue = @gauge.maxValue
 		@minValue = @gauge.minValue
-		@animationSpeed = @gauge.animationSpeed
+		@animationSpeed =  @gauge.animationSpeed
 		@options.angle = @gauge.options.angle
 		if @options.iconPath
 			@img = new Image()
@@ -272,8 +272,8 @@ class Bar
 		valPercent = (@value / @maxValue) * 100
 		avgPercent = (@avgValue / @maxValue) * 100
 
-		$(".bar-value", @elem).css({"width": valPercent + "%"})
-		$(".typical-value", @elem).css({"width": avgPercent + "%"})
+		$(".bar-value", @elem).css( { "width": valPercent + "%" } )
+		$(".typical-value", @elem).css( { "width": avgPercent + "%" } )
 
 class Gauge extends BaseGauge
 	elem: null
@@ -289,7 +289,7 @@ class Gauge extends BaseGauge
 	options:
 		colorStart: "#6fadcf"
 		colorStop: undefined
-		gradientType: 0        # 0 : radial, 1 : linear
+		gradientType: 0       	# 0 : radial, 1 : linear
 		strokeColor: "#e0e0e0"
 		pointer:
 			length: 0.8
@@ -316,7 +316,7 @@ class Gauge extends BaseGauge
 
 		@gp = [new GaugePointer(@)]
 		@setOptions()
-
+		
 
 	setOptions: (options = null) ->
 		super(options)
@@ -329,7 +329,7 @@ class Gauge extends BaseGauge
 		@lineWidth = @availableHeight * @options.lineWidth # .2 - .7
 		@radius = (@availableHeight - @lineWidth / 2) / (1.0 + @extraPadding)
 		@ctx.clearRect(0, 0, @canvas.width, @canvas.height)
-
+		
 		for gauge in @gp
 			gauge.setOptions(@options.pointer)
 			gauge.render()
@@ -344,7 +344,7 @@ class Gauge extends BaseGauge
 				rval = parseInt((cutHex(@options.percentColors[i][1])).substring(0, 2), 16)
 				gval = parseInt((cutHex(@options.percentColors[i][1])).substring(2, 4), 16)
 				bval = parseInt((cutHex(@options.percentColors[i][1])).substring(4, 6), 16)
-				@percentColors[i] = {pct: @options.percentColors[i][0], color: {r: rval, g: gval, b: bval}}
+				@percentColors[i] = { pct: @options.percentColors[i][0], color: { r: rval, g: gval, b: bval } }
 
 	set: (value) ->
 		if not (value instanceof Array)
@@ -361,14 +361,14 @@ class Gauge extends BaseGauge
 				gp.setOptions(@options.pointer)
 				@gp.push(gp)
 		else if value.length < @gp.length
-# Delete redundant GaugePointers
+			# Delete redundant GaugePointers
 			@gp = @gp.slice(@gp.length - value.length)
 
 		# get max value and update pointer(s)
 		i = 0
 
 		for val in value
-# Limit pointer within min and max?
+			# Limit pointer within min and max?
 			if val > @maxValue
 				if @options.limitMax
 					val = @maxValue
@@ -382,7 +382,7 @@ class Gauge extends BaseGauge
 					@minValue = val - 1
 
 			@gp[i].value = val
-			@gp[i++].setOptions({minValue: @minValue, maxValue: @maxValue, angle: @options.angle})
+			@gp[i++].setOptions( { minValue: @minValue, maxValue: @maxValue, angle: @options.angle } )
 		@value = Math.max(Math.min(value[value.length - 1], @maxValue), @minValue) # TODO: Span maybe??
 
 		# Force first .set()
@@ -401,10 +401,10 @@ class Gauge extends BaseGauge
 			for i in [0..(@percentColors.length - 1)]
 				if (pct <= @percentColors[i].pct)
 					if grad == true
-# Gradually change between colors
+						# Gradually change between colors
 						startColor = @percentColors[i - 1] || @percentColors[0]
 						endColor = @percentColors[i]
-						rangePct = (pct - startColor.pct) / (endColor.pct - startColor.pct) # How far between both colors
+						rangePct = (pct - startColor.pct) / (endColor.pct - startColor.pct)  # How far between both colors
 						color = {
 							r: Math.floor(startColor.color.r * (1 - rangePct) + endColor.color.r * rangePct),
 							g: Math.floor(startColor.color.g * (1 - rangePct) + endColor.color.g * rangePct),
@@ -436,27 +436,27 @@ class Gauge extends BaseGauge
 		@ctx.textAlign = "center"
 		for value in staticLabels.labels
 			if (value.label != undefined)
-# Draw labels depending on limitMin/Max
+				# Draw labels depending on limitMin/Max
 				if (not @options.limitMin or value >= @minValue) and (not @options.limitMax or value <= @maxValue)
 					font = value.font || staticLabels.font
 					match = font.match(re)[0]
 					rest = font.slice(match.length)
 					fontsize = parseFloat(match) * this.displayScale
 					@ctx.font = fontsize + rest
-
+									
 					rotationAngle = @getAngle(value.label) - 3 * Math.PI / 2
 					@ctx.rotate(rotationAngle)
 					@ctx.fillText(formatNumber(value.label, staticLabels.fractionDigits), 0, -radius - @lineWidth / 2)
 					@ctx.rotate(-rotationAngle)
 
 			else
-# Draw labels depending on limitMin/Max
+				# Draw labels depending on limitMin/Max
 				if (not @options.limitMin or value >= @minValue) and (not @options.limitMax or value <= @maxValue)
 					rotationAngle = @getAngle(value) - 3 * Math.PI / 2
 					@ctx.rotate(rotationAngle)
 					@ctx.fillText(formatNumber(value, staticLabels.fractionDigits), 0, -radius - @lineWidth / 2)
 					@ctx.rotate(-rotationAngle)
-
+			
 		@ctx.restore()
 
 	renderTicks: (ticksOptions, w, h, radius) ->
@@ -478,9 +478,9 @@ class Gauge extends BaseGauge
 
 			for t in [0...divisionCount + 1] by 1
 				@ctx.lineWidth = @lineWidth * divLength
-				scaleMutate = (@lineWidth / 2) * (1 - divLength)
+				scaleMutate = (@lineWidth / 2) * ( 1 - divLength)
 				tmpRadius = (@radius * @options.radiusScale) + scaleMutate
-
+				
 				@ctx.strokeStyle = divColor
 				@ctx.beginPath()
 				@ctx.arc(0, 0, tmpRadius, @getAngle(currentDivision - divWidth), @getAngle(currentDivision + divWidth), false)
@@ -491,19 +491,19 @@ class Gauge extends BaseGauge
 				if t != ticksOptions.divisions && subdivisionCount > 0 # if its not the last marker then draw subs
 					for st in [0...subdivisionCount - 1] by 1
 						@ctx.lineWidth = @lineWidth * subLength
-						scaleMutate = (@lineWidth / 2) * (1 - subLength)
+						scaleMutate = (@lineWidth / 2) * ( 1 - subLength)
 						tmpRadius = (@radius * @options.radiusScale) + scaleMutate
-
+						
 						@ctx.strokeStyle = subColor
 						@ctx.beginPath()
 						@ctx.arc(0, 0, tmpRadius, @getAngle(currentSubDivision - subWidth), @getAngle(currentSubDivision + subWidth), false)
 						@ctx.stroke()
 						currentSubDivision += subDivisions
 
-#@ctx.restore()
+			#@ctx.restore()
 
 	render: () ->
-# Draw using canvas
+		# Draw using canvas
 		w = @canvas.width / 2
 		h = (@canvas.height * @paddingTop + @availableHeight) - ((@radius + @lineWidth / 2) * @extraPadding)
 		displayedAngle = @getAngle(@displayedValue)
@@ -514,13 +514,13 @@ class Gauge extends BaseGauge
 		radius = @radius * @options.radiusScale
 		if (@options.staticLabels)
 			@renderStaticLabels(@options.staticLabels, w, h, radius)
-
+		
 		if (@options.staticZones)
 			@ctx.save()
 			@ctx.translate(w, h)
 			@ctx.lineWidth = @lineWidth
 			for zone in @options.staticZones
-# Draw zones depending on limitMin/Max
+				# Draw zones depending on limitMin/Max
 				min = zone.min
 				if @options.limitMin and min < @minValue
 					min = @minValue
@@ -532,7 +532,7 @@ class Gauge extends BaseGauge
 					@ctx.lineWidth = @lineWidth * zone.height
 					scaleMutate = (@lineWidth / 2) * (zone.offset || 1 - zone.height)
 					tmpRadius = (@radius * @options.radiusScale) + scaleMutate
-
+				
 				@ctx.strokeStyle = zone.strokeStyle
 				@ctx.beginPath()
 				@ctx.arc(0, 0, tmpRadius, @getAngle(min), @getAngle(max), false)
@@ -565,11 +565,11 @@ class Gauge extends BaseGauge
 			@ctx.stroke()
 			@ctx.save()
 			@ctx.translate(w, h)
-
+		
 		if (@options.renderTicks)
 			@renderTicks(@options.renderTicks, w, h, radius)
 
-
+		
 		@ctx.restore()
 		# Draw pointers from (w, h)
 
@@ -594,7 +594,6 @@ class BaseDonut extends BaseGauge
 		shadowColor: "#d5d5d5"
 		angle: 0.35
 		radiusScale: 1.0
-		lineCap: "round"
 
 	constructor: (@canvas) ->
 		super()
@@ -649,7 +648,7 @@ class BaseDonut extends BaseGauge
 		@ctx.beginPath()
 		@ctx.arc(w, h, @radius, (1 - @options.angle) * Math.PI, (2 + @options.angle) * Math.PI, false)
 		@ctx.lineWidth = @lineWidth
-		@ctx.lineCap = @options.lineCap
+		@ctx.lineCap = "round"
 		@ctx.stroke()
 
 		@ctx.strokeStyle = grdFill
@@ -690,10 +689,10 @@ window.AnimationUpdater =
 			AnimationUpdater.elements.push object
 
 	run: (force = false) ->
-# 'force' can take three values, for which these paths should be taken
-#   true: Force repaint of the gauges (typically on first Gauge.set)
-#   false: Schedule repaint (2nd or later call to Gauge.set)
-#   a number: It's a callback. Repaint and schedule new callback if not done.
+		# 'force' can take three values, for which these paths should be taken
+		#   true: Force repaint of the gauges (typically on first Gauge.set)
+		#   false: Schedule repaint (2nd or later call to Gauge.set)
+		#   a number: It's a callback. Repaint and schedule new callback if not done.
 		isCallback = isFinite(parseFloat(force))
 		if isCallback or force is true
 			finished = true
@@ -711,7 +710,7 @@ window.AnimationUpdater =
 			AnimationUpdater.animId = if finished then null else requestAnimationFrame(AnimationUpdater.run)
 		else if force is false
 			if AnimationUpdater.animId is not null
-# Cancel pending callback if animId is already set to avoid overflow
+				# Cancel pending callback if animId is already set to avoid overflow
 				cancelAnimationFrame(AnimationUpdater.animId)
 			AnimationUpdater.animId = requestAnimationFrame(AnimationUpdater.run)
 

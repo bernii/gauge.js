@@ -5,7 +5,7 @@
   "main": "dist/gauge.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/razorness/gauge.js.git"
+    "url": "git@github.com:bernii/gauge.js.git"
   },
   "types": "index.d.ts",
   "author": "bernii",

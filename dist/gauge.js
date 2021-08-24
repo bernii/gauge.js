@@ -322,7 +322,6 @@
 
     function GaugePointer(gauge1) {
       this.gauge = gauge1;
-      GaugePointer.__super__.constructor.call(this);
       if (this.gauge === void 0) {
         throw new Error('The element isn\'t defined.');
       }
@@ -802,8 +801,7 @@
       strokeColor: "#eeeeee",
       shadowColor: "#d5d5d5",
       angle: 0.35,
-      radiusScale: 1.0,
-      lineCap: "round"
+      radiusScale: 1.0
     };
 
     function BaseDonut(canvas) {
@@ -868,7 +866,7 @@
       this.ctx.beginPath();
       this.ctx.arc(w, h, this.radius, (1 - this.options.angle) * Math.PI, (2 + this.options.angle) * Math.PI, false);
       this.ctx.lineWidth = this.lineWidth;
-      this.ctx.lineCap = this.options.lineCap;
+      this.ctx.lineCap = "round";
       this.ctx.stroke();
       this.ctx.strokeStyle = grdFill;
       this.ctx.beginPath();
