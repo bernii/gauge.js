@@ -24,7 +24,7 @@ declare module 'gaugeJS' {
 		 *
 		 * @default 32
 		 */
-		 animationSpeed?: number;
+		animationSpeed?: number;
 
 	}
 
@@ -100,11 +100,11 @@ declare module 'gaugeJS' {
 			iconAngle?: number
 		}
 
-		
+
 		/**
 		 * General render tick settings
 		 */
-		 renderTicks?: {
+		renderTicks?: {
 			/**
 			 * This is the number of major divisions around your arc.
 			 *
@@ -245,7 +245,7 @@ declare module 'gaugeJS' {
 			/**
 			 * Print labels at these values
 			 */
-			labels: number[]
+			labels: number[] | { label: number, font?: string }[]
 
 			/**
 			 * Label text color
@@ -296,6 +296,10 @@ declare module 'gaugeJS' {
 			 */
 			max: number
 
+			/**
+			 * Height
+			 */
+			height?: number
 		}[]
 
 	}
@@ -402,7 +406,7 @@ declare module 'gaugeJS' {
 		/**
 		 * We support multiple pointers
 		 */
-		value: [ number ];
+		value: number[];
 
 		/**
 		 * Set max gauge value
