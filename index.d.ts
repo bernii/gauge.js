@@ -448,6 +448,7 @@ declare module 'gaugeJS' {
 
 		render(): void
 
+		ctx: CanvasRenderingContext2D
 	}
 
 	class BaseDonut extends BaseGauge {
