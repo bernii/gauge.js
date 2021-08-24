@@ -104,7 +104,7 @@ declare module 'gaugeJS' {
 		/**
 		 * General render tick settings
 		 */
-		 renderTicks: {
+		 renderTicks?: {
 			/**
 			 * This is the number of major divisions around your arc.
 			 *
