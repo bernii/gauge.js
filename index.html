@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=1024, maximum-scale=1">
   <meta property="og:image" content="http://bernii.github.com/gauge.js/assets/preview.jpg?v=1" />
   <link rel="shortcut icon" href="favicon.ico">
-  <meta http-equiv="X-UA-Compatible" content="IE=7" />
+  <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
   <link href="assets/bootstrap.min.css" type="text/css" rel="stylesheet">
   <link href="assets/main.css?v=5" type="text/css" rel="stylesheet">
   <link href='http://fonts.googleapis.com/css?family=Amaranth:400,700|Just+Another+Hand' rel='stylesheet' type='text/css'>
@@ -124,11 +124,11 @@ var opts = {
     divisions: <span id="opt-divisions" class="lit">8</span>,
     divWidth: <span id="opt-divWidth" class="lit">1</span>,
     divLength: <span id="opt-divLength" class="lit">0.8</span>,
-    divColor: <span id="opt-divColor" class="lit">#333333</span>,
+    divColor: '<span id="opt-divColor" class="lit">#333333</span>',
     subDivisions: <span id="opt-subDivisions" class="lit">3</span>,
     subLength: <span id="opt-subLength" class="lit">0.5</span>,
     subWidth: <span id="opt-subWidth" class="lit">0.5</span>,
-    subColor: <span id="opt-subColor" class="lit">#333333</span>
+    subColor: '<span id="opt-subColor" class="lit">#333333</span>'
   }
   </span>
 };
@@ -147,7 +147,7 @@ gauge.set(<span id="opt-currval" class="lit">1500</span>); // set actual value
 <ul>
   <li>
     <b>Percentage color</b>
-    <p>If you want to control how Gauge behavaes in relation to the displayed value you can use the Guage option called <b>percentColors</b>. To use it add following entry to the options:
+    <p>If you want to control how Gauge behaves in relation to the displayed value you can use the Guage option called <b>percentColors</b>. To use it add following entry to the options:
 <pre class="prettyprint">
 percentColors = [[0.0, "#a9d70b" ], [0.50, "#f9c802"], [1.0, "#ff0000"]];
 </pre>
@@ -275,6 +275,14 @@ $.fn.gauge = function(opts) {
 </p>
 
 <h2>Changes</h2>
+
+
+<h3 id="v1.3.7">Version 1.3.7 (15.06.2019)</h3>
+<p>
+<ul>
+<li>AnimationUpdater now removes references finished rendering to prevent memory leaks.</li>
+</ul>
+</p>
 
 <h3 id="v1.3.6">Version 1.3.6 (28.11.2017)</h3>
 <p>
@@ -473,6 +481,7 @@ $.fn.gauge = function(opts) {
     });
     demoGauge.animationSpeed = opts.animationSpeed;
     opts.generateGradient = true;
+    console.log(opts);
     demoGauge.setOptions(opts);
     demoGauge.ctx.clearRect(0, 0, demoGauge.ctx.canvas.width, demoGauge.ctx.canvas.height);
     demoGauge.render();
@@ -501,6 +510,7 @@ $.fn.gauge = function(opts) {
     var opts = {
       angle: -0.25,
       lineWidth: 0.2,
+      radiusScale:0.9,
       pointer: {
         length: 0.6,
         strokeWidth: 0.05,
