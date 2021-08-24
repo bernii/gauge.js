@@ -245,7 +245,7 @@ declare module 'gaugeJS' {
 			/**
 			 * Print labels at these values
 			 */
-			labels: [ number ]
+			labels: number[]
 
 			/**
 			 * Label text color
