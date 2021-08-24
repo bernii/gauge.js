@@ -110,58 +110,58 @@ declare module 'gaugeJS' {
 			 *
 			 * @default 5
 			 */
-			divisions: number
+			divisions?: number
 
 			/**
 			 * This is to set the width of the indicator.
 			 *
 			 * @default 5
 			 */
-			divWidth: number
+			divWidth?: number
 
 			/**
 			 * This is a fractional percentage of the height of your arc line (0.5 = 50%).
 			 *
 			 * @default 0.7
 			 */
-			divLength: number
+			divLength?: number
 
 			/**
 			 * This sets the color of the division markers
 			 *
 			 * @default #333333
 			 */
-			divColor: number
+			divColor?: number
 
 			/**
 			 * This sets the minor tick marks count between major ticks.
 			 *
 			 * @default 3
 			 */
-			subDivisions: number
+			subDivisions?: number
 
 			/**
 			 * This is a fractional percentage of the height of your arc line (0.5 = 50%)
 			 *
 			 * @default 0.5
 			 */
-			subLength: number
+			subLength?: number
 
 			/**
 			 * This is to set the width of the indicator.
 			 *
 			 * @default 0.6
 			 */
-			subWidth: number
+			subWidth?: number
 
 			/**
 			 * This sets the color of the subdivision markers
 			 *
 			 * @default #666666
 			 */
-			subColor: number
+			subColor?: number
 		}
-		
+
 		/**
 		 * The span of the gauge arc
 		 *
