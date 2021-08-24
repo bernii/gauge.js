@@ -279,7 +279,7 @@ declare module 'gaugeJS' {
 		 *        ],
 		 *    </code>
 		 */
-		staticZones?: [ {
+		staticZones?: {
 
 			/**
 			 * Color
@@ -296,7 +296,7 @@ declare module 'gaugeJS' {
 			 */
 			max: number
 
-		} ]
+		}[]
 
 	}
 
