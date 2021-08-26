@@ -131,7 +131,7 @@ declare module 'gaugeJS' {
 			 *
 			 * @default #333333
 			 */
-			divColor?: number
+			divColor?: string
 
 			/**
 			 * This sets the minor tick marks count between major ticks.
@@ -159,7 +159,7 @@ declare module 'gaugeJS' {
 			 *
 			 * @default #666666
 			 */
-			subColor?: number
+			subColor?: string
 		}
 
 		/**
