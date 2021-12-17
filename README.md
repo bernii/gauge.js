@@ -32,7 +32,7 @@ gauge.setMinValue(0);  // set min value
 gauge.set(1250); // set actual value
 ```
 
-For an interactive demo and a list of all supported options please refer to the [project's homepage](http://bernii.github.com/gauge.js).
+For an interactive demo and a list of all supported options please refer to the [project's homepage](http://bernii.github.io/gauge.js).
 
 ## Wrappers
 
