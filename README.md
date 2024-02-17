@@ -40,3 +40,16 @@ gauge.js can be wrapped to a number of frameworks. Here are some examples:
 
 * **Vue**
   * [vgauge](https://github.com/amroessam/vgauge)
+* **React**
+  * [react-gaugejs](https://github.com/keanemind/react-gaugejs)
+
+## Build instructions
+
+Build is a two-step process. First, the CoffeeScript source `gauge.coffee` is converted to `gauge.js`. Next, [terser](https://www.npmjs.com/package/terser) produces the minified distribution file `gauge.min.js`.
+
+```bash
+# Install development dependencies
+npm install
+# Run the build
+npm run build
+```

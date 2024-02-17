@@ -8,5 +8,14 @@
     "url": "git@github.com:bernii/gauge.js.git"
   },
   "author": "bernii",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "coffeescript": "^1.12.7",
+    "terser": "^5.27.1"
+  },
+  "scripts": {
+    "build:coffee": "coffee -c -m -o ./dist/ ./dist",
+    "minify": "terser ./dist/gauge.js -m -o ./dist/gauge.min.js -c",
+    "build": "npm run build:coffee && npm run minify"
+  }
 }
