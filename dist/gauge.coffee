@@ -545,7 +545,9 @@ class Gauge extends BaseGauge
 				fillStyle = @getColorForValue(@displayedValue, @options.generateGradient)
 			else if @options.colorStop != undefined
 				if @options.gradientType == 0
-					fillStyle = this.ctx.createRadialGradient(w, h, 9, w, h, 70)
+					start = radius - @lineWidth / 2
+					stop = radius + @lineWidth / 2
+					fillStyle = this.ctx.createRadialGradient(w, h, start, w, h, stop)
 				else
 					fillStyle = this.ctx.createLinearGradient(0, 0, w, 0)
 				fillStyle.addColorStop(0, @options.colorStart)
@@ -637,12 +639,12 @@ class BaseDonut extends BaseGauge
 		if @textField
 			@textField.render(@)
 
-		grdFill = @ctx.createRadialGradient(w, h, 39, w, h, 70)
-		grdFill.addColorStop(0, @options.colorStart)
-		grdFill.addColorStop(1, @options.colorStop)
-
 		start = @radius - @lineWidth / 2
 		stop = @radius + @lineWidth / 2
+		
+		grdFill = @ctx.createRadialGradient(w, h, start, w, h, stop)
+		grdFill.addColorStop(0, @options.colorStart)
+		grdFill.addColorStop(1, @options.colorStop)
 
 		@ctx.strokeStyle = @options.strokeColor
 		@ctx.beginPath()

@@ -698,7 +698,7 @@
     };
 
     Gauge.prototype.render = function() {
-      var displayedAngle, fillStyle, gauge, h, j, l, len, len1, max, min, radius, ref, ref1, scaleMutate, tmpRadius, w, zone;
+      var displayedAngle, fillStyle, gauge, h, j, l, len, len1, max, min, radius, ref, ref1, scaleMutate, start, stop, tmpRadius, w, zone;
       w = this.canvas.width / 2;
       h = (this.canvas.height * this.paddingTop + this.availableHeight) - ((this.radius + this.lineWidth / 2) * this.extraPadding);
       displayedAngle = this.getAngle(this.displayedValue);
@@ -743,7 +743,9 @@
           fillStyle = this.getColorForValue(this.displayedValue, this.options.generateGradient);
         } else if (this.options.colorStop !== void 0) {
           if (this.options.gradientType === 0) {
-            fillStyle = this.ctx.createRadialGradient(w, h, 9, w, h, 70);
+            start = radius - this.lineWidth / 2;
+            stop = radius + this.lineWidth / 2;
+            fillStyle = this.ctx.createRadialGradient(w, h, start, w, h, stop);
           } else {
             fillStyle = this.ctx.createLinearGradient(0, 0, w, 0);
           }
@@ -857,11 +859,11 @@
       if (this.textField) {
         this.textField.render(this);
       }
-      grdFill = this.ctx.createRadialGradient(w, h, 39, w, h, 70);
-      grdFill.addColorStop(0, this.options.colorStart);
-      grdFill.addColorStop(1, this.options.colorStop);
       start = this.radius - this.lineWidth / 2;
       stop = this.radius + this.lineWidth / 2;
+      grdFill = this.ctx.createRadialGradient(w, h, start, w, h, stop);
+      grdFill.addColorStop(0, this.options.colorStart);
+      grdFill.addColorStop(1, this.options.colorStop);
       this.ctx.strokeStyle = this.options.strokeColor;
       this.ctx.beginPath();
       this.ctx.arc(w, h, this.radius, (1 - this.options.angle) * Math.PI, (2 + this.options.angle) * Math.PI, false);
