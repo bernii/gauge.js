@@ -644,7 +644,49 @@
       }
       return this.ctx.restore();
     };
-
+     Gauge.prototype.renderStaticLabelsWithText = function(staticLabels, w, h, radius) {
+      var font, fontsize, j, len, match, re, ref, rest, rotationAngle, value;
+      this.ctx.save();
+      this.ctx.translate(w, h);
+      font = staticLabels.font || "10px Times";
+      re = /\d+\.?\d?/;
+      match = font.match(re)[0];
+      rest = font.slice(match.length);
+      fontsize = parseFloat(match) * this.displayScale;
+      this.ctx.font = fontsize + rest;
+      this.ctx.fillStyle = staticLabels.color || "#000000";
+      this.ctx.textBaseline = "bottom";
+      this.ctx.textAlign = "center";
+    
+        //debugger;
+      ref = staticLabels;
+      for (j = 0, len = ref.labels.length; j < len; j++) {
+        value = ref.labels[j].value;
+        text = ref.labels[j].label;
+          value = ref.labels[j].value;
+        if (value !== void 0) {
+          if ((!this.options.limitMin || value >= this.minValue) && (!this.options.limitMax || value <= this.maxValue)) {
+            font = value.font || staticLabels.font;
+            match = font.match(re)[0];
+            rest = font.slice(match.length);
+            fontsize = parseFloat(match) * this.displayScale;
+            this.ctx.font = fontsize + rest;
+            rotationAngle = this.getAngle(value) - 3 * Math.PI / 2;
+            this.ctx.rotate(rotationAngle);
+            this.ctx.fillText(text + '' + formatNumber(value, staticLabels.fractionDigits), -20, -radius - this.lineWidth / 2);
+            this.ctx.rotate(-rotationAngle);
+          }
+        } else {
+          if ((!this.options.limitMin || value >= this.minValue) && (!this.options.limitMax || value <= this.maxValue)) {
+            rotationAngle = this.getAngle(value) - 3 * Math.PI / 2;
+            this.ctx.rotate(rotationAngle);
+            this.ctx.fillText(formatNumber(value, staticLabels.fractionDigits), 0, -radius - this.lineWidth / 2);
+            this.ctx.rotate(-rotationAngle);
+          }
+        }
+      }
+      return this.ctx.restore();
+    };
     Gauge.prototype.renderTicks = function(ticksOptions, w, h, radius) {
       var currentDivision, currentSubDivision, divColor, divLength, divWidth, divisionCount, j, lineWidth, range, rangeDivisions, ref, results, scaleMutate, st, subColor, subDivisions, subLength, subWidth, subdivisionCount, t, tmpRadius;
       if (ticksOptions !== {}) {
@@ -709,6 +751,9 @@
       radius = this.radius * this.options.radiusScale;
       if (this.options.staticLabels) {
         this.renderStaticLabels(this.options.staticLabels, w, h, radius);
+      }
+      if (this.options.staticLabelsWithText) {
+        this.renderStaticLabelsWithText(this.options.staticLabelsWithText, w, h, radius);
       }
       if (this.options.staticZones) {
         this.ctx.save();
