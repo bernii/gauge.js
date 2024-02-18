@@ -12,7 +12,7 @@ do () ->
 	lastId = 0
 	isCancelled = {}
 
-	if not requestAnimationFrame
+	if not window.requestAnimationFrame
 		window.requestAnimationFrame = (callback, element) ->
 			currTime = new Date().getTime()
 			timeToCall = Math.max(0, 16 - (currTime - lastTime))
@@ -678,7 +678,7 @@ class Donut extends BaseDonut
 		@options.strokeColor = @strokeGradient(w, h, start, stop)
 		return @
 
-window.AnimationUpdater =
+AnimationUpdater =
 	elements: []
 	animId: null
 
@@ -722,7 +722,8 @@ if typeof window.define == 'function' && window.define.amd?
 			Gauge: Gauge,
 			Donut: Donut,
 			BaseDonut: BaseDonut,
-			TextRenderer: TextRenderer
+			TextRenderer: TextRenderer,
+			AnimationUpdater: AnimationUpdater
 		}
 	)
 else if typeof module != 'undefined' && module.exports?
@@ -730,10 +731,12 @@ else if typeof module != 'undefined' && module.exports?
 		Gauge: Gauge,
 		Donut: Donut,
 		BaseDonut: BaseDonut,
-		TextRenderer: TextRenderer
+		TextRenderer: TextRenderer,
+		AnimationUpdater: AnimationUpdater
 	}
 else
 	window.Gauge = Gauge
 	window.Donut = Donut
 	window.BaseDonut = BaseDonut
 	window.TextRenderer = TextRenderer
+	window.AnimationUpdater = AnimationUpdater
