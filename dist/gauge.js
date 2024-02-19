@@ -453,7 +453,16 @@
       radiusScale: 1.0,
       fontSize: 40,
       limitMax: false,
-      limitMin: false
+      limitMin: false,
+      value: {
+          show: true,
+          font: "20px Arial",
+          color: "black",
+          down: 0,
+          right: 0,
+          decimals: 0,
+          units: ""
+      }
     };
 
     function Gauge(canvas) {
@@ -763,6 +772,15 @@
         this.ctx.beginPath();
         this.ctx.arc(w, h, radius, displayedAngle, (2 - this.options.angle) * Math.PI, false);
         this.ctx.stroke();
+        if (this.options.value.show == true) {
+          this.ctx.font = this.options.value.font;
+          this.ctx.fillStyle = this.options.value.color;
+          this.ctx.textAlign = "center";
+          this.ctx.fillText(addCommas(
+            this.displayedValue.toFixed(this.options.value.decimals)) + " " + this.options.value.units, 
+            (this.canvas.width/2) + this.options.value.right, 
+            (this.canvas.height/2) + this.options.value.down);
+        }
         this.ctx.save();
         this.ctx.translate(w, h);
       }
