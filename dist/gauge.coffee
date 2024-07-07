@@ -12,7 +12,7 @@ do () ->
 	lastId = 0
 	isCancelled = {}
 
-	if not requestAnimationFrame
+	if not window.requestAnimationFrame
 		window.requestAnimationFrame = (callback, element) ->
 			currTime = new Date().getTime()
 			timeToCall = Math.max(0, 16 - (currTime - lastTime))
@@ -545,7 +545,9 @@ class Gauge extends BaseGauge
 				fillStyle = @getColorForValue(@displayedValue, @options.generateGradient)
 			else if @options.colorStop != undefined
 				if @options.gradientType == 0
-					fillStyle = this.ctx.createRadialGradient(w, h, 9, w, h, 70)
+					start = radius - @lineWidth / 2
+					stop = radius + @lineWidth / 2
+					fillStyle = this.ctx.createRadialGradient(w, h, start, w, h, stop)
 				else
 					fillStyle = this.ctx.createLinearGradient(0, 0, w, 0)
 				fillStyle.addColorStop(0, @options.colorStart)
@@ -637,12 +639,12 @@ class BaseDonut extends BaseGauge
 		if @textField
 			@textField.render(@)
 
-		grdFill = @ctx.createRadialGradient(w, h, 39, w, h, 70)
-		grdFill.addColorStop(0, @options.colorStart)
-		grdFill.addColorStop(1, @options.colorStop)
-
 		start = @radius - @lineWidth / 2
 		stop = @radius + @lineWidth / 2
+		
+		grdFill = @ctx.createRadialGradient(w, h, start, w, h, stop)
+		grdFill.addColorStop(0, @options.colorStart)
+		grdFill.addColorStop(1, @options.colorStop)
 
 		@ctx.strokeStyle = @options.strokeColor
 		@ctx.beginPath()
@@ -676,7 +678,7 @@ class Donut extends BaseDonut
 		@options.strokeColor = @strokeGradient(w, h, start, stop)
 		return @
 
-window.AnimationUpdater =
+AnimationUpdater =
 	elements: []
 	animId: null
 
@@ -720,7 +722,8 @@ if typeof window.define == 'function' && window.define.amd?
 			Gauge: Gauge,
 			Donut: Donut,
 			BaseDonut: BaseDonut,
-			TextRenderer: TextRenderer
+			TextRenderer: TextRenderer,
+			AnimationUpdater: AnimationUpdater
 		}
 	)
 else if typeof module != 'undefined' && module.exports?
@@ -728,10 +731,12 @@ else if typeof module != 'undefined' && module.exports?
 		Gauge: Gauge,
 		Donut: Donut,
 		BaseDonut: BaseDonut,
-		TextRenderer: TextRenderer
+		TextRenderer: TextRenderer,
+		AnimationUpdater: AnimationUpdater
 	}
 else
 	window.Gauge = Gauge
 	window.Donut = Donut
 	window.BaseDonut = BaseDonut
 	window.TextRenderer = TextRenderer
+	window.AnimationUpdater = AnimationUpdater
