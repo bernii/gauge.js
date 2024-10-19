@@ -647,7 +647,7 @@
 
     Gauge.prototype.renderTicks = function(ticksOptions, w, h, radius) {
       var currentDivision, currentSubDivision, divColor, divLength, divWidth, divisionCount, j, lineWidth, range, rangeDivisions, ref, results, scaleMutate, st, subColor, subDivisions, subLength, subWidth, subdivisionCount, t, tmpRadius;
-      if (ticksOptions !== {}) {
+      if (typeof ticksOptions === 'object' && ticksOptions !== null && Object.keys(ticksOptions).length > 0) {
         divisionCount = ticksOptions.divisions || 0;
         subdivisionCount = ticksOptions.subDivisions || 0;
         divColor = ticksOptions.divColor || '#fff';
