@@ -153,6 +153,26 @@ class BaseGauge extends ValueUpdater
 		value =  parseFloat(value) || Number(value)
 		return if isFinite(value) then value else 0
 
+	attachResizeHandler: () ->
+		if typeof ResizeObserver != 'undefined'
+			@resizeObserver = new ResizeObserver (entries) =>
+				@handleResize(entries)
+			@resizeObserver.observe(@canvas)
+
+	handleResize: (entries) ->
+		for entry in entries
+			if entry.target.id == @canvas.id
+				@canvas.height = entry.contentRect.height
+				@canvas.width = entry.contentRect.width
+				@resize()
+
+	resize: () ->
+		# Must be overridden
+
+	detachAll: () ->
+		if @resizeObserver?
+			@resizeObserver.unobserve(@canvas)
+
 class TextRenderer
 	constructor: (@el, @fractionDigits) ->
 
@@ -316,7 +336,11 @@ class Gauge extends BaseGauge
 
 		@gp = [new GaugePointer(@)]
 		@setOptions()
-		
+		@attachResizeHandler()
+
+	resize: (s) ->
+		@setOptions(@options)
+		@set(@lastValue)
 
 	setOptions: (options = null) ->
 		super(options)
@@ -332,7 +356,7 @@ class Gauge extends BaseGauge
 		
 		for gauge in @gp
 			gauge.setOptions(@options.pointer)
-			gauge.render()
+			# gauge.render()
 		@render()
 		return @
 
@@ -347,6 +371,7 @@ class Gauge extends BaseGauge
 				@percentColors[i] = { pct: @options.percentColors[i][0], color: { r: rval, g: gval, b: bval } }
 
 	set: (value) ->
+		@lastValue = value
 		if not (value instanceof Array)
 			value = [value]
 		# Ensure values are OK
@@ -547,7 +572,7 @@ class Gauge extends BaseGauge
 				if @options.gradientType == 0
 					start = radius - @lineWidth / 2
 					stop = radius + @lineWidth / 2
-					fillStyle = this.ctx.createRadialGradient(w, h, start, w, h, stop)
+					fillStyle = this.ctx.createRadialGradient(w, h, Math.max(start, 1), w, h, stop)
 				else
 					fillStyle = this.ctx.createLinearGradient(0, 0, w, 0)
 				fillStyle.addColorStop(0, @options.colorStart)
@@ -603,6 +628,15 @@ class BaseDonut extends BaseGauge
 			@canvas = window.G_vmlCanvasManager.initElement(@canvas)
 		@ctx = @canvas.getContext('2d')
 		@setOptions()
+		@attachResizeHandler()
+		@render()
+
+	resize: () ->
+		@lineWidth = @canvas.height * @options.lineWidth
+		@radius = @options.radiusScale * (Math.min(@canvas.height, @canvas.width) / 2 - @lineWidth / 2)
+		start = @radius - @lineWidth / 2
+		stop = @radius + @lineWidth / 2
+		@options.strokeColor = @strokeGradient(@canvas.width / 2, @canvas.height / 2, start, stop)
 		@render()
 
 	getAngle: (value) ->
@@ -611,7 +645,7 @@ class BaseDonut extends BaseGauge
 	setOptions: (options = null) ->
 		super(options)
 		@lineWidth = @canvas.height * @options.lineWidth
-		@radius = @options.radiusScale * (@canvas.height / 2 - @lineWidth / 2)
+		@radius = @options.radiusScale * (Math.min(@canvas.height, @canvas.width) / 2 - @lineWidth / 2)
 		return @
 
 	set: (value) ->
@@ -642,7 +676,7 @@ class BaseDonut extends BaseGauge
 		start = @radius - @lineWidth / 2
 		stop = @radius + @lineWidth / 2
 		
-		grdFill = @ctx.createRadialGradient(w, h, start, w, h, stop)
+		grdFill = @ctx.createRadialGradient(w, h, Math.max(start, 1), w, h, stop)
 		grdFill.addColorStop(0, @options.colorStart)
 		grdFill.addColorStop(1, @options.colorStop)
 
@@ -661,7 +695,7 @@ class BaseDonut extends BaseGauge
 
 class Donut extends BaseDonut
 	strokeGradient: (w, h, start, stop) ->
-		grd = @ctx.createRadialGradient(w, h, start, w, h, stop)
+		grd = @ctx.createRadialGradient(w, h, Math.max(start, 1), w, h, stop)
 		grd.addColorStop(0, @options.shadowColor)
 		grd.addColorStop(0.12, @options._orgStrokeColor)
 		grd.addColorStop(0.88, @options._orgStrokeColor)
