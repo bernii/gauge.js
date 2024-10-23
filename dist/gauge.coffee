@@ -460,7 +460,7 @@ class Gauge extends BaseGauge
 		@ctx.restore()
 
 	renderTicks: (ticksOptions, w, h, radius) ->
-		if ticksOptions != {}
+		if typeof ticksOptions is 'object' and ticksOptions isnt null and Object.keys(ticksOptions).length > 0
 			divisionCount = ticksOptions.divisions || 0
 			subdivisionCount = ticksOptions.subDivisions || 0
 			divColor = ticksOptions.divColor || '#fff'
